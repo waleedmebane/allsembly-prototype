@@ -338,15 +338,12 @@ class AllsemblyServer:
         self.argdb_conn = self.argumentdb.open()
         #create the queues: order_queue, graph_update_queue
         #create separate queues for guests?
-        #TODO: switch to using queue.Queue instead of deque
-        #  so that I can limit the size and block on attempts to put
-        #  data into the queue when it is at its capacity
-        self.order_queue: OrderQueue = deque([], Limits.max_queue_items) \
-            #Queue(Limits.max_queue_items)
-        self.graph_arg_queue: GraphUpdateArgQueue = deque([], Limits.max_queue_items) \
-            #Queue(Limits.max_queue_items)
-        self.graph_pos_queue: GraphUpdatePosQueue = deque([], Limits.max_queue_items) \
-            #Queue(Limits.max_queue_items)
+        #TODO: additions to the queue, when they are full will just get
+        #  discarded without notice.  That is not the behavoir I prefer.
+        #  Attend to that in a future version.
+        self.order_queue: OrderQueue = deque([], Limits.max_queue_items)
+        self.graph_arg_queue: GraphUpdateArgQueue = deque([], Limits.max_queue_items)
+        self.graph_pos_queue: GraphUpdatePosQueue = deque([], Limits.max_queue_items)
 
         #Load the data into BettingExchange and ArgumentGraph
         #  instances &
