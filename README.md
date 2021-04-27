@@ -7,7 +7,7 @@ Some additional explanation may be found in misc/notes.md.
 
 Only about half of the major features have been added, so far.
 
-##License
+## License
 
 Please find the license terms in the file: LICENSE.txt
 The Javascript libraries "d3", "dialog-polyfill", and "simple-jsonrpc-js"
@@ -49,8 +49,7 @@ Dependencies:
 
 Install Apache2, mod-fcgid, openssl, and graphviz:
 
-```sudo apt-get install apache2 libapache2-mod-fcgid openssl graphviz graphviz-dev
-```
+`sudo apt-get install apache2 libapache2-mod-fcgid openssl graphviz graphviz-dev`
 
 Next, install Python.  If you are using Ubuntu 16.04, you will need to 
 install from source.  With later versions of Ubuntu you may be able
@@ -85,13 +84,14 @@ sudo python3.7 -m pip install pygraphviz json-rpc problog ZODB Werkzeug flup RPy
 ```
 
 Install the Allsembly™ package:
+
 cd to the directory allsembly-prototype
-```sudo python3.7 -m pip install .
-```
+
+```sudo python3.7 -m pip install .```
 
 OR to install for easy development:
-```sudo python3.7 -m pip install --editable .
-```
+
+```sudo python3.7 -m pip install --editable .```
 
 Create a new system user named, e.g., "allsembly"
   and give that user permission to read and write /var/allsembly/data
@@ -102,17 +102,19 @@ sudo chown allsembly /var/allsembly-prototype/data
 ```
 
 Make sure the Python scripts have the executable bit set:
-```chmod a+x allsembly-prototype/scripts/allsembly*.py
-```
+
+```chmod a+x allsembly-prototype/scripts/allsembly*.py```
 
 Add an Allsembly™ user:
+
 This should ideally be done while the Allsembly™ server
   is not running.
+
 ```sudo su allsembly -s /bin/bash
 allsembly-prototype/scripts/allsembly_add_user.py
 ```
 
-Follow the prompts.
+Follow the prompts.<br />
 Then:
 
 ```
@@ -120,8 +122,10 @@ exit
 ```
 
 Run the Allsembly™ server:
+
 Before running the server, you may change any configuration settings
   in the server_config.py file.
+  
 ```cd allsembly-prototype/scripts
 sudo su allsembly -s /bin/bash
 ./allsembly-server.py --daemon
@@ -136,7 +140,8 @@ In the meantime, you could put a line like:
 (Replace `<directory containing allsembly-server.py and server_config.py>` with the path where you have put the files, e.g., `/usr/local/bin` or `/home/user/allsembly-prototype/scripts`.)
 
 
-###Setup and start the Apache web server:
+### Setup and start the Apache web server:
+
 _(You may skip this step and return to it later if you just want to
 try out Allsembly.  Go to the section, below: "...development web server".)_
 
@@ -145,8 +150,8 @@ Add an SSL certificate, either by following the directions given by
   certificate: https://certbot.eff.org
 
 Enable mod-fcgi:
-```sudo a2enmod fcgid
-```
+
+```sudo a2enmod fcgid```
 
 Add the following lines to /etc/apache2/apache2.conf:
 
@@ -167,27 +172,28 @@ Require all granted
 ```
 
 Make the directory /usr/local/apache2/cgi-bin/:
-```sudo mkdir -p /usr/local/apache2/cgi-bin/
-```
+
+```sudo mkdir -p /usr/local/apache2/cgi-bin/```
 
 Copy the FastCGI script into that directory:
-```sudo cp -i allsembly-prototype/scripts/allsembly_demo.py /usr/local/apache2/cgi-bin/
-```
+
+```sudo cp -i allsembly-prototype/scripts/allsembly_demo.py /usr/local/apache2/cgi-bin/```
 
 Move the web files to the web root:
+
 ```sudo mkdir -p /var/www/html/allsembly
 sudo cp -ir allsembly-prototype/web/* /var/www/html/allsembly
 ```
 
 Restart the Apache server:
-```sudo apachectl restart
-```
+
+```sudo apachectl restart```
 
 Open a web browser and navigate to https://<your-server-hostname>/cgi-bin/allsembly_demo.py
 Enter the userid and password of the user you created in a previous step.
 
 
-###Try out Allsembly™ using the development web server.
+### Try out Allsembly™ using the development web server.
 Create a directory to store the SSL certificate:
 
 `mkdir ~/allsembly_test_cert`
