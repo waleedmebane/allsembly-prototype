@@ -189,7 +189,7 @@ Restart the Apache server:
 
 ```sudo apachectl restart```
 
-Open a web browser and navigate to https://<your-server-hostname>/cgi-bin/allsembly_demo.py
+Open a web browser and navigate to https://\<your-server-hostname\>/cgi-bin/allsembly_demo.py
 Enter the userid and password of the user you created in a previous step.
 
 
@@ -199,7 +199,7 @@ Create a directory to store the SSL certificate:
 `mkdir ~/allsembly_test_cert`
 
 Create a self-signed SSL certificate.  You only need to do this step once.
-(Replace '<your-linux-userid>' below with your own userid.)
+(Replace '\<your-linux-userid\>' below with your own userid.)
 
 ```
 python3.7
@@ -219,12 +219,12 @@ allsembly-prototype/scripts/allsembly_dev_demo.py -c '/home/<your-linux-userid>/
 That will start a server running on locahost port 8443.
 If you are running the server on a remote machine, use the -s or --host option 
 to give the IP address of the server.  You should also create your SSL 
-certifcate with host='<your-server-hostname>' in the previous step, e.g.: 
-`make_ssl_devcert('/home/<your-linux-userid>/allsembly_test_cert/', host='waleedmebane.com')`.
+certifcate with host='\<your-server-hostname\>' in the previous step, e.g.: 
+`make_ssl_devcert('/home/\<your-linux-userid\>/allsembly_test_cert/', host='waleedmebane.com')`.
 
 Your firewall might block ports other than 80 and 443.  If so, you can run the server with the option -p 443, but you also have to run it as root (using sudo) since access to ports <=1024 is privileged.
 
-Open your browser and go to https://localhost:8443 or https://<your-server-hostname>:<your-server-port-number> 
+Open your browser and go to https://localhost:8443 or https://\<your-server-hostname\>:\<your-server-port-number\> 
 Your browser will warn you that the connection is not secure since you are
 using a self-signed certificate.  Click the appropriate button to bypass the
 warning.
