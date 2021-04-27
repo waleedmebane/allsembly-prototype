@@ -1,0 +1,32 @@
+from setuptools import setup
+
+setup(
+  name='allsembly',
+  version='0.1.0',
+  author='Waleed Mebane',
+  author_email='allsembly-dev@waleedmebane.com',
+  zip_safe=False,
+  package_data={'allsembly': ['py.typed']},
+  packages=['allsembly'],
+  scripts=[],
+  license='LICENSE.txt',
+  description='Create an online community for anonymous proposal and collaborative evaluation of public policy options, with automated decision support.',
+  long_description=open('README.md').read(),
+  install_requires=[
+      'problog',
+      'pygraphviz',
+      'json-rpc',
+      'ZODB',
+      'Werkzeug',
+      'flup',
+      'RPyC',
+      'persistent',
+      'transaction',
+      'cryptography',
+      'atomic',
+      'readerwriterlock',
+      'argon2-cffi',
+      'python-daemon',
+      'typing',
+      'typing_extensions'],
+)

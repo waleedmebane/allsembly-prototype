@@ -1,0 +1,17 @@
+persistent~=4.6.4
+transaction~=3.0.1
+ZODB~=5.6.0
+allsembly~=0.1.0
+rpyc~=5.0.1
+flup~=1.0.3
+Werkzeug~=1.0.1
+json-rpc~=1.13.0
+typing~=3.7.4.3
+setuptools>=40.8.0
+problog~=2.1.0.42
+pygraphviz~=1.7
+BTrees~=4.7.2
+atomic~=0.7.3
+readerwriterlock~=1.0.8
+cryptography~=3.4.7
+daemon~=2.3.0

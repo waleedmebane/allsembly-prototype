@@ -1,0 +1,17 @@
+Copyright © 2021 Waleed H. Mebane
+
+This program "Allsembly™ Prototype" is licensed under the terms of
+the Lesser GNU General Public License, version 3 (LGPLv3) and the 
+additional terms directly below this notice.  The terms of the LGPLv3 
+are to be found in the file COPYING.LESSER.
+
+   Additional terms:
+
+   Without his or her specific prior written permission, neither may the names
+   of any author of or contributor to this software be used to endorse products
+   derived from this software nor may his or her names, image, or likeness be
+   used to promote products derived from this software.
+
+   Nothing in this license shall be interpreted as granting any license to
+   any of the trademarks of any of the authors of or contributors to this
+   software.
