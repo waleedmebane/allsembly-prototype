@@ -236,3 +236,14 @@ message on the first step of installing build dependencies.
 In that case, you might have to uncomment a line beginning with "deb-src"
 near the top of your /etc/apt/sources.list file and then run 
 `sudo apt-get update` to populate the cache.
+
+How to run the tests
+--------------------
+
+The tests may be run using pytest (See https://pytest.org).
+
+With pytest installed, simply run pytest from the main directory of the
+distribution by typing `pytest`.  It will automatically discover the tests 
+(which are in the subdirectory "tests"), run them, and report the results.
+
+pytest may be installed with `python3.7 -m pip install pytest`.
