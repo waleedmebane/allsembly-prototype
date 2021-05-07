@@ -92,14 +92,6 @@ There will also be a secondary market, integrated with the primary market.
  they are obligated under: first find the sale item with the presumed
  current owner's id; check that their is no later sale, then find
  the mentioned contract id number.
- Since sellers cannot sell to other sellers, the order book needs
- to keep track of sellers separately from buyers.  There will be
- four queues: bids for support contracts, bids for oppose contracts,
- offers for support contracts, offers for oppose contracts.  Bids for
- support contracts can be matched with bids for oppose contracts to
- enter the parties into a new contract or with support offers to transfer
- an old contract, and correspondingly with bids for oppose contracts
- and their counterparts.
 """
 
 import persistent  #type: ignore[import]
@@ -116,11 +108,19 @@ class OrderBook(persistent.Persistent):
         (support or oppose) for pareto optimal matching.
         See https://blogs.cornell.edu/info4220/2016/03/17/nyse-automated-matching-algorithm/
         For that purpose, each side's orders are stored in priority
-        queues.
+        queues.  (Lists will be made into priority queues using the
+        algorithm from the heapq module of the Python standard library.)
         Re-sale of old betting contracts is accommodated by having
-        separate seller queues (self.support_asks and self.oppose_asks).
-        These will be made into priority queues using the algorithm from
-        the heapq module of the Python standard library.
+         separate seller queues (self.support_asks and self.oppose_asks).
+        Since sellers cannot sell to other sellers, the order book needs
+         to keep track of sellers separately from buyers.  There will be
+         four queues: bids for support contracts, bids for oppose contracts,
+         offers for support contracts, offers for oppose contracts.  Bids for
+         support contracts can be matched with bids for oppose contracts to
+         enter the parties into a new contract or with support offers to transfer
+         an old contract, and correspondingly with bids for oppose contracts
+         and their counterparts.
+        A single user also may not buy from or sell to self.
     """
     def __init__(self) -> None:
         self.support_bids = PersistentList()
