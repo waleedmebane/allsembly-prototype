@@ -129,20 +129,14 @@ def start_service():
         print(notification_textio.getvalue())
         notification_textio.close()
 
-def test_server():
-    #pdb.set_trace()
-    #start server in another process
-    p = mp.Process(target=start_service)
-    p.start()
-    #wait a little while for the server to be ready
-    time.sleep(2)
+def client_run():
     client = rpyc.connect("::1", SERVER_PORT_NUMBER, config = {"allow_public_attrs": True}, ipv6=True)
     #print(client.root.add_issue("testuser", "test123", "my issue"))
     my_propose_speech_act = ProposeSpeechAct(
                          InitialPosition("conclusion", [(Premise("premise", Bid(50,50,10)
                                                                 ), None
                                                         )]
-                                        )	
+                                        )
                            )
 
     def _():
@@ -158,5 +152,20 @@ def test_server():
             userid="testuser",
             password="test123"
         )).get_arg_graph(0))
-    p.terminate()
-    p.join()
+
+def test_server():
+    #pdb.set_trace()
+    #start server in another process
+    sp = mp.Process(target=start_service)
+    sp.start()
+    #wait a little while for the server to be ready
+    time.sleep(2)
+    cp = []
+    for i in range(0, 4):
+        cp.append(mp.Process(target=client_run))
+    for i in range(0, 4):
+        cp[i].start()
+    for i in range(0, 4):
+        cp[i].join()
+    sp.terminate()
+    sp.join()

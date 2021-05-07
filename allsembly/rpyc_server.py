@@ -250,8 +250,8 @@ class _UserAuthenticator:
 
         #Instance initialization takes place in a single-thread
         #context, so we are free to write to the database here,
-        #but we have to close it afterward and not reuse the
-        #connection.
+        #but we have to close it afterward since we want to
+        #later use a different, read-only, database object.
         authdb_storage = ZODB.FileStorage.FileStorage(
                 self.userauth_dbfilename, read_only=False)
         authdb = ZODB.DB(authdb_storage)
