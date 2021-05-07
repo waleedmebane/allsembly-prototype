@@ -33,11 +33,13 @@ There will be one exchange per 'issue' containing one
  market per position.
 An order book (see https://en.wikipedia.org/wiki/Order_book and
  https://www.5minutefinance.org/concepts/the-limit-order-book) is used
- to keep track of bids.  Since this is a betting market, both sides of
- a sale make bids, but one side bids to place a bet on success and
- the other side bids to place a bet on failure.  A betting contract
- can be made between bettors agreeing on price (i.e. price "p" for
- success and price "1-p" for failure).  Ordinarily, this means:
+ to keep track of bids.  It works like an 'auction market' (see
+ https://www.investopedia.com/terms/a/auctionmarket.asp). Since this
+ is a betting market, both sides of a sale make bids, but one side bids
+ to place a bet on success and the other side bids to place a bet on
+ failure.  A betting contract can be made between bettors agreeing on
+ price (i.e. price "p" for success and price "1-p" for failure).
+ Ordinarily, this means:
  if I am bidding on success, I will pay you "1" if there is failure
  and you will pay me "1" if there is success.
 These markets are different.  There can be partial success and failure.
@@ -66,13 +68,38 @@ There will also be a secondary market, integrated with the primary market.
  or I might buy out someone else's obligations in an existing contract
  (e.g. they'd bet "success" previously and now want to sell, and I can
  take over their bet of "success" at a new price, possibly lower than what
- they paid).  If the price has gone up, I might pay more than what they
- paid, but I only take on risk (the obligation to pay my counterpart in
- the contract) at the same level they did, so the contract is more
- valuable (e.g. if they purchased at 70 "cents" they could have lost only
- up to 70 "cents"; if they sell to me at 90 "cents", I can still only lose
- 70 "cents"; they make 20 "cents", and I get a lower risk contract).
- This has to be taken into account in a future implementation.
+ they paid).  In that case, it is useful to look at it as though they
+ have 'ante'd up' their betting contract price.  If they paid 70 cents,
+ and I buy their contract for 60 cents, their 10 cents remains with
+ the contract.  The contract will still pay up to 70 cents to the other
+ bettor on the contract, but 10 cents comes from the previous contract
+ owner before any money is taken from me.  So I break even at 60 cents
+ which is the same as if I'd purchased a new contract for 60 cents.
+ Suppose, again, that the original bettor paid 70 cents, but this time
+ I buy their contract for 80 cents.  I still only have an obligation
+ to pay the other bettor on the contract up to 70 cents, and I stand
+ to win up to 30 cents, but I have already paid 10 cents to the
+ original bettor (and they received 'back', in essence, their ante'd
+ sum of 70 cents, which I replaced). So I only break even at 80 cents.
+ And I stand to gain only up to 20 cents on net, which is the same
+ as if I'd purchased a new contract for 80 cents.
+ In terms of accounting, though, I don't think I would want to
+ modify the ids of the parties on the 'contract' written in the
+ ledger.  Instead I think there should be a line indicating that
+ it was sold and to whom and for how much.  To find out the current
+ owner, we would work our way forward through the chain of sales,
+ or to start from a current owner and find out which contract
+ they are obligated under: first find the sale item with the presumed
+ current owner's id; check that their is no later sale, then find
+ the mentioned contract id number.
+ Since sellers cannot sell to other sellers, the order book needs
+ to keep track of sellers separately from buyers.  There will be
+ four queues: bids for support contracts, bids for oppose contracts,
+ offers for support contracts, offers for oppose contracts.  Bids for
+ support contracts can be matched with bids for oppose contracts to
+ enter the parties into a new contract or with support offers to transfer
+ an old contract, and correspondingly with bids for oppose contracts
+ and their counterparts.
 """
 
 import persistent  #type: ignore[import]
@@ -90,12 +117,16 @@ class OrderBook(persistent.Persistent):
         See https://blogs.cornell.edu/info4220/2016/03/17/nyse-automated-matching-algorithm/
         For that purpose, each side's orders are stored in priority
         queues.
-        Re-sale of old betting contracts is mixed in, but flagged so an
-        appropriate value can be calculated for matching.
+        Re-sale of old betting contracts is accommodated by having
+        separate seller queues (self.support_asks and self.oppose_asks).
+        These will be made into priority queues using the algorithm from
+        the heapq module of the Python standard library.
     """
     def __init__(self) -> None:
-        self.support_bids_and_asks = PersistentList()
-        self.oppose_bids_and_asks = PersistentList()
+        self.support_bids = PersistentList()
+        self.oppose_bids = PersistentList()
+        self.support_asks = PersistentList()
+        self.oppose_asks = PersistentList()
 
 class BettingMarket(persistent.Persistent):
     def __init__(self) -> None:
