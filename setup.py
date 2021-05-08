@@ -4,7 +4,7 @@ setup(
   name='allsembly',
   version='0.1.0',
   author='Waleed Mebane',
-  author_email='allsembly-dev@waleedmebane.com',
+  author_email='allsemblyUNDERSCOREdev@waleedmebane.c.m',
   zip_safe=False,
   package_data={'allsembly': ['py.typed']},
   packages=['allsembly'],
