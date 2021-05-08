@@ -120,7 +120,7 @@ class OrderBook(persistent.Persistent):
          enter the parties into a new contract or with support offers to transfer
          an old contract, and correspondingly with bids for oppose contracts
          and their counterparts.
-        A single user also may not buy from or sell to self.
+        A user also may not buy from or sell to self.
     """
     def __init__(self) -> None:
         self.support_bids = PersistentList()
