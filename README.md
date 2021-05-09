@@ -9,7 +9,7 @@ Only about half of the major features have been added, so far.
 
 ## License
 
-Please find the license terms in the file: LICENSE.txt
+Please find the license terms in the file: LICENSE.txt.
 The Javascript libraries "d3", "dialog-polyfill", and "simple-jsonrpc-js"
 are included with this software in the sub-directory:
 web/scripts
@@ -236,6 +236,24 @@ message on the first step of installing build dependencies.
 In that case, you might have to uncomment a line beginning with "deb-src"
 near the top of your /etc/apt/sources.list file and then run 
 `sudo apt-get update` to populate the cache.
+
+How to install for other platforms
+----------------------------------
+
+The software has only been tested with Ubuntu 16.04; however, I believe
+that the only platform specific parts are the `--daemon` option, the
+`--user` option and platform specific file paths.  These should
+work on many other Unix-like or Unix operating systems.  So it might
+work with MacOS.  The allsembly-server.py script might run under Windows
+if you set all of the file options with Windows-specific pathnames and
+skip the options `--daemon` and `--user`.  I believe the first line 
+beginning "#!" has no effect on Windows, and it, instead, uses the file
+extension to determine which application (i.e., the Python interpreter) to
+use to load the file according to its registry of file types.
+You might try putting the script in the Windows startup folder or check 
+your Windows Server OS documentation for appropriate ways to cause it to 
+run at startup and to restrict its privileges.  There might be a RunAs 
+option on the script's properties window.
 
 How to run the tests
 --------------------

@@ -153,6 +153,13 @@ class IssueQueue:
             #			issue_id = self.issues.next_issue_id.get_and_set(
             #										 self.issues.next_issue_id.value + 1
             #										 )
+            # Actually enqueuing the new issue is unnecessary in this version
+            # since only one issue is used in the client and its name is
+            # not shown anywhere.  However, it might work.  It will have to
+            # be tested.
+            # If an issue doesn't exist, it is created in
+            # allsembly.process_one_position_from_queue() as long as its
+            # id number is less than next_issue_id.
             #			self.queue.append((issue_id, issue_name))
             issue_id = self.issues.next_issue_id
             self.issues.next_issue_id += 1
@@ -361,6 +368,16 @@ class _UserAuthenticator:
                      )
                     )
                 ):
+                    #TODO: put a creation time in the cookie to expire a
+                    # cookie (e.g., if its creation time is earlier than
+                    # the last login time or the last logout time once
+                    # logouts are implemented) to avoid replay attacks
+                    # (i.e., so that an attacker who gets hold of the
+                    # cookie may not use it after it expires or after the
+                    # user logs out.  But this also means a user could not
+                    # have multiple sessions active on different devices;
+                    # alternatively, store active session tokens in the
+                    # cookies and in the database, with expiration times.
                     if isinstance(credentials, AuthCredentialsStr):
                         encrypted_credentials = FinalVar[bytes](
                             self._fernet_cryptor.encrypt(

@@ -30,21 +30,21 @@
    software.
 -->
 <!--
-This implements the client side of Allsembly, except for logging it, which
+This implements the client side of Allsembly, except for logging in, which
 is implemented by allsembly_demo_login.xsl.
 The CGI just produces a trivial XML string that contains a document root,
 and a reference to this file as its default XML stylesheet.
 Implementing it as an XSL template simplifies what the CGI has to do,
 but will also make it easy to do localization in the future by including
 (using "xsl-include") an XML file that contains the strings to use.
-This approach also provided flexibility to either preload some data via XML
+This approach also provides flexibility to either preload some data via XML
 tags, such as to alter the page according to user preferences, or to wait
 and load the data via XmlHttpRequests with Javascript.
 
 The Javascript functions make requests to the server using JSON-RPC.
 The JSON-RPC implementation is provided by the library, "simple-jsonrcp-js".
 
-The library, "d3", is use to make the SVG image of the graph pan and
+The library, "d3", is used to make the SVG image of the graph pan and
 zoom in response to mouse events.
 
 The "dialog-polfill" library provides the functionality of the <DIALOG>

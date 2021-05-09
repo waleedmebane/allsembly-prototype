@@ -29,7 +29,7 @@
 #
 """ Contains functions for handling web requests and a function
 "application(...)" that implements the CGI backend for the web services
-as a WSGI application.
+as a WSGI application.  WSGI is a Python web services standard.
 
 See allsembly_demo.py for an example of its use.
 
@@ -254,7 +254,7 @@ def login(request: Any) -> Any:
 def application(environ: Any, start_response: Any) -> Any:
     """ A WSGI application implementing the connection between
     the web and the Allsembly server and providing the web
-    services.
+    services.  WSGI is a Python web services standard.
     """
     # In the case of GET requests, it loads either the main
     #  Allsembly demo page or the login page, depending on whether

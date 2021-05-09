@@ -248,4 +248,6 @@ class ArgumentScheme:
     # an argument could be derived given some parameter-arguments.
     # The relevance of the derived argument would not
     # be in doubt.
+    # For some general information about Argument Schemes
+    # see https://en.wikipedia.org/wiki/Argumentation_scheme .
     pass
