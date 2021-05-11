@@ -80,6 +80,9 @@ Design for scalability
 Localization
 ^^^^^^^^^^^^
 
+Project development roadmap
+---------------------------
+
 Coding standards
 ----------------
 
@@ -112,3 +115,6 @@ I plan to attend to the warnings.
 I also look at the output of the refactoring module even though it 
 is disabled in setup.cfg, and I plan to implement some of its refactoring
 recommendations.
+
+How it works
+------------

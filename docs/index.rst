@@ -13,6 +13,7 @@ Welcome to Allsembly™'s documentation!
    installation_and_testing
    user_s_guide
    programmer_s_guide
+   license
 
 
 Introduction
@@ -31,3 +32,12 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+Copyright © 2021 Waleed H. Mebane
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled "GNU
+Free Documentation License".
+
