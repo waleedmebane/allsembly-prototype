@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Installation and Testing &#8212; Allsembly™ Prototype  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="User’s Guide" href="user_s_guide.html" />
+    <link rel="prev" title="Welcome to Allsembly™’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="installation-and-testing">
+<h1>Installation and Testing<a class="headerlink" href="#installation-and-testing" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>Please find the license terms in the file: LICENSE.txt.
+The Javascript libraries “d3”, “dialog-polyfill”, and “simple-jsonrpc-js”
+are included with this software in the sub-directory:
+web/scripts</p>
+<p>Their license terms and copyright notices are in files in the sub-directory:
+LICENSE.third-party.  The respective license terms file has its
+suffix named after the name of the library.</p>
+</div>
+<div class="section" id="how-to-install-for-ubuntu-16-04">
+<h2>How to install (for Ubuntu 16.04)<a class="headerlink" href="#how-to-install-for-ubuntu-16-04" title="Permalink to this headline">¶</a></h2>
+<p>Dependencies:
+Python &gt;=3.6.5 (tested with Python 3.7.4)
+pip
+Apache2
+openssl
+libapache2-mod-fcgid
+graphviz
+graphviz-dev</p>
+<p>Python packages:
+problog
+ZODB
+pygrphviz
+json-rpc
+Werkzeug
+flup
+RPyC
+persistent
+transaction
+atomic
+readerwriterlock
+argon2-cffi
+cryptography
+typing
+python-daemon</p>
+<p>Install Apache2, mod-fcgid, openssl, and graphviz:</p>
+<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">apache2</span> <span class="pre">libapache2-mod-fcgid</span> <span class="pre">openssl</span> <span class="pre">graphviz</span> <span class="pre">graphviz-dev</span></code></p>
+<p>Next, install Python.  If you are using Ubuntu 16.04, you will need to
+install from source.  With later versions of Ubuntu you may be able
+to install using <code class="docutils literal notranslate"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">python3</span></code>, but it will place Python
+in /usr/bin; so you will either have to modify the first line of the
+scripts from <code class="docutils literal notranslate"><span class="pre">#!/usr/local/bin/python3</span></code> to <code class="docutils literal notranslate"><span class="pre">#!/usr/bin/python3</span></code> or
+place a link in /usr/local/bin (i.e., <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">ln</span> <span class="pre">-si</span> <span class="pre">/usr/bin/python3</span> <span class="pre">/usr/local/bin/python3</span></code>).</p>
+<p>To compile from source, first obtain the source code from:
+https://www.python.org/downloads/release/python-374
+And then follow the instructions in the README.rst file, which amount to:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sudo apt-get build-dep python3.5
+./configure
+make
+make test
+sudo make install
+</pre></div>
+</div>
+<p>(<code class="docutils literal notranslate"><span class="pre">*</span></code>See the bottom of this file for a tip in case you get an error message
+about needing to add a source repository in order to install build
+dependencies–the first step listed above.)
+(I haven’t tested with versions of Python other than 3.7.4, yet.
+One dependency, Problog, requires Python &gt;=3.6.5.)</p>
+<p>Next, use pip to install the Python packages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">python3</span><span class="o">.</span><span class="mi">7</span> <span class="o">-</span><span class="n">m</span> <span class="n">ensurepip</span>
+<span class="n">sudo</span> <span class="n">python3</span><span class="o">.</span><span class="mi">7</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span>
+<span class="n">sudo</span> <span class="n">python3</span><span class="o">.</span><span class="mi">7</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">pygraphviz</span> <span class="n">json</span><span class="o">-</span><span class="n">rpc</span> <span class="n">problog</span> <span class="n">ZODB</span> <span class="n">Werkzeug</span> <span class="n">flup</span> <span class="n">RPyC</span> <span class="n">persistent</span> <span class="n">transaction</span>  <span class="n">atomic</span> <span class="n">readerwriterlock</span> <span class="n">argon2</span><span class="o">-</span><span class="n">cffi</span> <span class="n">cryptography</span> <span class="n">typing</span> <span class="n">python</span><span class="o">-</span><span class="n">daemon</span>
+</pre></div>
+</div>
+<p>Install the Allsembly™ package:</p>
+<p>cd to the directory allsembly-prototype</p>
+<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">python3.7</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code></p>
+<p>OR to install for easy development:</p>
+<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">python3.7</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--editable</span> <span class="pre">.</span></code></p>
+<p>Create a new system user named, e.g., “allsembly”
+and give that user permission to read and write /var/allsembly/data</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">adduser</span> <span class="o">--</span><span class="n">system</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">create</span><span class="o">-</span><span class="n">home</span> <span class="n">allsembly</span>
+<span class="n">sudo</span> <span class="n">chown</span> <span class="n">allsembly</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">allsembly</span><span class="o">-</span><span class="n">prototype</span><span class="o">/</span><span class="n">data</span>
+</pre></div>
+</div>
+<p>Make sure the Python scripts have the executable bit set:</p>
+<p><code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">a+x</span> <span class="pre">allsembly-prototype/scripts/allsembly*.py</span></code></p>
+<p>Add an Allsembly™ user:</p>
+<p>This should ideally be done while the Allsembly™ server
+is not running.</p>
+<div class="highlight-sudo notranslate"><div class="highlight"><pre><span></span>allsembly-prototype/scripts/allsembly_add_user.py
+</pre></div>
+</div>
+<p>Follow the prompts.<br />
+Then:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exit</span>
+</pre></div>
+</div>
+<p>Run the Allsembly™ server:</p>
+<p>Before running the server, you may change any configuration settings
+in the server_config.py file.</p>
+<div class="highlight-cd notranslate"><div class="highlight"><pre><span></span>sudo su allsembly -s /bin/bash
+./allsembly-server.py --daemon
+exit
+</pre></div>
+</div>
+<p>NOTE: to get it to persist across reboots, you will need a service script
+for systemd or initd.  I haven’t written one, yet.  Come back to the repo
+to check for it later.  Or you can write one consulting your OS documentation.
+In the meantime, you could put a line like:
+<code class="docutils literal notranslate"><span class="pre">&lt;directory</span> <span class="pre">containing</span> <span class="pre">allsembly-server.py</span> <span class="pre">and</span> <span class="pre">server_config.py&gt;/allsembly-server.py</span> <span class="pre">--daemon</span> <span class="pre">--user</span> <span class="pre">allsembly</span></code> into your /etc/rc.local file.
+(Replace <code class="docutils literal notranslate"><span class="pre">&lt;directory</span> <span class="pre">containing</span> <span class="pre">allsembly-server.py</span> <span class="pre">and</span> <span class="pre">server_config.py&gt;</span></code> with the path where you have put the files, e.g., <code class="docutils literal notranslate"><span class="pre">/usr/local/bin</span></code> or <code class="docutils literal notranslate"><span class="pre">/home/user/allsembly-prototype/scripts</span></code>.)</p>
+<div class="section" id="setup-and-start-the-apache-web-server">
+<h3>Setup and start the Apache web server:<a class="headerlink" href="#setup-and-start-the-apache-web-server" title="Permalink to this headline">¶</a></h3>
+<p><em>(You may skip this step and return to it later if you just want to
+try out Allsembly.  Go to the section, below: “…development web server”.)</em></p>
+<p>Add an SSL certificate, either by following the directions given by
+your webhosting provider or by using Certbot to install a Let’s Encrypt
+certificate: https://certbot.eff.org</p>
+<p>Enable mod-fcgi:</p>
+<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">a2enmod</span> <span class="pre">fcgid</span></code></p>
+<p>Add the following lines to /etc/apache2/apache2.conf:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FcgidIOTimeout</span> <span class="mi">1800</span>
+
+<span class="n">Alias</span> <span class="s2">&quot;/cgi-bin/&quot;</span> <span class="s2">&quot;/usr/local/apache2/cgi-bin/&quot;</span>
+<span class="o">&lt;</span><span class="n">Location</span> <span class="s2">&quot;/cgi-bin&quot;</span><span class="o">&gt;</span>
+<span class="n">SetHandler</span> <span class="n">fcgid</span><span class="o">-</span><span class="n">script</span>
+<span class="n">Options</span> <span class="o">+</span><span class="n">ExecCGI</span>
+<span class="n">Require</span> <span class="nb">all</span> <span class="n">granted</span>
+<span class="c1">#Optionally uncomment the lines below to limit the number of bytes</span>
+<span class="c1"># that can be sent in a single request to the FastCGI scripts in </span>
+<span class="c1"># this directory.</span>
+<span class="c1">#LimitRequestBody 64000</span>
+<span class="c1">#LimitXMLRequestBody 64000</span>
+<span class="o">&lt;/</span><span class="n">Location</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Make the directory /usr/local/apache2/cgi-bin/:</p>
+<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">mkdir</span> <span class="pre">-p</span> <span class="pre">/usr/local/apache2/cgi-bin/</span></code></p>
+<p>Copy the FastCGI script into that directory:</p>
+<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">cp</span> <span class="pre">-i</span> <span class="pre">allsembly-prototype/scripts/allsembly_demo.py</span> <span class="pre">/usr/local/apache2/cgi-bin/</span></code></p>
+<p>Move the web files to the web root:</p>
+<div class="highlight-sudo notranslate"><div class="highlight"><pre><span></span>sudo cp -ir allsembly-prototype/web/* /var/www/html/allsembly
+</pre></div>
+</div>
+<p>Restart the Apache server:</p>
+<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apachectl</span> <span class="pre">restart</span></code></p>
+<p>Open a web browser and navigate to https://&lt;your-server-hostname&gt;/cgi-bin/allsembly_demo.py
+Enter the userid and password of the user you created in a previous step.</p>
+</div>
+<div class="section" id="try-out-allsembly-using-the-development-web-server">
+<h3>Try out Allsembly™ using the development web server.<a class="headerlink" href="#try-out-allsembly-using-the-development-web-server" title="Permalink to this headline">¶</a></h3>
+<p>Create a directory to store the SSL certificate:</p>
+<p><code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">~/allsembly_test_cert</span></code></p>
+<p>Create a self-signed SSL certificate.  You only need to do this step once.
+(Replace ‘&lt;your-linux-userid&gt;’ below with your own userid.)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span><span class="o">.</span><span class="mi">7</span>
+<span class="n">Python</span> <span class="mf">3.7</span><span class="o">.</span><span class="mi">4</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">Apr</span> <span class="mi">22</span> <span class="mi">2021</span><span class="p">,</span> <span class="mi">18</span><span class="p">:</span><span class="mi">55</span><span class="p">:</span><span class="mi">44</span><span class="p">)</span> 
+<span class="p">[</span><span class="n">GCC</span> <span class="mf">5.4</span><span class="o">.</span><span class="mi">0</span> <span class="mi">20160609</span><span class="p">]</span> <span class="n">on</span> <span class="n">linux</span>
+<span class="n">Type</span> <span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;copyright&quot;</span><span class="p">,</span> <span class="s2">&quot;credits&quot;</span> <span class="ow">or</span> <span class="s2">&quot;license&quot;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span><span class="o">.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">werkzeug.serving</span> <span class="kn">import</span> <span class="n">make_ssl_devcert</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">make_ssl_devcert</span><span class="p">(</span><span class="s1">&#39;/home/&lt;your-linux-userid&gt;/allsembly_test_cert/&#39;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">)</span>
+<span class="p">(</span><span class="s1">&#39;/home/&lt;your-linux-userid&gt;/allsembly_test_cert/.crt&#39;</span><span class="p">,</span> <span class="s1">&#39;/home/&lt;your-linux-userid&gt;/allsembly_test_cert/.key&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">quit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Start the development server:</p>
+<p>allsembly-prototype/scripts/allsembly_dev_demo.py -c ‘/home/<your-linux-userid>/allsembly_test_cert/’ -w ‘allsembly-prototype/web/’</p>
+<p>That will start a server running on locahost port 8443.
+If you are running the server on a remote machine, use the -s or –host option
+to give the IP address of the server.  You should also create your SSL
+certifcate with host=’&lt;your-server-hostname&gt;’ in the previous step, e.g.:
+<code class="docutils literal notranslate"><span class="pre">make_ssl_devcert('/home/\&lt;your-linux-userid\&gt;/allsembly_test_cert/',</span> <span class="pre">host='waleedmebane.com')</span></code>.</p>
+<p>Your firewall might block ports other than 80 and 443.  If so, you can run the server with the option -p 443, but you also have to run it as root (using sudo) since access to ports &lt;=1024 is privileged.</p>
+<p>Open your browser and go to https://localhost:8443 or https://&lt;your-server-hostname&gt;:&lt;your-server-port-number&gt;
+Your browser will warn you that the connection is not secure since you are
+using a self-signed certificate.  Click the appropriate button to bypass the
+warning.
+Enter the userid and password of the user you created in a previous step.</p>
+<p>NOTE: When building Python3.7.4 from source code, you might get an error
+message on the first step of installing build dependencies.
+In that case, you might have to uncomment a line beginning with “deb-src”
+near the top of your /etc/apt/sources.list file and then run
+<code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">update</span></code> to populate the cache.</p>
+</div>
+</div>
+<div class="section" id="how-to-install-for-other-platforms">
+<h2>How to install for other platforms<a class="headerlink" href="#how-to-install-for-other-platforms" title="Permalink to this headline">¶</a></h2>
+<p>The software has only been tested with Ubuntu 16.04; however, I believe
+that the only platform specific parts are the <code class="docutils literal notranslate"><span class="pre">--daemon</span></code> option, the
+<code class="docutils literal notranslate"><span class="pre">--user</span></code> option and platform specific file paths.  These should
+work on many other Unix-like or Unix operating systems.  So it might
+work with MacOS.  The allsembly-server.py script might run under Windows
+if you set all of the file options with Windows-specific pathnames and
+skip the options <code class="docutils literal notranslate"><span class="pre">--daemon</span></code> and <code class="docutils literal notranslate"><span class="pre">--user</span></code>.  I believe the first line
+beginning “#!” has no effect on Windows, and it, instead, uses the file
+extension to determine which application (i.e., the Python interpreter) to
+use to load the file according to its registry of file types.
+You might try putting the script in the Windows startup folder or check
+your Windows Server OS documentation for appropriate ways to cause it to
+run at startup and to restrict its privileges.  There might be a RunAs
+option on the script’s properties window.</p>
+</div>
+<div class="section" id="how-to-run-the-tests">
+<h2>How to run the tests<a class="headerlink" href="#how-to-run-the-tests" title="Permalink to this headline">¶</a></h2>
+<p>The tests may be run using pytest (See https://pytest.org).</p>
+<p>With pytest installed, simply run pytest from the main directory of the
+distribution by typing <code class="docutils literal notranslate"><span class="pre">pytest</span></code>.  It will automatically discover the tests
+(which are in the subdirectory “test”), run them, and report the results.</p>
+<p>pytest may be installed with <code class="docutils literal notranslate"><span class="pre">python3.7</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pytest</span></code>.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Allsembly™ Prototype</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation and Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-install-for-ubuntu-16-04">How to install (for Ubuntu 16.04)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-install-for-other-platforms">How to install for other platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-run-the-tests">How to run the tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_s_guide.html">User’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="programmer_s_guide.html">Programmer’s Guide</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Allsembly™’s documentation!</a></li>
+      <li>Next: <a href="user_s_guide.html" title="next chapter">User’s Guide</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Waleed H. Mebane.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/installation_and_testing.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
