@@ -7,7 +7,11 @@ Some additional explanation may be found in misc/notes.md.
 
 Only about half of the major features have been added, so far.
 
-A demo server is currently deployed at https://waleedmebane.com/
+A demo server is currently deployed at https://waleedmebane.com/  <br />
+The documentation is currently hosted at https://waleedmebane.github.io/allsembly-docs/ .
+You may also generate the documentation from the files in the docs
+subdirectory using the documentation creation tool, Sphinx
+(https://www.sphinx-doc.org/).
 
 ## License
 
