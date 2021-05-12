@@ -86,6 +86,37 @@ Design for scalability
 
 Localization
 ^^^^^^^^^^^^
+My current intention is to implement localization by putting the strings
+in XML files and using XSLT transforms to select the appropriate
+string and to combine it with any dynamic data.
+
+The Accept-Language header or the user's language selection (stored
+in a cookie or embodied in a special path, such as /en/file.xml)
+can be used to select the appropriate string.
+
+Directives in XML tags can encode the correct way to transform
+dynamic data or other words in the text that are dependent on the dynamic
+data.
+
+For example, if the dynamic data is a number, another word might have
+to be sometimes singular and sometimes plural:
+
+"You have x token(s) remaining."
+
+Sometimes there might be special words when the number is 2 or 3.
+
+Sometimes words might need to be marked with affixes or suffixes to do
+with grammatical role.
+
+These things could be accomodated with regular expressions and XSLT
+regular expression functions.
+
+Benefits of this approach could be:
+XML and XSLT processing are built into web browsers.
+Javascript isn't required (but could be used).
+XML schemas could validate the documents using readily available tools
+XML is a commonly used standard.  The developer might already know it;  
+  otherwise, it may be useful to learn and reuseable knowledge.
 
 Project development roadmap
 ---------------------------
