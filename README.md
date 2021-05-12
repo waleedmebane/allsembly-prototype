@@ -1,7 +1,7 @@
 Allsembly™ Prototype
 ====================
 
-This is software for creating an online community for anonymous proposal and collaborative evaluation of public policy options, with automated decision support.
+This software will be for creating an online community for anonymous proposal and collaborative evaluation of public policy options, with automated decision support.
 It makes use of betting markets and Bayesian networks.
 Some additional explanation may be found in misc/notes.md.
 
