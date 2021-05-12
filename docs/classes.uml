@@ -1,4 +1,231 @@
 @startuml
+caption Figure 1
 class AllsemblyServer {
+-userauth_dbfilename: str
+-user_dbfilename: str
+-arg_dbfilename: str
+-order_queue: deque[Tuple]
+-graph_arg_queue: deque[Tuple]
+-graph_pos_queue: deque[Tuple]
++process_all_issues_from_queue()
++process_all_orders_from_queue()
++process_all_positions_from_queue()
++process_all_items_from_all_queues()
++process_all_items_of_one_request()
++cleanup()
++server_main_loop()
 }
+
+class ServerControl {
+- _should_exit: int
++ should_exit()
++ set_should_exit()
++ reset_should_exit()
+}
+
+ServerControl o.. AllsemblyServer
+
+class Issues(Persistent) {
++ graphs: OOBTree
++ next_issue_id: AtomicLong
+}
+
+"Issues(Persistent)" *-- AllsemblyServer: <<create>>
+
+class IssueQueue {
+- queue: deque
++ add_issue()
++ delete_issue()
+}
+
+IssueQueue *-- AllsemblyServer: <<create>>
+"Issues(Persistent)" o-- IssueQueue
+
+class _UserAuthenticator {
+- userauth_dbfilename: str
+- user_dbfilename: str
+- authdb_storage: ZODB..FileStorage
+- userdb_storage: ZODB..FileStorage
+- authdb: ZODB.DB
+- userdb: ZODB.DB
+- authdb_conn: ZODB..Connection
+- userdb_conn: ZODB..Connection
+- _fernet_cryptor: bytes
+- {field} userid_salt (unused)
++ authenticate_user()
++ close_databases()
+}
+
+_UserAuthenticator <.. AllsemblyServer: <<create>>
+
+class ArgumentGraph(Persistent) {
+- {static} _v_my_rwlock: RWLockWrite
+- _v_my_wlock
+- _v_my_rlock
++ issue_name: str
+- arg_node_index: PersistentMapping
+- pos_node_index: PersistentMapping
+- next_arg_id: AtomicLong
+- next_pos_id: AtomicLong
+- read_buffer_index: int
+- write_buffer_index: int
+- /_v_gv_graph: AGraph
+- /my_problog_prog: str
+- /_v_my_g_svg: list[str]
+- _add_position_to_gv_graph()
+- _add_argument_to_gv_graph()
+- _update_gv_graph_nodes()
+- _build_initial_gv_graph()
+- _add_clause_to_problog_program()
+- _add_virtual_evidence_to_problog_program()
+- _add_term_and_query_to_problog_program()
+- _build_problog_program()
+- _problog_calculate()
++ get_problog_program_string()
++ add_argument()
++ get_position_copy()
++ add_position()
++ hide_arguement() (unused)
+- _prepare_graph()
++ draw_graph()
+}
+
+"ArgumentGraph(Persistent)" "1..*" *-- "1" "Issues(Persistent)"
+
+class PositionNode(Persistent) {
+{field} ... (dataclass)
+{static} build_PositionNode()
+}
+
+class ArgumentNode(Persistent) {
+{field} ... (dataclass)
+{static} build_ArgumentNode()
+}
+
+"PositionNode(Persistent)" "0..*" *-- "1" "ArgumentGraph(Persistent)"
+"ArgumentNode(Persistent)" "0..*" *-- "1" "ArgumentGraph(Persistent)"
+
+class UserAuth(Persistent) {
+userid_hashed: bytes
+password_hashed: bytes
+pwd_salt: bytes
+}
+
+class UserInfo(Persistent) {
+userid_hashed: bytes
+last_login: int
+{field} current_isssue: int (unused)
+{field} current_subuser: str (unused)
+{field} subusers: PersistentMapping (unused)
+}
+
+class UserClientSettings(Persistent) {
+{field} (unused)
+}
+
+_UserAuthenticator "1" o.. "0..*" "UserAuth(Persistent)"
+_UserAuthenticator "1" o.. "0..*" "UserInfo(Persistent)"
+"UserInfo(Persistent)" *-- "UserClientSettings(Persistent)"
+
+class GraphRequest {
++ draw()
++ get_position_details()
+}
+
+"Issues(Persistent)" o-- GraphRequest
+
+class LedgerRequest {
+{field} (unused)
+}
+
+class AllsemblyServices(rpyc.Service) {
+- order_queue: deque[Tuple]
+- graph_arg_queue: deque[Tuple]
+- graph_pos_queue: deque[Tuple]
++ on_connect()
++ on_disconnect()
++ exposed_get_user_services()
++ exposed_authenticate_user()
+- _add_issue()
+}
+
+GraphRequest o-- "AllsemblyServices(rpyc.Service)"
+LedgerRequest o-- "AllsemblyServices(rpyc.Service)"
+_UserAutheenticator o-- "AllsemblyServices(rpyc.Service)"
+
+class UserServices {
++ check_commitments_for_consistency() (unused)
++ delete_issue()
++ argue()
++ propose()
++ get_arg_graph()
++ get_position_details()
+}
+
+UserServices <--+ "AllsemblyServices(rpyc.Service)"
+
+class ProblogModel(Persistent) {
+- {static} _v_my_rwlock: RWLockWrite
+- _v_my_wlock
+- _v_my_rlock
+- _read_buffer_index: int
+- _write_buffer_index: int
+- _problog_queuy_results
+- __setstate__()
++ calculate_marginals()
++ add_terms() (unused)
++ update_term_weights() (unused)
+}
+
+"ArgumentGraph(Persistent)" --* "ProblogModel(Persistent)"
+
+class BettingExchange(Persistent) {
+}
+
+class BettingMarket(Persistent) {
++ last_support_price: float
++ {field} market_id: int (same as arg_id)
+}
+
+"BettingMarket(Persistent)" "1..*" *-- "1" "BettingExchange(Persistent)"
+
+class OrderBook(Persistent) {
+- support_bids_index
+- oppose_bids_index
+- support_asks_index
+- oppose_asks_index
++ ... () (future methods)
+}
+
+"OrderBook(Persistent)" *-- "BettingMarket(Persistent)"
+
+class IndependentBid(orAsk) {
+{field} ... (future fields)
+}
+
+"IndependentBid(orAsk)" "0..*" *-- "OrderBook(Persistent)": support_bids (or _asks)
+"IndependentBid(orAsk)" "0..*" *-- "OrderBook(Persistent)": oppose_bids (or _asks)
+
+class Ledger(Persistent) {
++ index: OOBTree
+==
+I think there should
+be only one Ledger
+object (not one per
+exchange)
+}
+
+class BettingContract(Persistent) {
++ {field} user1_anonid: bytes
++ {field} user2_anonid: bytes
++ purchase_price: float
++ position_locator
+...
+}
+
+"Ledger(Persistent)" "0..*" --* "BettingContract(Persistent)"
+"Ledger(Persistent)" "1" o-- "BettingMarket(Persistent)": support_ledger_ref
+"Ledger(Persistent)" "1" o-- "BettingMarket(Persistent)": oppose_ledger_ref
+
+"ArgumentGraph(Persistent)" --* "BettingExchange(Persistent)"
 @enduml

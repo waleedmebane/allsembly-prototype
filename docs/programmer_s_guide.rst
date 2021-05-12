@@ -14,9 +14,16 @@ Future possible dependencies
 Files
 -----
 
+Specification of requirements (draft)
+-------------------------------------
+
 Design overview
 ---------------
 .. uml:: classes.uml
+
+.. uml:: sequenceDiagram.uml
+
+Text to explain the above figures: to be added.
 
 Class detail
 ------------
