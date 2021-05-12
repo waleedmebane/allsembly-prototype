@@ -7,6 +7,8 @@ Some additional explanation may be found in misc/notes.md.
 
 Only about half of the major features have been added, so far.
 
+A demo server is currently deployed at https://waleedmebane.com/
+
 ## License
 
 Please find the license terms in the file: LICENSE.txt.
