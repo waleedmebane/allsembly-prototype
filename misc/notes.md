@@ -33,7 +33,8 @@ that has been given so far.
 There is evidence that human reasoning is Bayesian (although boundedly so).
 See Charter and Oaksford 2007, _Bayesian Rationality_.  If that is the case, 
 the more evidence is presented, and people change their bets in light of the
-evidence, the more the bet price and the calculated evidence should align.
+evidence, the more the bet price and the calculated estimate of the weight
+of the evidence should align.
 Reasons for their non-alignment could be:
 1) There is evidence that some participants are basing their judgements on
 (perhaps unknowingly) that has not been articulated, yet.
@@ -60,7 +61,9 @@ the position will be supported by the evidence by the end of the exercise.
 The betting is also supposed to give an incentive to contribute evidence
 since evidence is needed to change other participants' judgements about
 the question, whether the position will be supported by the end, or their
-levels of confidence in those judgements.
+levels of confidence in those judgements.  It may also be an incentive to
+seek out evidence, so as to take advantage of potentially currently
+undervalued positions.
 
 Bets work in the following way:
 If I bet 70 cents against your 30, I am expressing my confidence that the final valuation will be greater than or equal to 70 cents, and I promise to pay you the difference if the final valuation is lower.
