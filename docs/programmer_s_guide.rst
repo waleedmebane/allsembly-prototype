@@ -109,7 +109,16 @@ Sometimes words might need to be marked with affixes or suffixes to do
 with grammatical role.
 
 These things could be accomodated with regular expressions and XSLT
-regular expression functions.
+regular expression functions.  The same or similar methods can be
+used to accommodate differences in date, time, and number formats
+or separators between items in sequences.  Alternatively, some format
+preferences could be handled using special code in the server.
+For example, the server could be given the user's preference for
+probabilities as decimal values or percentages and preference for
+dot or comma separating the whole and fractional parts of a number,
+etc., and the server would thenceforth produce probabilities that way,
+or it could be handled with XSLT and (possibly complex) regular expressions 
+or conditionals.
 
 Benefits of this approach could be:
 XML and XSLT processing are built into web browsers.
