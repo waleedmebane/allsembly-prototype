@@ -121,11 +121,11 @@ or it could be handled with XSLT and (possibly complex) regular expressions
 or conditionals.
 
 Benefits of this approach could be:
-XML and XSLT processing are built into web browsers.
-Javascript isn't required (but could be used).
-XML schemas could validate the documents using readily available tools
-XML is a commonly used standard.  The developer might already know it;
-otherwise, it may be useful to learn and reuseable knowledge.
+* XML and XSLT processing are built into web browsers.
+* Javascript isn't required (but could be used).
+* XML schemas could validate the documents using readily available tools
+* XML is a commonly used standard.  The developer might already know it;
+  otherwise, it may be useful to learn and reuseable knowledge.
 
 Project development roadmap
 ---------------------------
