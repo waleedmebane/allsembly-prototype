@@ -62,7 +62,7 @@ And then follow the instructions in the README.rst file, which amount to:
     make test
     sudo make install
 
-(`*`See the bottom of this file for a tip in case you get an error message
+(`*`See the bottom of this section for a tip in case you get an error message
 about needing to add a source repository in order to install build
 dependencies--the first step listed above.)
 (I haven't tested with versions of Python other than 3.7.4, yet.
@@ -225,7 +225,7 @@ warning.
 Enter the userid and password of the user you created in a previous step.
 
 
-NOTE: When building Python3.7.4 from source code, you might get an error
+*NOTE: When building Python3.7.4 from source code, you might get an error
 message on the first step of installing build dependencies.
 In that case, you might have to uncomment a line beginning with "deb-src"
 near the top of your /etc/apt/sources.list file and then run 
