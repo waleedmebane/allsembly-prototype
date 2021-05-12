@@ -151,7 +151,7 @@ class AllsemblyServices(rpyc.Service) {
 
 GraphRequest o-- "AllsemblyServices(rpyc.Service)"
 LedgerRequest o-- "AllsemblyServices(rpyc.Service)"
-_UserAutheenticator o-- "AllsemblyServices(rpyc.Service)"
+_UserAuthenticator o-- "AllsemblyServices(rpyc.Service)"
 
 class UserServices {
 + check_commitments_for_consistency() (unused)
