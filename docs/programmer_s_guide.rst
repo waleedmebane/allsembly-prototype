@@ -75,6 +75,9 @@ For now this section just contains the docstrings from the modules.
 Future design
 -------------
 
+User data validation and type safety
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Design for confidentiality
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 

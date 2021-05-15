@@ -57,6 +57,33 @@ These markets are different.  There can be partial success and failure.
  price was 70 "cents" that indicates a high probability of success;
  the odds are in my favor and my low risk is mitigated by a high price
  and your high risk is mitigated by a low price.
+There are special conditions needed for price to correspond
+ with probability of success.
+ Participants cannot be withholding information that, if known, would
+ swing the estimate.  That is, if I know a decisive reason why a position
+ that currently has a high price is actually false, no one else knows it,
+ and I wait until the near the end of the exercise to share it, then
+ all along, the price was very wrong as an indicator of the probability
+ of success.  However, the market is supposed to give participants an
+ incentive to share their best evidence early.  They cannot know that
+ no one else knows it, and they know that others have an incentive to
+ investigate and find it out, in any case.  So, their best chance of
+ getting the benefit (in the form of 'profit') from their knowledge is
+ to share it early.  If that happens, then the price might swing a lot
+ early in the trading, but later stabilize.  This does not mean that the
+ position is probably true or that no decisive reason that it is false
+ exists.  But it is probably true to the best of the knowledge of the
+ group and of their ability to learn relevant pro and con evidence in the
+ time allotted.
+ The "Efficient Market Hypothesis" and related empirical results seeming
+ to confirm it says some of what I wrote above in a different way.
+ I also think I see a reasonable analogy with the way that scientists get
+ credit for their work by publishing it.  They have an incentive to
+ publish before others working on similar projects (or so I understand);
+ they cannot change the estimate, accepted within the community, of the
+ probability of the truth of theories in any other way than by offering
+ evidence (in an ideal characterization); and that evidence is presented
+ publicly and peer reviewed.
 A "ledger" keeps track of the bets.
 There will also be a secondary market, integrated with the primary market.
  Participants may change their minds.  In that case they would want to

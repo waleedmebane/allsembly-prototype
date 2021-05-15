@@ -1,5 +1,8 @@
 @startuml
+page 1x2
 caption Figure 1
+
+package allsembly.py {
 class AllsemblyServer {
 -userauth_dbfilename: str
 -user_dbfilename: str
@@ -22,24 +25,26 @@ class ServerControl {
 + set_should_exit()
 + reset_should_exit()
 }
+}
 
 ServerControl o.. AllsemblyServer
 
-class Issues(Persistent) {
-+ graphs: OOBTree
-+ next_issue_id: AtomicLong
-}
 
-"Issues(Persistent)" *-- AllsemblyServer: <<create>>
-
+package rpyc_server.py {
 class IssueQueue {
 - queue: deque
 + add_issue()
 + delete_issue()
 }
 
-IssueQueue *-- AllsemblyServer: <<create>>
-"Issues(Persistent)" o-- IssueQueue
+class GraphRequest {
++ draw()
++ get_position_details()
+}
+
+class LedgerRequest {
+{field} (unused)
+}
 
 class _UserAuthenticator {
 - userauth_dbfilename: str
@@ -56,7 +61,32 @@ class _UserAuthenticator {
 + close_databases()
 }
 
-_UserAuthenticator <.. AllsemblyServer: <<create>>
+class "AllsemblyServices(rpyc.Service)" as AllsemblyServices {
+- order_queue: deque[Tuple]
+- graph_arg_queue: deque[Tuple]
+- graph_pos_queue: deque[Tuple]
++ on_connect()
++ on_disconnect()
++ exposed_get_user_services()
++ exposed_authenticate_user()
+- _add_issue()
+}
+
+class UserServices {
++ check_commitments_for_consistency() (unused)
++ delete_issue()
++ argue()
++ propose()
++ get_arg_graph()
++ get_position_details()
+}
+}
+
+package argument_graph.py {
+class Issues(Persistent) {
++ graphs: OOBTree
++ next_issue_id: AtomicLong
+}
 
 class ArgumentGraph(Persistent) {
 - {static} _v_my_rwlock: RWLockWrite
@@ -90,7 +120,6 @@ class ArgumentGraph(Persistent) {
 + draw_graph()
 }
 
-"ArgumentGraph(Persistent)" "1..*" *-- "1" "Issues(Persistent)"
 
 class PositionNode(Persistent) {
 {field} ... (dataclass)
@@ -101,10 +130,18 @@ class ArgumentNode(Persistent) {
 {field} ... (dataclass)
 {static} build_ArgumentNode()
 }
+}
 
+"ArgumentGraph(Persistent)" "1..*" *-- "1" "Issues(Persistent)"
 "PositionNode(Persistent)" "0..*" *-- "1" "ArgumentGraph(Persistent)"
 "ArgumentNode(Persistent)" "0..*" *-- "1" "ArgumentGraph(Persistent)"
 
+"Issues(Persistent)" *-- AllsemblyServer: <<create>>
+IssueQueue *-- AllsemblyServer: <<create>>
+"Issues(Persistent)" o-- IssueQueue
+_UserAuthenticator <.. AllsemblyServer: <<create>>
+
+package user.py {
 class UserAuth(Persistent) {
 userid_hashed: bytes
 password_hashed: bytes
@@ -122,48 +159,23 @@ last_login: int
 class UserClientSettings(Persistent) {
 {field} (unused)
 }
+}
 
 _UserAuthenticator "1" o.. "0..*" "UserAuth(Persistent)"
 _UserAuthenticator "1" o.. "0..*" "UserInfo(Persistent)"
 "UserInfo(Persistent)" *-- "UserClientSettings(Persistent)"
 
-class GraphRequest {
-+ draw()
-+ get_position_details()
-}
 
 "Issues(Persistent)" o-- GraphRequest
 
-class LedgerRequest {
-{field} (unused)
-}
 
-class AllsemblyServices(rpyc.Service) {
-- order_queue: deque[Tuple]
-- graph_arg_queue: deque[Tuple]
-- graph_pos_queue: deque[Tuple]
-+ on_connect()
-+ on_disconnect()
-+ exposed_get_user_services()
-+ exposed_authenticate_user()
-- _add_issue()
-}
+GraphRequest o-- AllsemblyServices
+LedgerRequest o-- AllsemblyServices
+_UserAuthenticator o-- AllsemblyServices
 
-GraphRequest o-- "AllsemblyServices(rpyc.Service)"
-LedgerRequest o-- "AllsemblyServices(rpyc.Service)"
-_UserAuthenticator o-- "AllsemblyServices(rpyc.Service)"
+UserServices <--+ AllsemblyServices
 
-class UserServices {
-+ check_commitments_for_consistency() (unused)
-+ delete_issue()
-+ argue()
-+ propose()
-+ get_arg_graph()
-+ get_position_details()
-}
-
-UserServices <--+ "AllsemblyServices(rpyc.Service)"
-
+package prob_logic.py {
 class ProblogModel(Persistent) {
 - {static} _v_my_rwlock: RWLockWrite
 - _v_my_wlock
@@ -176,9 +188,15 @@ class ProblogModel(Persistent) {
 + add_terms() (unused)
 + update_term_weights() (unused)
 }
+}
 
-"ArgumentGraph(Persistent)" --* "ProblogModel(Persistent)"
+package speech_act.py {
+class IndependentBid(orAsk) {
+{field} ... (future fields)
+}
+}
 
+package betting_exchange.py {
 class BettingExchange(Persistent) {
 }
 
@@ -187,8 +205,6 @@ class BettingMarket(Persistent) {
 + {field} market_id: int (same as arg_id)
 }
 
-"BettingMarket(Persistent)" "1..*" *-- "1" "BettingExchange(Persistent)"
-
 class OrderBook(Persistent) {
 - support_bids_index
 - oppose_bids_index
@@ -196,15 +212,6 @@ class OrderBook(Persistent) {
 - oppose_asks_index
 + ... () (future methods)
 }
-
-"OrderBook(Persistent)" *-- "BettingMarket(Persistent)"
-
-class IndependentBid(orAsk) {
-{field} ... (future fields)
-}
-
-"IndependentBid(orAsk)" "0..*" *-- "OrderBook(Persistent)": support_bids (or _asks)
-"IndependentBid(orAsk)" "0..*" *-- "OrderBook(Persistent)": oppose_bids (or _asks)
 
 class Ledger(Persistent) {
 + index: OOBTree
@@ -222,6 +229,14 @@ class BettingContract(Persistent) {
 + position_locator
 ...
 }
+}
+
+"ArgumentGraph(Persistent)" --* "ProblogModel(Persistent)"
+"BettingMarket(Persistent)" "1..*" *-- "1" "BettingExchange(Persistent)"
+"OrderBook(Persistent)" *-- "BettingMarket(Persistent)"
+
+"IndependentBid(orAsk)" "0..*" *-- "OrderBook(Persistent)": support_bids (or _asks)
+"IndependentBid(orAsk)" "0..*" *-- "OrderBook(Persistent)": oppose_bids (or _asks)
 
 "Ledger(Persistent)" "0..*" --* "BettingContract(Persistent)"
 "Ledger(Persistent)" "1" o-- "BettingMarket(Persistent)": support_ledger_ref
