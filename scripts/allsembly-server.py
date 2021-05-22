@@ -86,7 +86,7 @@ def start_service(daemonize: bool = False) -> None:
 	logger.info("start_service function called")
 	server_control = ServerControl()
 
-	def handle_sigterm(signum, stackframe):
+	def handle_sigterm(signum, _):
 		if signal.SIGTERM == signum\
 			or signal.SIGINT == signum:
 			server_control.set_should_exit()

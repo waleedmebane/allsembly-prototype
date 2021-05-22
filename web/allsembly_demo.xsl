@@ -291,6 +291,7 @@ overflow: auto;
 				bid_on_first_premise = parseFloat(document.getElementById("bid_on_first_premise").value)
 				inf_premise = document.getElementById("inf_premise").value
 				bid_on_inf_premise = parseFloat(document.getElementById("bid_on_inf_premise").value)
+				argument_is_PRO = document.getElementsByName("pro_or_con")[0].checked
 
 				//validate the inputs
 				if ("" == first_premise) {
@@ -307,7 +308,9 @@ overflow: auto;
 				else {
 					if ("" == inf_premise) {
 						inf_premise = "IF " + first_premise
-									  + "\nTHEN " + document.getElementById("posit_details_div").innerHTML
+									  + "\nTHEN "
+		                              + (argument_is_PRO ? "" : "NOT ")
+		                              + document.getElementById("posit_details_div").innerHTML
 									  ;
 					}
 					//make the request to the server to add the argument

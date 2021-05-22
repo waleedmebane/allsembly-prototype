@@ -117,7 +117,7 @@ There will also be a secondary market, integrated with the primary market.
  owner, we would work our way forward through the chain of sales,
  or to start from a current owner and find out which contract
  they are obligated under: first find the sale item with the presumed
- current owner's id; check that their is no later sale, then find
+ current owner's id; check that there is no later sale, then find
  the mentioned contract id number.
 """
 
