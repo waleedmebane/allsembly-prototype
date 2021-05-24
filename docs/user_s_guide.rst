@@ -46,12 +46,17 @@ which means to present a pro or con consideration or piece of
 evidence supporting or opposing the position.
 
 The greyed out buttons are actions that will be available in future
-revisions of the software.  Define means to clear up the meanings of
-terms in the position.  Discuss means to start or add to an informal
+revisions of the software.  "Define" means to clear up the meanings of
+terms in the position.  "Discuss" means to start or add to an informal
 discussion about the position.  Discussions are expected to be useful
-for coming up with good arguments or good definitions of terms.  Bet
+for coming up with good arguments or good definitions of terms.  "Bet"
 means to place a bet on whether the weight of evidence will support
 the position in the end (pro considerations outweight con considerations).
+"Relate" means to propose that the positon is related to some other
+position by being either the same as the other position or mutually
+exclusive with it.  This will enable the computer to model dependencies 
+between positions so as not to over or under count their weights in the
+probability estimate.
 
 .. image:: images/05argue_mortal.png
 
@@ -77,7 +82,7 @@ to the diagram.
 
 .. image:: images/07graph_mortal_plus_con.png
 
-The compute updates the probability estimates based on the prices of
+The computer updates the probability estimates based on the prices of
 the positions pro and con.  Since a "con" position was added, there is
 only evidence against the position that "Achilles is mortal", namely
 that "Weapons do not wound him."  Prices are between 0 and 100 "cents".

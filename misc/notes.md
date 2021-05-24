@@ -1,8 +1,13 @@
 Copyright © 2021 Waleed H. Mebane
-License is granted to the recipients of this file to distribute it with
-the Allsembly™ Prototype source code provided that all of the terms of
-the license for the Allsembly™ Prototype software are adhered to.  
-No other permissions are granted.
+License is granted to the recipients of this file to distribute it 
+incidentally and without changes with the Allsembly™ Prototype source code 
+provided that all of the terms of the license for the Allsembly™ Prototype 
+software are adhered to. This notice must be reproduced verbatim and legibly 
+in distributed copies.  If the Allsembly™ Prototype source code is being 
+distributed for a fee, this file may only be distributed with it if no 
+additional amount is charged.  No other permissions are granted.  This work 
+or works derived from it may not be published under any other circumstances 
+without the explicit prior written permission of the author.
 
 Allsembly™ Prototype
 
