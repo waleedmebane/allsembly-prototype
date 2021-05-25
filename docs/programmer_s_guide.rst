@@ -11,7 +11,7 @@ Apache2
 openssl
     The Python encryption library "cryptography" and one of the password hashing libraries (the Python standard library's "hashlib") rely on openssl for encryption features.  It is the premier free and open source encryption library, widely used.
 
-Apache2 mod-fcgi
+Apache2 mod-fcgid
     This starts the FastCGI scripts and communicates with them.  I plan to replace this with mod-proxy-fcgi (see below under :ref:`Future possible dependencies`.
 
 graphviz
@@ -30,7 +30,7 @@ PyGraphviz
     Easy to use Python bindings to the Graphviz library.
 
 json-rpc
-    A library for a simple form of remote procedure call (RPC) that is used for communication between the web client software and the server (CGI) software.  In the future the code using this should be improved to validate data and to ensure that the types of functions on client and server sides matche.  See :ref:`User data validation and type safety`.
+    A library for a simple form of remote procedure call (RPC) that is used for communication between the web client software and the server (CGI) software.  In the future the code using this should be improved to validate data and to ensure that the data types of functions on client and server sides match.  See :ref:`User data validation and type safety`.
 
 Werkzeug
     This provides classes for reading web CGI request data and constructing response data conveniently.  It also has a built-in, simple web server that can be used to play with the software without installing Apache.
@@ -63,10 +63,10 @@ python-daemon
     This provides an easy APT for making a Python program run as a Unix daemon.
 
 d3.js
-    This is a graphics library for web clients.  I am currently only using it for pan and zoom of scalable vector graphics (SVG) that is the format of the argument graph.  It could be used to draw alternative layouts of the argument graph on the client-side if desired, especially when accompanied by d3-graphviz.
+    This is a graphics library for web clients.  I am currently only using it for pan and zoom of scalable vector graphics (SVG) that is the format of the argument graph.  It could be used to draw alternative layouts of the argument graph on the client-side if desired, especially when accompanied by *d3-graphviz*.
 
 dialog-polyfill.js
-    This provides the HTML DIALOG tag and its functionality for browsers that don't (fully) support it, yet.
+    This provides the HTML DIALOG tag and its functionality for browsers that don't (fully) support it, yet.  The DIALOG tag is used for creating the modal dialogs.
 
 simple-jsonrpc-js.js
     This provides the client side functions for JSON-RPC (remote procedure call) interaction.
@@ -178,7 +178,18 @@ Design overview
 
 .. uml:: sequenceDiagram.uml
 
-Text to explain the above figures: to be added.
+
+*I realize that the class diagram, Figure 1 above, is very small in the document.  For now, use your browser's context menu to select an option like "view image" and zoom in to view the whole thing in a separate tab or window.*
+
+The client-side code is in the file "web/allsembly_demo.xsl", with a separate page for login in the file "web/allsembly_demo_login.xsl".  The client code is delivered to the web browser by the FastCGI script, "scripts/allsembly_demo.py".  When a user visits the page hosting the script, e.g., `https://my.webserver.com/cgi-bin/allsembly_demo.py`, the script determines which content to deliver based on whether the user is logged in.  If the user is not logged in, it delivers an empty XML document that gives "allsembly_demo_login.xsl" as its default XML stylesheet template; otherwise, it delivers a document with "allsembly_demo.xsl" as its default.
+
+The browser generates the HTML and Javascript for the page from the directives in the XSL document.  In this case it is trivial.  If the user is already logged in, that is recognized from the contents of a login cookie.  The code for the Fast CGI that is invoked by the script, "scripts/allsembly_demo.py" is in the demo.py module.  It communicates with the Allsembly™ server using RPC (provided by the RPyC library).  The code on the Allsembly™ server side is in the rpyc_server.py module, especially the AllsemblyServices class.
+
+The interaction proceeds as shown in Figure 2, above.  Currently, since there is no interaction between users--each user is in a kind of *sandbox* of its own--which graph to display is dependent on which user is logged it (i.e., the userid in the encrypted login cookie).
+
+The AllsemblyServices class uses a _UserAuthentication object to check the user's authentication credentials and create the encrypted login cookie.  Subsequently, The UserServices object is used to provide each of the specific services that require login.  In most cases, the request is just added to a queue.  This is done for thread-safety since the RPyC server is multi-threaded.  The AllsemblyServices RPyC server object is running its event loop in a separate thread from the server main loop.
+
+The server main loop, allsembly.allsembly.AllsemblyServer.server_main_loop(), is started by the script, "scripts/allsembly-server.py", and it, in turn, starts the RPyC service in a separate thread.  In the main loop, each queue is checked and the requests there are processed.  Most of the processing involves calling functions in an ArgumentGraph object.  There is a separate ArgumentGraph object for each graph and it is stored in a mapping that is persisted in the database.  The ArgumentGraph object draws a new graph and calculates new probabilities with each client request that changes the graph.  Currently, after the client makes a request that changes the graph, it immediately after that requests a new drawn graph.  The intention is that in a future version, the client would be subscribed to a server sent events or websockets channel or be waiting on a long poll, to learn when a new graph is ready to be loaded.
 
 Class detail
 ------------
@@ -186,42 +197,42 @@ Class detail
 For now this section just contains the docstrings from the modules.
 
 **allsembly** module
-^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 .. automodule:: allsembly.allsembly
    :members:
 
 **rpyc_server** module
-^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: allsembly.rpyc_server
    :members:
 
 **demo** module
-^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
 .. automodule:: allsembly.demo
    :members:
 
 **user** module
-^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
 .. automodule:: allsembly.user
    :members:
 
 **argument_graph** module
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: allsembly.argument_graph
    :members:
 
 **prob_logic** module
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: allsembly.prob_logic
    :members:
 
 **betting_exchange** module
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: allsembly.betting_exchange
    :members:
 
 **speech_act** module
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: allsembly.speech_act
    :members:
 
