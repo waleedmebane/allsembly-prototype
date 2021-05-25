@@ -30,6 +30,7 @@ author = 'Waleed H. Mebane'
 extensions = ['myst_parser', 'sphinx.ext.autodoc', 'sphinx.ext.autosectionlabel', 'sphinxcontrib.plantuml' 
 ]
 plantuml = 'java -jar /home/user/plantuml-nodot.1.2021.5.jar'
+plantuml_output_format = 'svg'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

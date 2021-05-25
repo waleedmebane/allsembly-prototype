@@ -6,7 +6,7 @@ Dependencies
 ------------
 
 Apache2
-    This is the web server.  Other web server's could be substituted.  I chose Apache because it is the premier free and open source web server.  We can have confidence in its security and robustness, as much as is possible for web server software.
+    This is the web server.  Other web servers could be substituted.  I chose Apache because it is the premier free and open source web server.  We can have confidence in its security and robustness, as much as is possible for web server software.
 
 openssl
     The Python encryption library "cryptography" and one of the password hashing libraries (the Python standard library's "hashlib") rely on openssl for encryption features.  It is the premier free and open source encryption library, widely used.
@@ -57,10 +57,10 @@ argon2-cffi
     This provides the Argon2 password hashing algorithm.  It uses the C reference implementation.
 
 cryptography
-    I am using this for AES-256 (symmetric) encryption, to encrypted a web login cookie.  It uses openssl for encryption.
+    I am using this for AES-256 (symmetric) encryption, to encrypt a web login cookie.  It uses openssl for encryption.
 
 python-daemon
-    This provides an easy APT for making a Python program run as a Unix daemon.
+    This provides an easy API for making a Python program run as a Unix daemon.
 
 d3.js
     This is a graphics library for web clients.  I am currently only using it for pan and zoom of scalable vector graphics (SVG) that is the format of the argument graph.  It could be used to draw alternative layouts of the argument graph on the client-side if desired, especially when accompanied by *d3-graphviz*.
@@ -148,7 +148,7 @@ scripts/
         FastCGI script for use with the Werkzeug library web server.  This allows for quick testing of Allsembly™ without a production web server like Apache.
 
     allsembly-server.py*
-        Use this script to start the Allsembly™ server.  Run it with the `--help` option to get usage information.  Also, see, the section :ref:`Installation and Testing` for some instructions.
+        Use this script to start the Allsembly™ server.  Run it with the ``--help`` option to get usage information.  Also, see, the section :ref:`Installation and Testing` for some instructions.
 
     server_config.py
         Configuration file for allsembly-server.py--it is not intended to contain code.
@@ -178,8 +178,6 @@ Design overview
 
 .. uml:: sequenceDiagram.uml
 
-
-*I realize that the class diagram, Figure 1 above, is very small in the document.  For now, use your browser's context menu to select an option like "view image" and zoom in to view the whole thing in a separate tab or window.*
 
 The client-side code is in the file "web/allsembly_demo.xsl", with a separate page for login in the file "web/allsembly_demo_login.xsl".  The client code is delivered to the web browser by the FastCGI script, "scripts/allsembly_demo.py".  When a user visits the page hosting the script, e.g., `https://my.webserver.com/cgi-bin/allsembly_demo.py`, the script determines which content to deliver based on whether the user is logged in.  If the user is not logged in, it delivers an empty XML document that gives "allsembly_demo_login.xsl" as its default XML stylesheet template; otherwise, it delivers a document with "allsembly_demo.xsl" as its default.
 
