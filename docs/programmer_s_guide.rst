@@ -5,162 +5,167 @@ Programmer's Guide
 Dependencies
 ------------
 
-Reason for each dependency to be documented.
-
 Apache2
+    This is the web server.  Other web server's could be substituted.  I chose Apache because it is the premier free and open source web server.  We can have confidence in its security and robustness, as much as is possible for web server software.
 
 openssl
+    The Python encryption library "cryptography" and one of the password hashing libraries (the Python standard library's "hashlib") rely on openssl for encryption features.  It is the premier free and open source encryption library, widely used.
 
-libapache2-mod-fcgid
+Apache2 mod-fcgi
+    This starts the FastCGI scripts and communicates with them.  I plan to replace this with mod-proxy-fcgi (see below under :ref:`Future possible dependencies`.
 
 graphviz
 
 graphviz-dev
+    The Python library "PyGraphviz" relies on these.  Graphviz is used to draw the graphs.
+
 
 Problog
+    A probabilistic programming language.  This is used to compute the probabilities.
 
 ZODB
+   An object database.  This is used for persistence.  It stores all of the persistent objects.  The default backend is file storage, which is currently being used.  Other storage backends could be used in the future for better scalability, see :ref:`Design for scalability`.
 
 PyGraphviz
+    Easy to use Python bindings to the Graphviz library.
 
 json-rpc
+    A library for a simple form of remote procedure call (RPC) that is used for communication between the web client software and the server (CGI) software.  In the future the code using this should be improved to validate data and to ensure that the types of functions on client and server sides matche.  See :ref:`User data validation and type safety`.
 
 Werkzeug
+    This provides classes for reading web CGI request data and constructing response data conveniently.  It also has a built-in, simple web server that can be used to play with the software without installing Apache.
 
 flup
+    Threaded FastCGI client that adapts the FastCGI API to WSGI, a Python web standard.  So we can use a WSGI application to serve FastCGI responses.
 
 RPyC
+    Python to Python RPC used to communicate between the FastCGI script and the Allsembly™ server.  This will no longer be needed when we switch to mod-proxy-fcgi and incorporate the FastCGI directly into the Allsembly™ server.  (See :ref:`Future possible dependencies`.)  However, it could be useful later for implementing communication with a registration server.  (See :ref:`Design for confidentiality`.)
 
 persistent
+    This works with ZODB to automatically save and restore objects that subclass "Persistent".
 
 transaction
+    This provides a transaction manager that is used with ZODB.
 
 atomic
+    This provides an atomically updatable integer class.
 
 readerwriterlock
+    This provides thread synchronization using separate locks for readers and writers.  There can be multiple readers but only one writer.
 
 argon2-cffi
+    This provides the Argon2 password hashing algorithm.  It uses the C reference implementation.
 
 cryptography
+    I am using this for AES-256 (symmetric) encryption, to encrypted a web login cookie.  It uses openssl for encryption.
 
 python-daemon
+    This provides an easy APT for making a Python program run as a Unix daemon.
 
 d3.js
+    This is a graphics library for web clients.  I am currently only using it for pan and zoom of scalable vector graphics (SVG) that is the format of the argument graph.  It could be used to draw alternative layouts of the argument graph on the client-side if desired, especially when accompanied by d3-graphviz.
 
 dialog-polyfill.js
+    This provides the HTML DIALOG tag and its functionality for browsers that don't (fully) support it, yet.
 
 simple-jsonrpc-js.js
+    This provides the client side functions for JSON-RPC (remote procedure call) interaction.
 
 
 Future possible dependencies
 ----------------------------
 
-Reason for considering each possible future dependency to be documented.
+Apache2 mod-proxy-fcgi
+    to replace mod-fcgid.  This Apache2 module connects to the already running FastCGI program rather than starting it.  So, we won't need a separate FastCGI script.  The FastCGI can be directly integrated into the server.  The same approach works with other web servers, and I believe it is the standard way.  I did not, at first, realize that this option was available with Apache2.  The software will appear to be more responsive since Apache won't need to start new FastCGI scripts to process requests; it will send them to the already running (threaded) server.
+
+GPGME
+    for encrypting the stream encryption keys with the public key(s) of the admins.  (The stream encryption key will also be encrypted with the user's hashed password.)  See more details about this in the section :ref:`Design for confidentiality`, below).
 
 Pydantic
+    to validate incoming user provided data (getting some validation almost for free as a side-effect of using static types).
+
+PyNaCl
+    for stream encryption or salsa20 to encrypt a database field containing users' anonymized ids (see more details about this in the section :ref:`Design for confidentiality`, below).
 
 Pyrsistent
+    to avoid mistaken call by reference-like behaviors (and, therefore, subtle bugs).
 
 returns
+    to replace exceptions for error handling.
 
 
 Files
 -----
 
-Purpose of each file not commonly included in a package to be documented.
-
-COPYING
-
-COPYING.LESSER
-
-LICENSE.txt
-
 requirements.txt
+    List of required dependencies and their version numbers
 
 setup.cfg
+    Configuration options for mypy and configuration options for Pylint
 
 allsembly/
-
-    allsembly.py
-
-    argument_graph.py
-
-    betting_exchange.py
-
-    common.py
-
-    config.py
-
-    CONSTANTS.py
-
-    demo_default_settings.py
-
-    demo.py
-
-    prob_logic.py
-
-    py.typed
-
-    rpyc_server.py
-
-    speech_act.py
-
-    user.py
+    All of the modules of the Python package
 
 docs/
 
     _build/
-
-    classes.uml
+        The Sphinx-generated HTML documentation, as a git submodule
 
     conf.py
+        The Sphinx configuration file.
 
     fdl-1.3.txt
+        The GNU Free Documentation License
 
     index.rst
-
-    installation_and_testing.md
-
-    license.rst
+        The main file of the documentation
 
     make.bat
 
     Makefile
+        Files for building the documentation.  Sphinx is required.
 
-    programmer_s_guide.rst
-
-    sequenceDiagram.uml
-
-    user_s_guide.rst
 
 LICENSE.third-party/
+    Licenses for third-party software distributed with Allsembly™
 
 misc/
+    Documents containing additional explanation about what Allsembly™ is about and the theory behind it--these files are not part of the documentation, and mightbe edited for publication elsewhere at some point.
 
     notes.md
+
+    prospectus.pdf
 
 scripts/
 
     allsembly_add_user.py*
+        Use this to add new Allsembly™ users.  It is better to do this when the Allsembly™ server is not running.
 
     allsembly_demo.py*
+        FastCGI script for providing the Allsembly™ services.  The client communicates with the web server (Apache) which communicates with the FastCGI script, starting it and stopping it when expedient, and the FastCGI script communicates with the Allsembly™ server.
 
     allsembly_dev_demo.py*
+        FastCGI script for use with the Werkzeug library web server.  This allows for quick testing of Allsembly™ without a production web server like Apache.
 
     allsembly-server.py*
+        Use this script to start the Allsembly™ server.  Run it with the `--help` option to get usage information.  Also, see, the section :ref:`Installation and Testing` for some instructions.
 
     server_config.py
+        Configuration file for allsembly-server.py--it is not intended to contain code.
 
 test/
-
+    The tests.
 
 web/
 
     allsembly_demo_login.xsl
+        XML stylesheet template for constructing the login page: The server currently just produces an empty XML document with this as its default XSL template.  So, all of the information to produce the page is actually in this file.  See :ref:`Localization` for information about how XML might be used in the future.
 
     allsembly_demo.xsl
+        XML stylesheet template for constructing the demo page.
 
     scripts/
+        The javascript libraries
 
 
 
@@ -234,6 +239,9 @@ Use Pydantic for basic validation from type hints.
 
 Design for confidentiality
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*This section and the next two sections, "Design for integrity" and "Design for scalability" describe features that are not expected to be added to the prototype.  They would be added later, in a stage of development beyond the prototype.  But they contain important ideas to keep in mind while developing the prototype.*
+
 .. image:: images/anonymity_preserving_registration.*
 
 
@@ -312,6 +320,8 @@ user logs out or the cache expires.
 Design for integrity
 ^^^^^^^^^^^^^^^^^^^^
 
+*This section and the next two sections describes features that are not expected to be added to the prototype.  They would be added later, in a stage of development beyond the prototype.  But it contains important ideas to keep in mind while developing the prototype.*
+
 To provide accountability that the data stored on the server matches the
 users' activities, the server should send cryptographically signed receipts
 for bids, asks, and betting contract purchases and sales.
@@ -321,6 +331,8 @@ transactions to re-send in case it does not get a confirmation receipt.
 
 Design for scalability
 ^^^^^^^^^^^^^^^^^^^^^^
+
+*This section and the next two sections describes features that are not expected to be added to the prototype.  They would be added later, in a stage of development beyond the prototype.  But it contains important ideas to keep in mind while developing the prototype.*
 
 The current design was not made for massive scalability.  This section is
 just to add information about what can be done to scale the existing design
@@ -397,6 +409,7 @@ Benefits of this approach could be:
 Project development roadmap
 ---------------------------
 
+
 Coding standards
 ----------------
 
@@ -459,7 +472,35 @@ https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/migr
 
 Choosing library dependencies:  
 
+* Choose the most widely uses and respected libraries for encryption.
+* For other purposes, choose more or less production ready libraries.
 
 
 How it works
 ------------
+
+
+Other uses
+----------
+
+For example, the software could be adapted to provide a way for writers
+to distribute bounties to people who help to improve their writing by
+finding shortcomings in the reasoning.  Aside from adapting the code, if one 
+wants to use it in such a way, one needs to be cognizant of any laws in one's
+jusrisdiction restricting *contests*, including ones that contain an element
+of chance.
+
+Individuals or small groups could provide bounties for a recommended resolution
+of some disagreement.
+
+Private groups could use it without bounties to deliberate among themselves.
+If any money is exchanged, for example, grafting a parimutuel betting scheme
+onto the betting market aspect of the software, then one needs to be cognizant
+of any laws in one's jusrisdiction restricting *gambling*, and possibly also
+laws in the jurisdictions of each of the participants if those are different.
+
+While Allsembly™ as a community is intended to be intependent in the sense
+of participants choosing their own issues to dialogue about, the software 
+could also be adapted for public consultation in which issues and possibly 
+some other parameters for the dialogue are decided by the organization seeking 
+the policy recommendation to be generated through the dialogue.

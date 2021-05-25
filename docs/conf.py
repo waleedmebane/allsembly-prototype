@@ -27,7 +27,7 @@ author = 'Waleed H. Mebane'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['myst_parser', 'sphinx.ext.autodoc', 'sphinxcontrib.plantuml' 
+extensions = ['myst_parser', 'sphinx.ext.autodoc', 'sphinx.ext.autosectionlabel', 'sphinxcontrib.plantuml' 
 ]
 plantuml = 'java -jar /home/user/plantuml-nodot.1.2021.5.jar'
 

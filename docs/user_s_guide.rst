@@ -134,5 +134,11 @@ This section will be updated to include some information about what
 the action or policy option evaluation features may look like and
 how they might work.
 
+Betting markets and commitment stores
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Random selection of participants
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Alternative layout
 ------------------
