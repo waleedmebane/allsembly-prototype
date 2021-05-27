@@ -102,7 +102,7 @@ restrict the means of linking or combining.  They can cut and paste if they
 want. The LGPL is clear even in such a case that if their code does more with 
 "the Library" than call its functions and subclass its classes, then such code
 would be "based on" "the Library" rather than just based on "the Application" 
-and need to be conveyed as "Minimum Corresponding Source" (i.e., what I've 
+and need to be conveyed with "Minimum Corresponding Source" (i.e., what I've 
 called, above, "contributing back").  The exception excludes LGPL Section 4(e)
 (the requirement to provide installation information) because it might be interpretted to require that the user be able to modify the Combined Work (see, e.g.,
 https://www.gnu.org/licenses/gpl-faq.html#RemoteAttestation).
