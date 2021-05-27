@@ -423,27 +423,27 @@ Coding standards
 ----------------
 
 NOTE: This project is uses typed Python.  The mypy settings are in the
-file setup.cfg.  It uses all of the settings from mypy --strict
-(as of mypy version 0.812) except --disallow-subclassing-any, which
+file setup.cfg.  It uses all of the settings from ``mypy --strict``
+(as of mypy version 0.812) except ``--disallow-subclassing-any``, which
 is not used (especially) since some classes subclass "Persistent" in order
 to take advantage of the ZODB database.
 
 The modules may be type-checked using the following command from the
 command line from within the main directory of the project:
-`mypy allsembly/*.py`.  It should report no errors.
+``mypy allsembly/*.py``.  It should report no errors.
 
 For more information about mypy or about optional type-checking in Python,
 see http://mypy-lang.org.
 
-Mypy may be installed with: `python3.7 -m pip install mypy`.
+Mypy may be installed with: ``python3.7 -m pip install mypy``.
 
 Settings for Pylint (see https://pylint.org) are also in the setup.cfg file.
 With Pylint installed, the modules may be linted by running Pylint from the 
 command line as follows:
-`pylint --rcfile=setup.cfg allsembly`.
+``pylint --rcfile=setup.cfg allsembly``.
 
 The Pylint settings in setup.cfg correspond to:
-`pylint --disable=all -enable F,E,W --disable=python3`.
+``pylint --disable=all -enable F,E,W --disable=python3``.
 This will report many warnings, mostly about unused variables and two
 errors about imports.  The errors are false positives as far as I can
 tell.  The module is successfully using the imported class (OOBTree).

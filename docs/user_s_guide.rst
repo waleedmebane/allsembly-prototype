@@ -1,8 +1,10 @@
 User's Guide
 ============
 
-Introduction
-------------
+Overview
+--------
+
+For now, please look at :ref:`Introduction`.
 
 Features
 --------
@@ -137,8 +139,57 @@ how they might work.
 Betting markets and commitment stores
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Betting markets are not implemented in this version and that is a multi-user
+feature. 
+
+A participant's commitment store will consist of their bids and asks and their
+betting contracts.  When a participant's commitments are shown to be 
+inconsistent that participant will not be able to make other contributions
+until the situation is rectified by the sale of one of the betting contracts or
+withdrawal of a bid or ask.
+
+The commitment store is currently intended to appear as a separate tab behind
+the graph.
+
+There should also be a place to look at market trends and such.  That could
+be a third tab.
+
 Random selection of participants
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The software currently does not feature selection of participants onto a panel.
+Probably, in future versions of the prototype participants will self-select
+onto panels, with random selection being an option that can be turned on in
+the software.  Self-selection will be easier for testing with small groups
+although ultimately we would like to have the software used with large groups
+and to avoid self-selection bias.
+
+The selection does not have to be entirely random.  Participants who did 
+especially well in previous panels, as measured by how much 'profit' they 
+accummulated could have an increased chance of being selected onto a future 
+panel.  For example, half of the slots could be filled at random from a pool
+of members who have have accumulated better than average profits and the other
+half from the whole membership.  This would be to provide an additional 
+incentive, but I also suspect that the best distribution for epistemic
+success might be more like a normal distribution rather than fully random.  No
+participant would ever be locked out of future participation due to poor 
+performance.
+(The 'profit' accumlated and 'money' that bets are made with will be play 
+money so that no participants will be disadvantaged in their ability to 
+participate.)
+
+Editing position or argument text
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Positions and arguments will not be able to be edited unless all of those who
+have so far placed bets for or against any position in the argument agree.
+That is because bettors have to be able to be secure in what they are betting
+on.
+
+However, it will be posible to create a new position or argument and have it
+associated with the old one(s).  Also, it will be possible to add a gloss
+to the text, which must, however, have the same meaning as the text but just
+expand on or clarify it.
 
 Alternative layout
 ------------------
