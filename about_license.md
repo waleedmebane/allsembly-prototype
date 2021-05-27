@@ -4,7 +4,7 @@ as a third additional term.  Each has been given a separate heading.  Also
 note that the software's license is LGPL verion 3 only (not "or later versions")
 plus the additional terms.
 
-#Trademark
+# Trademark
 
 Making "Allsembly" a trademark is not intended to prevent the use of the
 name, even as a part of the names of other software products.  It is intended
@@ -44,10 +44,10 @@ that I had particularly in mind.)
 In the future, I hope to add a free trademark license to make that explicit.
 
 It is not a pressing need, and it can wait until I am finished with
-graduate studies and have a full-time jobs.  Then I expect I will hire legal
+graduate studies and have a full-time job.  Then I expect I will hire legal
 help to draft it.
 
-#Static linking exception
+# Static linking exception
 
 I would like to add a linking exception allowing distribution of "Combined
 Works" (see section 4 of the LGPL) without source code for the part that only
