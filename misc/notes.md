@@ -105,7 +105,9 @@ into conflict.
 If other participants make reductio ad contradictione arguments using
 positions all of which one supports, one will be obliged to modify one's
 bets so that they become consistent or produce an acceptable rebuttal.
-(How to produce an acceptable rebuttal has not been worked out, yet.)
+(How to produce an acceptable rebuttal has not been worked out, yet.
+I believe the only rebuttal could be that the argument was not
+"connected" as defined below.)
 
 One issue that needs futher consideration is the relevance of
 presented evidence to alleged conclusions.  It is a semantic issue and
