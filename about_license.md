@@ -95,7 +95,7 @@ other potential contributors.
 
 > It is the intention of the copyright holders that the exception given in Section 1 of the LGPL still apply if it otherwise would have applied by your meeting the terms of Section 4 without the above addtional exception.
 
-> It is the intention of the copyright holders that they or their agents be permitted to disassemble or reverse engineer the Combined Work for the purpose of determining compliance with the license terms but that the terms under which you convey the Combined Work need not be compatible with disassembly or reverse engineering, as mentioned in Section 4 of the LGPL, for any other purpose.
+> It is the intention of the copyright holders that they or their agents be permitted to disassemble, decompile, or reverse engineer the Combined Work for the purpose of determining compliance with the license terms but that the terms under which you convey the Combined Work need not be compatible with disassembly, decompilation or reverse engineering, as mentioned in Section 4 of the LGPL, for any other purpose.
 
 Note:  I don't say anything about "static linking" because I don't intend to 
 restrict the means of linking or combining.  They can cut and paste if they 
