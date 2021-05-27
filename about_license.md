@@ -31,7 +31,7 @@ help the user choose the implementation that is best for them.
 
 2) A couple of decades ago or so, Apple Computer licensed the name "Macintosh"
 to Hewlett Packard (HP) so HP could manufacture a Mac branded computer.  I 
-don't believe they ever did, but one could imaging that Apple would have 
+don't believe they ever did, but one could imagine that Apple would have 
 conditioned it on HP meeting certain technical standards so that their brand
 would not be tarnished by poor user experience on an HP engineered and
 manufactured Mac.
