@@ -54,10 +54,20 @@ class ProblogModel(persistent.Persistent):
        a probabilistic rule, where the probability is the certainty
        of the evidence; the antecedent is virtual evidence, with
        probability 1, and the consequent is the real evidence.
-       Can update the model by reusing the same program with different
-       weights if no new arguments have been added--method taken from:
-       https://dtai.cs.kuleuven.be/problog/tutorial/01-compile-once.html
+
+       Note that the current Problog models (constructed in ArgumentGraph 
+       methods, _add_clause_to_problog_program(), 
+       _add_virtual_evidence_to_problog_program(), and
+       _add_term_and_query_to_problog_program())
+       are not necessarily the best for all 
+       kinds of arguments.  The For example, the inference in causal arguments 
+       might only go in one direction.  Dealing most appropriately with 
+       all major types is a longer-term goal.
     """
+       # In future it will be possible to update the model by reusing 
+       # the same program with different
+       # weights if no new arguments have been added--method taken from:
+       # https://dtai.cs.kuleuven.be/problog/tutorial/01-compile-once.html
     pl_model: Any
     _v_my_rwlock = rwlock.RWLockWrite()
 
