@@ -13,9 +13,9 @@ software with this one.  If another piece of software actually implements
 Allsembly, e.g., by fulfilling all of the spec. requirements (not published
 yet), then I wouldn't mind it being called "Allsembly".  I would not want it
 to be misrepresented as the one and only Allsembly, though, as long as this
-project exists, and especially if that other is not Free and Open Source (FOSS)
-software.  This might become important if the name "Allsembly" comes to have
-some currency, such as being mentioned in articles or blog posts. 
+project exists, and especially if that other is not Free and Open Source
+Software (FOSS).  This might become important if the name "Allsembly" comes
+to have some currency, such as being mentioned in articles or blog posts. 
 
 Here are some examples to illustrate reasonable uses:
 
@@ -95,7 +95,7 @@ other potential contributors.
 
 > It is the intention of the copyright holders that the exception given in Section 1 of the LGPL still apply if it otherwise would have applied by your meeting the terms of Section 4 without the above addtional exception.
 
-> It is the intention of the copyright holders that they or their agents be permitted to disassemble, decompile, or reverse engineer the Combined Work for the purpose of determining compliance with the license terms but that the terms under which you convey the Combined Work need not be compatible with disassembly, decompilation or reverse engineering, as mentioned in Section 4 of the LGPL, for any other purpose.
+> It is the intention of the copyright holders that they or their agents be permitted to disassemble, decompile, or reverse engineer the Combined Work for the purpose of determining compliance with the license terms but that the terms under which you convey the Combined Work need not be compatible with reverse engineering, as mentioned in Section 4 of the LGPL, or disassembly or decompilation, for any other purpose.
 
 Note:  I don't say anything about "static linking" because I don't intend to 
 restrict the means of linking or combining.  They can cut and paste if they 
