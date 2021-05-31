@@ -134,6 +134,11 @@ of space vertically, whereas the standard tree view expands a similar amount in
 both dimensions (depending, of course, on the contributions).  For now, the
 standard tree style is used.
 
+No account will be necessary to view contributions but only to make 
+contributions.  However, access without an account is not implemented, yet. 
+In the currently implementation, users do not interact with each other, but
+just have private 'sandboxes' in which they can try out the existing features.
+
 Indices and tables
 ==================
 

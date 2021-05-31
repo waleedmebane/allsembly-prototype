@@ -172,6 +172,16 @@ web/
 Specification of requirements (draft)
 -------------------------------------
 
+More to be added later.
+
+Make all of the argumentation and discussion publicly accessible.  This will
+support a secondary function of having a kind of encyclopedia of arguments
+pro and con issues for repeated reference.  Users should be able to obtain an 
+independent URL to any part of an argument or discussion so as to refer to any specific aspect of that argument or discussion.  The data (only completely anonymous or anonymized data) should also be available in a format like Argument Interchange Format (XML-RDF) or CSV (comma-separated values), for computer assisted processing and exploration.  (Public accessibility is not currently implemented.)
+
+Future requirement: provide for third-party clients, ideally via TCP as well as 
+via HTTP; maintain a stable client interface.
+
 Design overview
 ---------------
 .. uml:: classes.uml
@@ -513,3 +523,11 @@ of participants choosing their own issues to dialogue about, the software
 could also be adapted for public consultation in which issues and possibly 
 some other parameters for the dialogue are decided by the organization seeking 
 the policy recommendation to be generated through the dialogue.
+
+It could be used for opinion research in conjunction with opinion polls, 
+e.g., by comparing opinion before and after deliberation (as with Deliberative
+Polling®) or by comparing the recommendation yielded by deliberation (if any)
+with an opinion poll result.
+
+It could be used for argumentation or AI research by mining (only completely anonymous) data, such as for training an artifical agent how to argue or deliberate
+based on the activity of the human participants.
