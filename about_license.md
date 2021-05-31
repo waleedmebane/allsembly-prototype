@@ -47,6 +47,10 @@ It is not a pressing need, and it can wait until I am finished with
 graduate studies and have a full-time job.  Then I expect I will hire legal
 help to draft it.
 
+(The LGPL does not say that a trademark license is granted, but the GPL, which
+it incorporates by reference, mentions trademark in section 7e.  The additional
+term is meant to avoid the possibility of an implied trademark grant.)
+
 # Static linking exception
 
 I would like to add a linking exception allowing distribution of "Combined
@@ -91,7 +95,7 @@ different licenses.  But I will wait a little while to get some feedback.
 The addition can wait until there are pull requests from
 other potential contributors.
 
-> Linking Exception.  As an exception to Section 4 of the LGPL, the copyright holders of this software give you permission to convey a Combined Work under the terms of your choice [the first part of Section 4 without "that... do not restrict modification... and reverse engineering for debugging..."] provided you meet the requirements listed as (a) - (c) under Section 4 and that you convey the Minimum Corrresponding Source [as required by 4 (d)] but without the need to convey the Corresponding Application Code.  This exception does not invalidate any other reason why your software might be covered by the LGPL or the GPL; and it does not alter any license term of any work that is part of the Application combined with the Library even if one or more copyright holders of the Library are also incidentally copyright holders of those works.  You must still adhere to all of the license terms of any other works you link with the Library.
+> Linking Exception.  As an exception to Section 4 of the LGPL, the copyright holders of this software give you permission to convey a Combined Work under the terms of your choice [the first part of Section 4 without "that... do not restrict modification... and reverse engineering for debugging..."] provided you meet the requirements listed as (a) - (c) under Section 4 and that you convey the Minimum Corrresponding Source [as in 4 (d0)] but without the need to convey the Corresponding Application Code.  This exception does not invalidate any other reason why your software might be covered by the LGPL or the GPL; and it does not alter any license term of any work that is part of the Application combined with the Library even if one or more copyright holders of the Library are also incidentally copyright holders of those works.  You must still adhere to all of the license terms of any other works you link with the Library.
 
 > It is the intention of the copyright holders that the exception given in Section 1 of the LGPL still apply if it otherwise would have applied by your meeting the terms of Section 4 without the above addtional exception.
 
