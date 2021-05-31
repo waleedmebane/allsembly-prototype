@@ -172,7 +172,7 @@ web/
 Specification of requirements (draft)
 -------------------------------------
 
-More to be added later.
+More is to be added to this section later.
 
 Make all of the argumentation and discussion publicly accessible.  This will
 support a secondary function of having a kind of encyclopedia of arguments

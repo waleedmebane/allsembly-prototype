@@ -104,7 +104,8 @@ Add an Allsembly™ user:
 This should ideally be done while the Allsembly™ server
   is not running.
 
-```sudo su allsembly -s /bin/bash
+```
+sudo su allsembly -s /bin/bash
 allsembly-prototype/scripts/allsembly_add_user.py
 ```
 
@@ -120,7 +121,8 @@ Run the Allsembly™ server:
 Before running the server, you may change any configuration settings
   in the server_config.py file.
   
-```cd allsembly-prototype/scripts
+```
+cd allsembly-prototype/scripts
 sudo su allsembly -s /bin/bash
 ./allsembly-server.py --daemon
 exit
@@ -175,7 +177,8 @@ Copy the FastCGI script into that directory:
 
 Move the web files to the web root:
 
-```sudo mkdir -p /var/www/html/allsembly
+```
+sudo mkdir -p /var/www/html/allsembly
 sudo cp -ir allsembly-prototype/web/* /var/www/html/allsembly
 ```
 
@@ -208,7 +211,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 Start the development server:
 
-allsembly-prototype/scripts/allsembly_dev_demo.py -c '/home/<your-linux-userid>/allsembly_test_cert/' -w 'allsembly-prototype/web/'
+```allsembly-prototype/scripts/allsembly_dev_demo.py -c '/home/<your-linux-userid>/allsembly_test_cert/' -w 'allsembly-prototype/web/'```
 
 That will start a server running on locahost port 8443.
 If you are running the server on a remote machine, use the -s or --host option 
