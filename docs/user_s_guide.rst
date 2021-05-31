@@ -53,7 +53,8 @@ terms in the position.  "Discuss" means to start or add to an informal
 discussion about the position.  Discussions are expected to be useful
 for coming up with good arguments or good definitions of terms.  "Bet"
 means to place a bet on whether the weight of evidence will support
-the position in the end (pro considerations outweight con considerations).
+the position in the end (i.e., whether pro considerations will outweigh con 
+considerations).
 "Relate" means to propose that the positon is related to some other
 position by being either the same as the other position or mutually
 exclusive with it.  This will enable the computer to model dependencies 
@@ -116,7 +117,7 @@ will shore up with "pro" evidence.
 
 We have the word of a reliable source according to the new "pro" evidence.
 There is high confidence in that new position (95 "cents").  The probability
-evidence of the position it supports, "His heel is vulnerable", has increased
+estimate of the position it supports, "His heel is vulnerable", has increased
 and so has the probability estimate of the position supported by that position
 (i.e., the initial position) that "Achilles is mortal".
 

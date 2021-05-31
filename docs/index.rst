@@ -30,8 +30,8 @@ as follows, roughly.
 Potential participants sign up to get accounts using their real identities, 
 which are checked.  However, those identities are kept separated from their
 userid that they use to login using cryptographic technology in such a way that
-they cannot normally be reconnected.  For details, see :ref:`Design for confidentiality` 
-in the Programmer's Guide.  Participants will not know each others identities,
+the userid and real identity cannot normally be reconnected.  For details, see :ref:`Design for confidentiality` 
+in the Programmer's Guide.  Participants will not know each other's identities,
 not even their userids.  All contributions will be anonymous to other users. 
 The reasons for this are explained in the file misc/prospectus.pdf in the 
 source code repository.  Anonymity means that
@@ -54,13 +54,13 @@ on the needs of others in empathetic dialogue are important as a basis for such
 justifications, but the best processes for producing such understandings may 
 not be the best process for determining the best justified positions in an efficient way that allows for broad participation, which includes diverse 
 participants.  Instead, there can be two (or more) processes which complement 
-each other.  Also their can be different senses of justification: e.g., 
+each other.  Also there can be different senses of justification: e.g., 
 epistemic justification or procedural justification.  In some theories of 
 deliberative democracy, a decision is justified when it was the product of
 the right kind of process that gives all of the people an equal chance of 
-having the points of view and concerns come to be embodied in the decision.
+having their points of view and concerns come to be embodied in the decision.
 Even if it is otherwise a bad decision, their voices were heard and *fairly*
-taken into account.  In other sense, that I'm calling *epistemic justification* a decision is justified by an standard of what is good that is separate from
+taken into account.  In another sense, that I'm calling *epistemic justification* a decision is justified by a standard of what is good that is separate from
 the process itself.  It might be good, for example, when more people are better
 off as a result.  The kind of justification of concern for the Allsembly™ 
 community is epistemic justification, and the content of the good is left up
@@ -86,14 +86,14 @@ After a panel is convened, it proceeds in the way described in the file
 misc/notes.md in the source code repository and shown to some extent in the 
 screen shots in the User's Guide.  Participants
 present policy proposals as described in misc/prospectus.pdf, and then they
-present positions statements about the evaluation of those proposals and pro and
+present positions, statements about the evaluation of those proposals, and pro and
 con evidence to support such statements.  The pro and con evidence statements
-are themselves positions which may be supported or oppose with new pieces of, 
-respectively, pro and con evidence.  Each contribution of new pro or con
+are themselves positions which may be supported or opposed with new pieces of, 
+respectively, pro and con evidence.  Each contribution of new pro or con piece of
 evidence is accompanied by a bet, expressing a level of confidence that by the
 end, all of the weight of evidence in the chain of evidence will, on net, 
 support that position (i.e., all of the opposing evidence eventually presented 
-will not be enoughto defeat it).  The software uses probability to estimate
+will not be enough to defeat it).  The software uses probability to estimate
 the weight of the evidence as each new piece of evidence is added and as
 participants adjust their expressed confidence in positions by making new bets.
 A bet is supposed to represent the taking of a risk.  Thus a participant is
@@ -125,7 +125,11 @@ graph to put them, even by adding a new initial position, but each branch is
 kept on topic.  Some other details can be found in misc/notes.md and 
 misc/prospectus.pdf and gleaned from the User's and Programmer's Guides.  In 
 the future, I expect that summarization will have an important role to play as
-well.
+well.  For example, the positions with the highest probability estimates or
+highest last bet price might appear at a glance and others be visible after
+clicking to expand a set.  'Bargain'-priced positions might still appear at a
+glance in a separate market-watch style tab, maybe depending on user preference
+settings.  Other summarization possibilities are to be investigated.
 
 Note that the presentation of the graph is as a tree.  So, it could also have
 been presented in the familiar style of threaded email or threaded forum posts,
@@ -136,7 +140,7 @@ standard tree style is used.
 
 No account will be necessary to view contributions but only to make 
 contributions.  However, access without an account is not implemented, yet. 
-In the currently implementation, users do not interact with each other, but
+In the current implementation, users do not interact with each other, but
 just have private 'sandboxes' in which they can try out the existing features.
 
 Indices and tables
