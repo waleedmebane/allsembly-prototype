@@ -14,6 +14,8 @@ You may also generate the documentation from the files in the docs
 subdirectory using the documentation creation tool, Sphinx
 (https://www.sphinx-doc.org/).
 
+I do not expect to develop the prototype further until September or later.
+
 ## License
 
 Please find the license terms in the file: LICENSE.txt.

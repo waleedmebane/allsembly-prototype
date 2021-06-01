@@ -339,7 +339,7 @@ user logs out or the cache expires.
 Design for integrity
 ^^^^^^^^^^^^^^^^^^^^
 
-*This section and the next two sections describes features that are not expected to be added to the prototype.  They would be added later, in a stage of development beyond the prototype.  But it contains important ideas to keep in mind while developing the prototype.*
+*This section describes features that are not expected to be added to the prototype.  They would be added later, in a stage of development beyond the prototype.  But it contains important ideas to keep in mind while developing the prototype.*
 
 To provide accountability that the data stored on the server matches the
 users' activities, the server should send cryptographically signed receipts
@@ -351,7 +351,7 @@ transactions to re-send in case it does not get a confirmation receipt.
 Design for scalability
 ^^^^^^^^^^^^^^^^^^^^^^
 
-*This section and the next two sections describes features that are not expected to be added to the prototype.  They would be added later, in a stage of development beyond the prototype.  But it contains important ideas to keep in mind while developing the prototype.*
+*This section describes features that are not expected to be added to the prototype.  They would be added later, in a stage of development beyond the prototype.  But it contains important ideas to keep in mind while developing the prototype.*
 
 The current design was not made for massive scalability.  This section is
 just to add information about what can be done to scale the existing design

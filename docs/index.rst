@@ -34,7 +34,7 @@ the userid and real identity cannot normally be reconnected.  For details, see :
 in the Programmer's Guide.  Participants will not know each other's identities,
 not even their userids.  All contributions will be anonymous to other users. 
 The reasons for this are explained in the file misc/prospectus.pdf in the 
-source code repository.  Anonymity means that
+`source code repository <https://github.com/waleedmebane/allsembly-prototype>`_.  Anonymity means that
 users will be free to speak their minds because they cannot be retaliated 
 against, and it also means that markers of different status are obscured so that
 status is less likely to become a reason to accept or reject the statements made
