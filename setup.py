@@ -12,6 +12,7 @@ setup(
   license='LICENSE.txt',
   description='Create an online community for anonymous proposal and collaborative evaluation of public policy options, with automated decision support.',
   long_description=open('README.md').read(),
+  python_requires='>=3.7',
   install_requires=[
       'problog',
       'pygraphviz',

@@ -4,6 +4,9 @@ Installation and Testing
 ## License
 
 Please find the license terms in the file: LICENSE.txt.
+The license is LGPLv3-only with two additional terms, disallowing using the
+authors' names and likenesses and declining to grant license to use trademarks.
+
 The Javascript libraries "d3", "dialog-polyfill", and "simple-jsonrpc-js"
 are included with this software in the sub-directory:
 web/scripts
@@ -16,7 +19,7 @@ How to install (for Ubuntu 16.04)
 ---------------------------------
 
 Dependencies:
- Python >=3.6.5 (tested with Python 3.7.4)
+ Python >=3.7 (tested with Python 3.7.4)
  pip
  Apache2
  openssl
@@ -47,10 +50,11 @@ Install Apache2, mod-fcgid, openssl, and graphviz:
 
 Next, install Python.  If you are using Ubuntu 16.04, you will need to 
 install from source.  With later versions of Ubuntu you may be able
-to install using `apt-get install python3`, but it will place Python
-in /usr/bin; so you will either have to modify the first line of the
-scripts from `#!/usr/local/bin/python3` to `#!/usr/bin/python3` or
-place a link in /usr/local/bin (i.e., `sudo ln -si /usr/bin/python3 /usr/local/bin/python3`).
+to install using `apt-get install python3` (you need a Python version >=3.7), 
+but it will place Python in /usr/bin; so you will either have to modify the 
+first line of the scripts from `#!/usr/local/bin/python3` to 
+`#!/usr/bin/python3` or place a link in /usr/local/bin (i.e., 
+`sudo ln -si /usr/bin/python3 /usr/local/bin/python3`).
 
 To compile from source, first obtain the source code from:
 https://www.python.org/downloads/release/python-374
@@ -65,8 +69,6 @@ And then follow the instructions in the README.rst file, which amount to:
 (`*`See the bottom of this section for a tip in case you get an error message
 about needing to add a source repository in order to install build
 dependencies--the first step listed above.)
-(I haven't tested with versions of Python other than 3.7.4, yet.
-One dependency, Problog, requires Python >=3.6.5.)
 
 
 Next, use pip to install the Python packages:
@@ -79,7 +81,9 @@ sudo python3.7 -m pip install pygraphviz json-rpc problog ZODB Werkzeug flup RPy
 
 Install the Allsembly™ package:
 
-cd to the directory allsembly-prototype
+Clone or download the [source code repository](https://github.com/waleedmebane/allsembly-prototype) 
+files into a directory, "allsembly-prototype". <br />
+cd to the directory allsembly-prototype, then:
 
 ```sudo python3.7 -m pip install .```
 
@@ -88,10 +92,11 @@ OR to install for easy development:
 ```sudo python3.7 -m pip install --editable .```
 
 Create a new system user named, e.g., "allsembly"
-  and give that user permission to read and write /var/allsembly/data
+  and give that user permission to read and write /var/allsembly-prototype/data 
 
 ```
 sudo adduser --system --no-create-home allsembly
+sudo mkdir -p /var/allsembly-prototype/data
 sudo chown allsembly /var/allsembly-prototype/data
 ```
 
