@@ -15,7 +15,7 @@ Their license terms and copyright notices are in files in the sub-directory:
 LICENSE.third-party.  The respective license terms file has its
 suffix named after the name of the library.
 
-How to install (for Ubuntu 16.04)
+How to install (for Ubuntu 16.04 or Ubuntu 18.04)
 ---------------------------------
 
 Dependencies:
@@ -48,7 +48,7 @@ Install Apache2, mod-fcgid, openssl, and graphviz:
 
 `sudo apt-get install apache2 libapache2-mod-fcgid openssl graphviz graphviz-dev`
 
-Next, install Python.  If you are using Ubuntu 16.04, you will need to 
+Next, install Python.  If you are using Ubuntu 16.04 or 18.04, you will need to 
 install from source.  With later versions of Ubuntu you may be able
 to install using `apt-get install python3` (you need a Python version >=3.7), 
 but it will place Python in /usr/bin; so you will either have to modify the 
@@ -242,9 +242,9 @@ near the top of your /etc/apt/sources.list file and then run
 How to install for other platforms
 ----------------------------------
 
-The software has only been tested with Ubuntu 16.04; however, I believe
-that the only platform specific parts are the `--daemon` option, the
-`--user` option and platform specific file paths.  These should
+The software has only been tested with Ubuntu 16.04 and 18.04; 
+however, I believe that the only platform specific parts are the `--daemon` 
+option, the `--user` option and platform specific file paths.  These should
 work on many other Unix-like or Unix operating systems.  So it might
 work with MacOS.  The allsembly-server.py script might run under Windows
 if you set all of the file options with Windows-specific pathnames and
