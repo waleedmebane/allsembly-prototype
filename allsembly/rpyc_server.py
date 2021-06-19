@@ -54,6 +54,7 @@ import pickle
 import copy
 import time
 import logging
+from threading import Event
 from logging import Logger
 from collections import deque
 from typing import Tuple, Optional, cast, Any, Deque, Union, NamedTuple
@@ -85,7 +86,6 @@ elif UserPasswordType.argon2id == Config.user_password_type:
     from argon2.exceptions import VerificationError #type: ignore[import]
     from argon2.exceptions import VerifyMismatchError, InvalidHash
 
-# some type aliases
 #TODO: Use just one queue for posting all requests.  Use a Union type.
 # And probably use classes instead of type aliases for each Union member type.
 
@@ -107,25 +107,100 @@ elif UserPasswordType.argon2id == Config.user_password_type:
 # and store the encryption key and the name of the file in an encrypted
 # field of the UserAuth object in the separate authentication database
 # (the same database as used now for storing authentication information).
-OrderQueue = Deque[Tuple[bytes,  # (hashed) userid
+
+OrderQueueElement = Tuple[bytes,  # (hashed) userid
                          str,  # subuser
                          IndependentBid
 ]
+
+_OrderQueue = Deque[OrderQueueElement
 ]
 
-GraphUpdateArgQueue = Deque[Tuple[bytes,  # (hashed) userid
+class OrderQueue:
+    """ wraps a deque allowing us to pass an optional Event object to
+        notify another thread when items have been added and are,
+        therefore, ready for processing."""
+    def __init__(self, event_obj: Optional[Event] = None):
+        self.queue: _OrderQueue = deque([], Limits.max_queue_items)
+        self.event_obj = event_obj
+
+    def __bool__(self) -> bool:
+        return True if self.queue else False
+
+    def append(self, item: OrderQueueElement) -> None:
+        self.queue.append(item)
+        if self.event_obj is not None:
+            self.event_obj.set()
+
+    def popleft(self) -> OrderQueueElement:
+        return self.queue.popleft()
+
+    def set_event_object(self, event_obj: Event) -> None:
+        self.event_obj = event_obj
+
+
+GraphUpdateArgQueueElement = Tuple[bytes,  # (hashed) userid
                                   str,  # subuser
                                   Tuple[bytes, int],  # issue id
                                   Argument
 ]
+
+_GraphUpdateArgQueue = Deque[GraphUpdateArgQueueElement
 ]
 
-GraphUpdatePosQueue = Deque[Tuple[bytes,  # (hashed) userid
+class GraphUpdateArgQueue:
+    """ wraps a deque allowing us to pass an optional Event object to
+        notify another thread when items have been added and are,
+        therefore, ready for processing."""
+    def __init__(self, event_obj: Optional[Event] = None):
+        self.queue: _GraphUpdateArgQueue = deque([], Limits.max_queue_items)
+        self.event_obj = event_obj
+
+    def __bool__(self) -> bool:
+        return True if self.queue else False
+
+    def append(self, item: GraphUpdateArgQueueElement) -> None:
+        self.queue.append(item)
+        if self.event_obj is not None:
+            self.event_obj.set()
+
+    def popleft(self) -> GraphUpdateArgQueueElement:
+        return self.queue.popleft()
+
+    def set_event_object(self, event_obj: Event) -> None:
+        self.event_obj = event_obj
+
+
+GraphUpdatePosQueueElement = Tuple[bytes,  # (hashed) userid
                                   str,  # subuser
                                   Tuple[bytes, int],  # issue id
                                   InitialPosition
 ]
+_GraphUpdatePosQueue = Deque[GraphUpdatePosQueueElement
 ]
+
+class GraphUpdatePosQueue:
+    """ wraps a deque allowing us to pass an optional Event object to
+        notify another thread when items have been added and are,
+        therefore, ready for processing."""
+    def __init__(self, event_obj: Optional[Event] = None):
+        self.queue: _GraphUpdatePosQueue = deque([], Limits.max_queue_items)
+        self.event_obj = event_obj
+
+    def __bool__(self) -> bool:
+        return True if self.queue else False
+
+    def append(self, item: GraphUpdatePosQueueElement) -> None:
+        self.queue.append(item)
+        if self.event_obj is not None:
+            self.event_obj.set()
+
+    def popleft(self) -> GraphUpdatePosQueueElement:
+        return self.queue.popleft()
+
+    def set_event_object(self, event_obj: Event) -> None:
+        self.event_obj = event_obj
+
 
 class IssueDeleteDirective:
     def __init__(self, issue_id: Tuple[bytes, int]) -> None:
@@ -138,9 +213,10 @@ IssueUpdateQueue = Deque[Union[IssueAddDirective, IssueDeleteDirective]]
 
 
 class IssueQueue:
-    def __init__(self, issues: 'Issues'):
+    def __init__(self, issues: 'Issues', event_obj: Optional[Event] = None):
         self.issues = issues
         self.queue: IssueUpdateQueue = deque([], Limits.max_queue_items)
+        self.event_obj = event_obj
 
     def add_issue(self, issue_name: str) -> Optional[int]:
         """ return new issue number """
@@ -169,7 +245,11 @@ class IssueQueue:
 
     def delete_issue(self, issue_id: Tuple[bytes, int]) -> None:
         self.queue.append(IssueDeleteDirective(issue_id))
+        if self.event_obj is not None:
+            self.event_obj.set()
 
+    def set_event_object(self, event_obj: Event) -> None:
+        self.event_obj = event_obj
 
 
 class GraphRequest:

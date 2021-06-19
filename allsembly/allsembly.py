@@ -105,6 +105,7 @@ from allsembly.config import Config
 from allsembly.config import Limits
 from allsembly import CONSTANTS
 import threading
+from threading import Event
 
 from allsembly.rpyc_server import _UserAuthenticator, AllsemblyServices, GraphRequest, LedgerRequest, GraphUpdatePosQueue, \
     OrderQueue, IssueQueue, GraphUpdateArgQueue, IssueDeleteDirective, IssueAddDirective
@@ -341,9 +342,9 @@ class AllsemblyServer:
         #TODO: additions to the queue, when they are full will just get
         #  discarded without notice.  That is not the behavoir I prefer.
         #  Attend to that in a future version.
-        self.order_queue: OrderQueue = deque([], Limits.max_queue_items)
-        self.graph_arg_queue: GraphUpdateArgQueue = deque([], Limits.max_queue_items)
-        self.graph_pos_queue: GraphUpdatePosQueue = deque([], Limits.max_queue_items)
+        self.order_queue: OrderQueue = OrderQueue()
+        self.graph_arg_queue: GraphUpdateArgQueue = GraphUpdateArgQueue()
+        self.graph_pos_queue: GraphUpdatePosQueue = GraphUpdatePosQueue()
 
         #Load the data into BettingExchange and ArgumentGraph
         #  instances &
@@ -582,12 +583,16 @@ class AllsemblyServer:
             server_control.reset_should_exit() #this could cause a race
                                                #condition but is convenient
                                                #and pretty benign
+        event_obj: Event = Event()
+        self.order_queue.set_event_object(event_obj)
+        self.graph_arg_queue.set_event_object(event_obj)
+        self.graph_pos_queue.set_event_object(event_obj)
+        self.issue_queue.set_event_object(event_obj)
+
         #start RPyC threaded server; pass:
         #  order_queue and graph_update_queue (FIFOs)
         #  authenticator that can provide a UserInfo object
         #  on successful authentication
-
-
         rpyc_server = rpyc.ThreadPoolServer(classpartial(AllsemblyServices,
                                                        self.order_queue,
                                                        self.graph_arg_queue,
@@ -629,6 +634,9 @@ class AllsemblyServer:
             #start main loop in main thread
             while not AllsemblyServer.check_should_exit(server_control):
                 #logger.debug("starting main loop")
+                # wait for an item to be added to any queue
+                event_obj.wait()
+                event_obj.clear()
                 self.process_all_items_from_all_queues(
                     Config.time_msec_for_one_iter_of_graph_updating,
                     server_control)
