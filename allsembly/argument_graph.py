@@ -51,7 +51,7 @@ import heapq
 import pygraphviz as pgv #type: ignore[import]
 import re
 from BTrees.OOBTree import OOBTree #type: ignore[import]
-from typing import List, Dict, Any, Optional, cast
+from typing import List, Dict, Set, Any, Optional, cast
 from typing_extensions import Final
 
 from allsembly.betting_exchange import BettingExchange
@@ -105,6 +105,7 @@ class PositionNode(persistent.Persistent):
         # used by the Problog model; leaf nodes are virtual evidence
         # set to False when an argument has this node as its conclusion
         self.node_is_leaf_node = True
+        self.arguments_pro_and_con_ids: Set[int] = set()
 
 def build_PositionNode(creator: bytes,
                        statement: str,
@@ -240,7 +241,6 @@ class ArgumentGraph(persistent.Persistent):
                                            self.pos_node_index[
                                                p_key
                                            ])
-        # update conclusion's probability
         if a_value.conclusion_id in self.pos_node_index:
             self._add_position_to_gv_graph(a_value.conclusion_id,
                                            self.pos_node_index[
@@ -264,42 +264,73 @@ class ArgumentGraph(persistent.Persistent):
                                        a_value: ArgumentNode) -> None:
 
         term_base: Final[str] = "n" + str(a_value.conclusion_id)
-        pos_term: Final[str] = term_base + "(t)"
-        neg_term: Final[str] = term_base + "(f)"
-        conclusion_term: Final[str] = pos_term \
-                                      if a_value.supports_conclusion \
-                                      else neg_term
-        self.my_problog_prog += conclusion_term + " :- "
+        branch_index_term: str = term_base
+        for p in a_value.premises_ids:
+            branch_index_term += "_" + str(p)
+        evidence_term: Final[str] = branch_index_term + "_ev"
+        conclusion_term: Final[str] = branch_index_term
+        prior = term_base + "_pri"
+        # "Prior" here doesn't mean the same thing as in Bayesian Confirmation Theory.
+        # In that case the prior represents belief prior to seeing the evidence,
+        #  and generally the evidence is the result of some experiment or the
+        #  observation of a future event, so the evidence could not be part of
+        #  the prior belief.
+        # In this case, belief in the evidence might be included or partly included
+        #  in the prior, especially since participants can revise their bets in
+        #  light of the evidence.
+        # So, "prior" here means the last price as a representation of aggregated
+        #  belief.
+        # I think that suggests that evidence should not increase belief unless it
+        #  is believed to a greater degree than the prior.  The current code does
+        #  not behave that way and will probably be updated in the future.
+        # The existing model is: (pro evidence AND NOT prior) OR
+        #  (NOT con evidence AND prior).
+        # If there is no con evidence then it is (pro AND NOT prior) OR prior.
+        # In other words, if the pro evidence is true, it adds to the belief
+        #  by the amount not included in prior belief; if it is false, it defaults
+        #  to the prior.  For example, if prior is 0.5, then, if the evidence is
+        #  false, the conclusion is just as likely to be true as false.
+        #  If the con evidence is true then it subtracts from belief in the
+        #  conclusion by the amount not excluded from prior belief.  If the
+        #  con evidence is false it does not effect the result.
+        # It is also an assumption that evidence in sibling arguments is
+        #  independent.  Thus, if the prior is small, negative evidence won't
+        #  make much difference unless it is evidence applied as a con
+        #  argument against some pro argument for the conclusion.  E.g.,
+        #  conclusion <-- argument for conclusion <-- argument against argument
+        #  for conclusion; instead of:
+        #  conclusion <-- argument for conclusion
+        #             <-- argument against conclusion
+        # If you don't want the bet price to influence the calculated probability,
+        #  just change prior to a constant value, e.g., 0.5, in the function,
+        #  _add_term_and_query_to_problog_program(), below.
         conjuncts = str()
         for p in a_value.premises_ids:
             prem_term = FinalVar[str]("n" + str(p) + "(t)")
             if conjuncts:
                 conjuncts += ","
             conjuncts += prem_term.get()
-        self.my_problog_prog += conjuncts + ".\n"
-        if not a_value.supports_conclusion:
-            self.my_problog_prog += term_base + "_and_not_" + term_base + \
-                                       " :- " + pos_term + ", " + neg_term + ".\n"
-            self.my_problog_prog += "evidence(" + \
-                                       term_base + "_and_not_" + term_base + \
-                                       ", false).\n"
+        self.my_problog_prog += evidence_term + " :- " + conjuncts + ".\n"
+        if a_value.supports_conclusion:
+            self.my_problog_prog += conclusion_term + " :- "
+            self.my_problog_prog += evidence_term + ", \\+ " + prior + ".\n"
+
 
     def _add_virtual_evidence_to_problog_program(self,
                                                  p_key: int,
                                                  p_value: PositionNode
                                                  ) -> None:
-        #I'm not sure that virtual evidence is necessary
-        #Problog seems to produce the same results without it, but
-        #I haven't investigated it deeply.
-        prob: Final[float] = self.betting_exchange\
-                                 .markets[p_key]\
-                                 .last_support_price / 100.0 \
-        if self.betting_exchange.markets.has_key(p_key) \
-        else 0.5
-        term: Final[str] = "n" + str(p_key) + "(t)"
-        ev_term: Final[str] = "v" + str(p_key)
-        self.my_problog_prog += str(prob) + "::" + term + " :- " + ev_term + ".\n"
-        self.my_problog_prog += ev_term + ".\n"
+        # I'm not sure that virtual evidence is necessary
+        # Problog seems to produce the same results without it, but
+        # I haven't investigated it deeply.
+        if self.betting_exchange.markets.has_key(p_key):
+            prob: float = self.betting_exchange\
+                                     .markets[p_key]\
+                                     .last_support_price / 100.0
+            term: Final[str] = "n" + str(p_key) + "(t)"
+            ev_term: Final[str] = "v" + str(p_key)
+            self.my_problog_prog += str(prob) + "::" + term + " :- " + ev_term + ".\n"
+            self.my_problog_prog += ev_term + ".\n"
 
     def _add_term_and_query_to_problog_program(self,
                                                p_key: int,
@@ -307,16 +338,50 @@ class ArgumentGraph(persistent.Persistent):
                                                ) -> None:
         term_base: Final[str] = "n" + str(p_key)
         pos_term: Final[str] = term_base + "(t)"
-        neg_term: Final[str] = term_base + "(f)"
+        con_ev_head_term: Final[str] = term_base + "_con_ev"
         if p_value.node_is_leaf_node:
             self._add_virtual_evidence_to_problog_program(p_key, p_value)
         else:
-            prob: Final[float] = self.betting_exchange \
+            prob: float = self.betting_exchange \
                                      .markets[p_key] \
                                      .last_support_price / 100.0 \
-                if self.betting_exchange.markets.has_key(p_key) \
-                else 0.5
-            self.my_problog_prog += str(prob) + "::" + pos_term + ".\n"
+                          if self.betting_exchange.markets.has_key(p_key) \
+                          else 0.5
+            prior: str = term_base + "_pri"
+            self.my_problog_prog += str(prob) + "::" + prior + ".\n"
+            if p_value.arguments_pro_and_con_ids:
+                con_disjuncts = str()
+                for arg_id in p_value.arguments_pro_and_con_ids:
+                    a_value: ArgumentNode = self.arg_node_index[arg_id]
+                    if not a_value.supports_conclusion:
+                        branch_index_term: str = term_base
+                        for p in a_value.premises_ids:
+                            branch_index_term += "_" + str(p)
+                        con_evidence_term: str = branch_index_term + "_ev"
+                        if con_disjuncts:
+                            con_disjuncts += "; "
+                        con_disjuncts += con_evidence_term
+                if con_disjuncts:
+                    self.my_problog_prog += con_ev_head_term + " :- " + con_disjuncts + ".\n"
+
+                pro_disjuncts = str()
+                for arg_id in p_value.arguments_pro_and_con_ids:
+                    a_value: ArgumentNode = self.arg_node_index[arg_id]
+                    if a_value.supports_conclusion:
+                        branch_index_term: str = term_base
+                        for p in a_value.premises_ids:
+                            branch_index_term += "_" + str(p)
+                        pro_evidence_term: str = branch_index_term + "_ev"
+                        if pro_disjuncts:
+                            pro_disjuncts += "; "
+                        pro_disjuncts += pro_evidence_term + ", \\+" + prior
+                if con_disjuncts:
+                    self.my_problog_prog += pos_term + " :- \\+" + con_ev_head_term \
+                                            + ", " + prior + ".\n"
+                else:
+                    self.my_problog_prog += pos_term + " :- " + prior + ".\n"
+                if pro_disjuncts:
+                    self.my_problog_prog += pos_term + " :- " + pro_disjuncts + ".\n"
         self.my_problog_prog += "query(" + pos_term + ").\n"
 
     def _build_problog_program(self) -> None:
@@ -346,10 +411,13 @@ class ArgumentGraph(persistent.Persistent):
             self.arg_node_index[arg_id] = argument
             argument.arg_id = arg_id
 
-            # argument's conclusion is no longer a leaf node
-            # if it was previously
-            if argument.conclusion_id in self.pos_node_index \
-                    and argument.supports_conclusion:
+            if argument.conclusion_id in self.pos_node_index:
+                # update position node with back reference
+                self.pos_node_index[argument.conclusion_id] \
+                    .arguments_pro_and_con_ids.add(arg_id)
+                # argument's conclusion is no longer a leaf node
+                # if it was previously
+                #if argument.supports_conclusion:
                 self.pos_node_index[argument.conclusion_id].node_is_leaf_node = False
 
             # calculate probabilities for this argument's positions
