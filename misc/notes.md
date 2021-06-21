@@ -85,6 +85,15 @@ gain ('profit') merely by converting some other participants to their view,
 even if their view isn't the prevailing one by the end.
 
 The betting is intended to be done with play money and with a betting limit.
+Each market (each of which is for a separate position) will have a
+separate allocation of amounts of play money to each participant.
+The amounts may not be share between markets.  This is so that the
+betting limit remains effective at preventing market manipulations.
+Participants will not be able to accumulate profits from many markets 
+and pool them to manipulate some other market (e.g., to put all their
+profits into shoring up some highly preferred position).  The total
+of each participant's 'profit' from all markets may still be used to rank
+participants in terms of their relative performance.
 
 The probability estimate is supposed to show how belief in evidence ought to
 propagate according to the model of rationality given by the axioms of 

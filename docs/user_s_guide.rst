@@ -12,6 +12,10 @@ Features
 Walkthrough
 -----------
 
+*Note that the numbers shown in the screenshots are not accurate to the
+latest version of the prototype, which fixes problems with the 
+probability calculation.*
+
 .. image:: images/00empty_graph.png
 
 Click the button "Add Initial Position" to get started.
@@ -36,7 +40,8 @@ and zooming in and out may be accomplished with a mouse scroll wheel.
 Additional controls for panning and zooming are intended for a future version.
 Currently, the panning is a bit buggy.  If the diagram disappears from view, 
 you can get it back by loading the page again.  Just press enter in the
-location line after the URL.
+location line after the URL.  (Do not use the browser's reload or refresh
+button since that would cause the last form to be resubmitted.)
 
 .. image:: images/04mortal_position_detail.png
 
@@ -120,6 +125,16 @@ There is high confidence in that new position (95 "cents").  The probability
 estimate of the position it supports, "His heel is vulnerable", has increased
 and so has the probability estimate of the position supported by that position
 (i.e., the initial position) that "Achilles is mortal".
+
+*Note that in the current version of the prototype, the software sometimes
+requests a new version of the argument graph before it has finished
+being drawn.  When that happens, some just added nodes appear to the
+far left of the diagram, not connected to the rest of the graph, and
+the probabilities might not have been updated.  If that situations occurs, 
+you can get the correct latest version of the graph by loading the page again.  
+Just press enter in the location line after the URL.  (Do not use the 
+browser's reload or refresh button since that would cause the last form
+to be resubmitted.)*
 
 
 Future features

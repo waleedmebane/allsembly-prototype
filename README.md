@@ -31,7 +31,8 @@ web/scripts
 
 Their license terms and copyright notices are in files in the sub-directory:
 LICENSE.third-party.  The respective license terms file has its
-suffix named after the name of the library.
+suffix named after the name of the library.  They are under permissive,
+BSD and MIT, license terms.
 
 Installation
 ------------

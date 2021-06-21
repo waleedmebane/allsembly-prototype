@@ -1,3 +1,9 @@
+v0.1.2
+Used Event and wait() (from Python standard library, threading module)
+to reduce the amount of looping in the server main loop and make the
+application more responsive.
+Improved the model for calculating probabilities, fixing major flaws.
+
 v0.1.1
 Fixed regular expressions that make graphs clickable to work with Ubuntu 18.04
 Updated docs and increased revision number.
