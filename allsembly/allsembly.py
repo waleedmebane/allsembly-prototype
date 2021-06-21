@@ -86,7 +86,6 @@ import rpyc #type: ignore[import]
 
 from typing import TextIO, Dict
 #from queue import Queue
-from collections import deque
 from atomic import AtomicLong #type: ignore[import]
 import time
 from time import thread_time_ns
@@ -108,7 +107,7 @@ import threading
 from threading import Event
 
 from allsembly.rpyc_server import _UserAuthenticator, AllsemblyServices, GraphRequest, LedgerRequest, GraphUpdatePosQueue, \
-    OrderQueue, IssueQueue, GraphUpdateArgQueue, IssueDeleteDirective, IssueAddDirective
+    OrderQueue, IssueQueue, GraphUpdateArgQueue, IssueDeleteDirective
 from allsembly.speech_act import ProOrCon, UnconcededPosition
 
 logger: Logger = logging.getLogger(__name__)
@@ -147,15 +146,20 @@ class ServerControl:
     """
     def __init__(self) -> None:
         self._should_exit: int = 0
+        self._event_obj: Event = Event()
 
     def set_should_exit(self) -> None:
         self._should_exit = 1
+        self._event_obj.set()
 
     def reset_should_exit(self) -> None:
         self._should_exit = 0
 
     def should_exit(self) -> bool:
         return bool(self._should_exit)
+
+    def get_event_obj(self) -> Event:
+        return self._event_obj
 
 class ServerControlThreadSafe(ServerControl):
     """Thread safe version of ServerControl
@@ -583,7 +587,9 @@ class AllsemblyServer:
             server_control.reset_should_exit() #this could cause a race
                                                #condition but is convenient
                                                #and pretty benign
-        event_obj: Event = Event()
+        event_obj: Event = server_control.get_event_obj() \
+                           if server_control is not None \
+                           else Event()
         self.order_queue.set_event_object(event_obj)
         self.graph_arg_queue.set_event_object(event_obj)
         self.graph_pos_queue.set_event_object(event_obj)

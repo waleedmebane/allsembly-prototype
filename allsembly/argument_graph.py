@@ -366,9 +366,11 @@ class ArgumentGraph(persistent.Persistent):
 
                 pro_disjuncts = str()
                 for arg_id in p_value.arguments_pro_and_con_ids:
-                    a_value: ArgumentNode = self.arg_node_index[arg_id]
+                    # TODO: reusing variables a_value and branch_index_term;
+                    #  should probably put this for loop in a separate function
+                    a_value = self.arg_node_index[arg_id]
                     if a_value.supports_conclusion:
-                        branch_index_term: str = term_base
+                        branch_index_term = term_base
                         for p in a_value.premises_ids:
                             branch_index_term += "_" + str(p)
                         pro_evidence_term: str = branch_index_term + "_ev"
