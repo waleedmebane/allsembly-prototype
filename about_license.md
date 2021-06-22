@@ -56,12 +56,12 @@ term is meant to avoid the possibility of an implied trademark grant.)
 I would like to add a linking exception allowing distribution of "Combined
 Works" (see section 4 of the LGPL) without source code for the part that only
 links with Allsembly code, without being "based on" it (which, in the sense
-given by the LGPL means onlly calling its function or subclassing its classes).
+given by the LGPL means onlly calling its functions or subclassing its classes).
 
 I like the LGPL as a good weak copyleft license.  My goals in using it are
 a little different from those of the Free Software Foundation (FSF).  I'm 
 interested in a license that encourages widespread use, even commercial use
-in proprietary software, which requiring that modifications be given back to
+in proprietary software, while requiring that modifications be given back to
 the community in source code form.  I also very much like the LGPLs provisions
 about giving "prominent notice" so distributors of the sofware and its
 derivatives may not represent a proprietary version as the only one but must
@@ -95,18 +95,18 @@ different licenses.  But I will wait a little while to get some feedback.
 The addition can wait until there are pull requests from
 other potential contributors.
 
-> Linking Exception.  As an exception to Section 4 of the LGPL, the copyright holders of this software give you permission to convey a Combined Work under the terms of your choice [the first part of Section 4 without "that... do not restrict modification... and reverse engineering for debugging..."] provided you meet the requirements listed as (a) - (c) under Section 4 and that you convey the Minimum Corrresponding Source [as in 4 (d0)] but without the need to convey the Corresponding Application Code.  This exception does not invalidate any other reason why your software might be covered by the LGPL or the GPL; and it does not alter any license term of any work that is part of the Application combined with the Library even if one or more copyright holders of the Library are also incidentally copyright holders of those works.  You must still adhere to all of the license terms of any other works you link with the Library.
+> Linking Exception.  As an exception to Section 4 of the LGPL, the copyright holders of this software give you permission to convey a Combined Work under the terms of your choice [the first part of Section 4 without "that... do not restrict modification... and reverse engineering for debugging..."] provided you meet the requirements listed as (a) - (c) under Section 4 and that you convey the Minimum Corrresponding Source [as in 4 (d0)] but without the need to convey the Corresponding Application Code.  This exception does not invalidate any other reason why your software might be covered by the LGPL or the GPL; and it does not alter any license term of any work that is part of the Application combined with the Library even if one or more copyright holders of the Library are also incidentally copyright holders of those works.  You must still adhere to all of the license terms of any other works you combine or link with the Library.
 
 > It is the intention of the copyright holders that the exception given in Section 1 of the LGPL still apply if it otherwise would have applied by your meeting the terms of Section 4 without the above addtional exception.
 
 > It is the intention of the copyright holders that they or their agents be permitted to disassemble, decompile, or reverse engineer the Combined Work for the purpose of determining compliance with the license terms but that the terms under which you convey the Combined Work need not be compatible with reverse engineering, as mentioned in Section 4 of the LGPL, or disassembly or decompilation, for any other purpose.
 
 Note:  I don't say anything about "static linking" because I don't intend to 
-restrict the means of linking or combining.  They can cut and paste if they 
+restrict the means of linking or combining.  Licensees can cut and paste if they 
 want. As I understand it, the LGPL is clear even in such a case that if their
 code does more with "the Library" than call its functions and subclass its classes,
 then such code would be "based on" "the Library" rather than just based on
-"the Application" and need to be conveyed with "Minimum Corresponding Source"
+"the Application" and need to be conveyed as part of "Minimum Corresponding Source"
 (i.e., what I've called, above, "contributing back").  The exception excludes
 LGPL Section 4(e) (the requirement to provide installation information) because
 it might be interpretted to require that the user be able to modify the Combined
