@@ -97,75 +97,74 @@ returns
 Files
 -----
 
-requirements.txt
-    List of required dependencies and their version numbers
-
-setup.cfg
-    Configuration options for mypy and configuration options for Pylint
-
-allsembly/
-    All of the modules of the Python package
-
-docs/
-
-    _build/
-        The Sphinx-generated HTML documentation, as a git submodule
-
-    conf.py
-        The Sphinx configuration file.
-
-    fdl-1.3.txt
-        The GNU Free Documentation License
-
-    index.rst
-        The main file of the documentation
-
-    make.bat
-
-    Makefile
-        Files for building the documentation.  Sphinx is required.
-
-
-LICENSE.third-party/
-    Licenses for third-party software distributed with Allsembly™
-
-misc/
-    Documents containing additional explanation about what Allsembly™ is about and the theory behind it--these files are not part of the documentation, and mightbe edited for publication elsewhere at some point.
-
-    notes.md
-
-    prospectus.pdf
-
-scripts/
-
-    allsembly_add_user.py*
-        Use this to add new Allsembly™ users.  It is better to do this when the Allsembly™ server is not running.
-
-    allsembly_demo.py*
-        FastCGI script for providing the Allsembly™ services.  The client communicates with the web server (Apache) which communicates with the FastCGI script, starting it and stopping it when expedient, and the FastCGI script communicates with the Allsembly™ server.
-
-    allsembly_dev_demo.py*
-        FastCGI script for use with the Werkzeug library web server.  This allows for quick testing of Allsembly™ without a production web server like Apache.
-
-    allsembly-server.py*
-        Use this script to start the Allsembly™ server.  Run it with the ``--help`` option to get usage information.  Also, see, the section :ref:`Installation and Testing` for some instructions.
-
-    server_config.py
-        Configuration file for allsembly-server.py--it is not intended to contain code.
-
-test/
-    The tests.
-
-web/
-
-    allsembly_demo_login.xsl
-        XML stylesheet template for constructing the login page: The server currently just produces an empty XML document with this as its default XSL template.  So, all of the information to produce the page is actually in this file.  See :ref:`Localization` for information about how XML might be used in the future.
-
-    allsembly_demo.xsl
-        XML stylesheet template for constructing the demo page.
-
-    scripts/
-        The javascript libraries
+| requirements.txt
+|     List of required dependencies and their version numbers
+| 
+| setup.cfg
+|     Configuration options for mypy and configuration options for Pylint
+| 
+| allsembly/
+|     All of the modules of the Python package
+| 
+| docs/
+| 
+|     _build/
+|         The Sphinx-generated HTML documentation, as a git submodule
+| 
+|     conf.py
+|         The Sphinx configuration file.
+| 
+|     fdl-1.3.txt
+|         The GNU Free Documentation License
+| 
+|     index.rst
+|         The main file of the documentation
+| 
+|     make.bat
+| 
+|     Makefile
+|         Files for building the documentation.  Sphinx is required. 
+|     
+| LICENSE.third-party/
+|     Licenses for third-party software distributed with Allsembly™
+| 
+| misc/
+|     Documents containing additional explanation about what Allsembly™ is about and the theory behind it--these files are not part of the documentation, and might be edited for publication elsewhere at some point.
+| 
+|     notes.md
+| 
+|     prospectus.pdf
+| 
+| scripts/
+| 
+|     allsembly_add_user.py*
+|         Use this to add new Allsembly™ users.  It is better to do this when the Allsembly™ server is not running.
+| 
+|     allsembly_demo.py*
+|         FastCGI script for providing the Allsembly™ services.  The client communicates with the web server (Apache) which communicates with the FastCGI script, starting it and stopping it when expedient, and the FastCGI script communicates with the Allsembly™ server.
+| 
+|     allsembly_dev_demo.py*
+|         FastCGI script for use with the Werkzeug library web server.  This allows for quick testing of Allsembly™ without a production web server like Apache.
+| 
+|     allsembly-server.py*
+|         Use this script to start the Allsembly™ server.  Run it with the ``--help`` option to get usage information.  Also, see, the section :ref:`Installation and Testing` for some instructions.
+| 
+|     server_config.py
+|         Configuration file for allsembly-server.py--it is not intended to contain code.
+| 
+| test/
+|     The tests.
+| 
+| web/
+| 
+|     allsembly_demo_login.xsl
+|         XML stylesheet template for constructing the login page: The server currently just produces an empty XML document with this as its default XSL template.  So, all of the information to produce the page is actually in this file.  See :ref:`Localization` for information about how XML might be used in the future.
+| 
+|     allsembly_demo.xsl
+|         XML stylesheet template for constructing the demo page.
+| 
+|     scripts/
+|         The javascript libraries
 
 
 
@@ -518,7 +517,7 @@ onto the betting market aspect of the software, then one needs to be cognizant
 of any laws in one's jusrisdiction restricting *gambling*, and possibly also
 laws in the jurisdictions of each of the participants if those are different.
 
-While Allsembly™ as a community is intended to be intependent in the sense
+While Allsembly™ as a community is intended to be independent in the sense
 of participants choosing their own issues to dialogue about, the software 
 could also be adapted for public consultation in which issues and possibly 
 some other parameters for the dialogue are decided by the organization seeking 

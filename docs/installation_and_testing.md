@@ -20,7 +20,7 @@ How to install (for Ubuntu 16.04 or Ubuntu 18.04)
 ---------------------------------
 
 Dependencies:
- Python >=3.7 (tested with Python 3.7.4)
+ Python >=3.7 (tested with Python 3.7.4 and Python 3.7.10)
  pip
  Apache2
  openssl
