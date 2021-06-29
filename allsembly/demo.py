@@ -84,14 +84,14 @@ def argue(issue: int,
           else ProOrCon.CON,
         Premise(
           first_premise,
-          Bid(min(99.0, bid_on_first_premise), 50.0, 1)
+          Bid(min(100.0-1e-9, max(1e-9, bid_on_first_premise)), 50.0, 1)
         ),
         UnconcededPosition(target_position),
         None, #allsembly.Bid(0, 0, 0), #bid on target is currently ignored
         None,
         [(Premise(
           inf_premise,
-          Bid(min(99.0, bid_on_inf_premise), 50.0, 1)
+          Bid(min(100.0-1e-9, max(1e-9, bid_on_inf_premise)), 50.0, 1)
           ),
           None
          )

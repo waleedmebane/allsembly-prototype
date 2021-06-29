@@ -298,12 +298,12 @@ overflow: auto;
 					alert("'Premises' is a required field.")
 				}
 				else if ( !Number.isFinite(bid_on_first_premise) ||
-							bid_on_first_premise &lt; 0.0 ||
-							bid_on_first_premise > 100.0 ||
+							bid_on_first_premise &lt;= 0.0 ||
+							bid_on_first_premise >= 100.0 ||
 						  !Number.isFinite(bid_on_inf_premise) ||
-							bid_on_inf_premise &lt; 0.0 ||
-							bid_on_inf_premise > 100.0) {
-					alert("Bid must be a number between 0 and 100.")
+							bid_on_inf_premise &lt;= 0.0 ||
+							bid_on_inf_premise >= 100.0) {
+					alert("Bid must be a number between 0 and 100, exclusive.")
 				}
 				else {
 					if ("" == inf_premise) {
