@@ -140,18 +140,13 @@ def client_run():
                            )
 
     def _():
-        my_user_services = client.root.get_user_services_noexcept(AuthCredentialsStr(
-            userid="testuser",
-            password="test123"
-        ))
+        my_user_services = client.root.get_user_services(b"testuser")
         assert my_user_services is not None
         print(my_user_services.propose(0, "subuser1", pickle.dumps(my_propose_speech_act)))
 
     _()
-    print(client.root.get_user_services(AuthCredentialsStr(
-            userid="testuser",
-            password="test123"
-        )).get_arg_graph(0))
+    print(client.root.get_user_services(
+            b"testuser").get_arg_graph(0))
 
 def test_server():
     #pdb.set_trace()

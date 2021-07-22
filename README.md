@@ -8,6 +8,12 @@ documentation, in misc/notes.md, and in misc/prospectus.pdf.
 
 Only about half of the major features have been added, so far.
 
+**This branch contains a working Django version.  Other than the 
+installation instructions, the documentation has not yet been updated to
+reflect the changes made in converting to Django.  The Django ORM has
+not yet been incorporated except for the user database used for
+login authentication.**
+
 A demo server is currently deployed at https://waleedmebane.com/  <br />
 The documentation is currently hosted at https://waleedmebane.github.io/allsembly-docs/ .
 You may also generate the documentation from the files in the docs
@@ -25,7 +31,7 @@ A third proposed additional term, a static linking exception, is discussed in
 about_license.md, and might be included in the license terms of some future
 version.
 
-The Javascript libraries "d3", "dialog-polyfill", and "simple-jsonrpc-js"
+The Javascript libraries "d3", "dialog-polyfill", and "jquery"
 are included with this software in the sub-directory:
 web/scripts
 

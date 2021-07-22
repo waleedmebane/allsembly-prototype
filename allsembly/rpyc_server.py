@@ -561,13 +561,18 @@ class AllsemblyServices(rpyc.Service):
         """
         def __init__(self,
                      services: 'AllsemblyServices',
-                     credentials: Union[AuthCredentialsStr, bytes]) -> None:
+                     userid: bytes
+                     # credentials: Union[AuthCredentialsStr, bytes]
+                    ) -> None:
             self._services: Final = services
-            user_or_none = self._services.user_auth.authenticate_user(credentials)
-            if user_or_none is not None:
-                self._userid_hashed = user_or_none.user_settings.userid_hashed
-            else:
-                raise AllsemblyServices.NotAuthenticated
+            #user_or_none = self._services.user_auth.authenticate_user(credentials)
+            #if user_or_none is not None:
+            #    self._userid_hashed = user_or_none.user_settings.userid_hashed
+            #else:
+            #    raise AllsemblyServices.NotAuthenticated
+
+            self._userid_hashed = userid
+
 
         def check_commitments_for_consistency(
         self
@@ -690,31 +695,25 @@ class AllsemblyServices(rpyc.Service):
         #RPyC boilerplate
         pass
 
-    def exposed_get_user_services_noexcept(self,
-                                  credentials: Union[AuthCredentialsStr, bytes]
-                                  ) -> Optional['AllsemblyServices.UserServices']:
-        """If authentication with the provided credentials is successful,
-        Returns a class instance that provides the services that require
-        authentication.
-        Otherwise, returns None.
-        """
-        try:
-            my_userv = AllsemblyServices.UserServices(self, credentials)
-            return my_userv
-        except AllsemblyServices.NotAuthenticated:
-            return None
+    # def exposed_get_user_services_noexcept(self,
+    #                               credentials: Union[AuthCredentialsStr, bytes]
+    #                               ) -> Optional['AllsemblyServices.UserServices']:
+    #     """If authentication with the provided credentials is successful,
+    #     Returns a class instance that provides the services that require
+    #     authentication.
+    #     Otherwise, returns None.
+    #     """
+    #     try:
+    #         my_userv = AllsemblyServices.UserServices(self, credentials)
+    #         return my_userv
+    #     except AllsemblyServices.NotAuthenticated:
+    #         return None
 
     def exposed_get_user_services(self,
-                                  credentials: Union[AuthCredentialsStr, bytes]
+                                  userid: bytes
+                                  # credentials: Union[AuthCredentialsStr, bytes]
                                   ) -> 'AllsemblyServices.UserServices':
-        """If authentication with the provided credentials is successful,
-        Returns a class instance that provides the services that require
-        authentication.
-        Otherwise, UserServices will raise an exception,
-        "AllsemblyServices.NotAuthenticated" that should be handled by
-        the caller.
-        """
-        return AllsemblyServices.UserServices(self, credentials)
+        return AllsemblyServices.UserServices(self, userid)
 
     def exposed_authenticate_user(self,
                                   credentials: Union[AuthCredentialsStr, bytes]

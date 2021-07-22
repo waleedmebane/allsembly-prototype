@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
   name='allsembly',
-  version='0.1.2',
+  version='0.2.0',
   author='Waleed Mebane',
   author_email='allsemblyUNDERSCOREdev@waleedmebane.c.m',
   zip_safe=False,
@@ -16,10 +16,7 @@ setup(
   install_requires=[
       'problog',
       'pygraphviz',
-      'json-rpc',
       'ZODB',
-      'Werkzeug',
-      'flup',
       'RPyC',
       'persistent',
       'transaction',
@@ -29,5 +26,6 @@ setup(
       'argon2-cffi',
       'python-daemon',
       'typing',
-      'typing_extensions'],
+      'typing_extensions',
+      'django'],
 )

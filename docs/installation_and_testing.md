@@ -7,7 +7,7 @@ Please find the license terms in the file: LICENSE.txt.
 The license is LGPLv3-only with two additional terms, disallowing using the
 authors' names and likenesses and declining to grant license to use trademarks.
 
-The Javascript libraries "d3", "dialog-polyfill", and "simple-jsonrpc-js"
+The Javascript libraries "d3", "dialog-polyfill", and "jquery"
 are included with this software in the sub-directory:
 web/scripts
 
@@ -20,11 +20,11 @@ How to install (for Ubuntu 16.04 or Ubuntu 18.04)
 ---------------------------------
 
 Dependencies:
- Python >=3.7 (tested with Python 3.7.4 and Python 3.7.10)
+ Python >=3.7 (tested with Python 3.9.5)
  pip
  Apache2
  openssl
- libapache2-mod-fcgid
+ mod_wsgi
  graphviz
  graphviz-dev
 
@@ -32,9 +32,6 @@ Dependencies:
   problog
   ZODB
   pygrphviz
-  json-rpc
-  Werkzeug
-  flup
   RPyC
   persistent
   transaction
@@ -45,9 +42,17 @@ Dependencies:
   typing
   python-daemon
 
-Install Apache2, mod-fcgid, openssl, and graphviz:
+Install Apache2, openssl, and graphviz:
 
-`sudo apt-get install apache2 libapache2-mod-fcgid openssl graphviz graphviz-dev`
+```
+sudo apt-get update
+sudo apt-get install apache2 openssl graphviz graphviz-dev apache2-dev
+```
+
+The apache2-dev package might not be necessary if you install Python and
+mod_wsgi from Ubuntu packages rather than using the method in the 
+instructions below.  The mod_wsgi package needs to be one that was built
+for the version of Python it will be used with.
 
 Next, install Python.  If you are using Ubuntu 16.04 or 18.04, you will need to 
 install from source.  With later versions of Ubuntu you may be able
@@ -55,29 +60,32 @@ to install using `apt-get install python3` (you need a Python version >=3.7),
 but it will place Python in /usr/bin; so you will either have to modify the 
 first line of the scripts from `#!/usr/local/bin/python3` to 
 `#!/usr/bin/python3` or place a link in /usr/local/bin (i.e., 
-`sudo ln -si /usr/bin/python3 /usr/local/bin/python3`).
+`sudo ln -si /usr/bin/python3 /usr/local/bin/python3`).  If you install
+Python using apt, then also install libapache2-mod-wsgi using apt as
+`apt-get install libapache2-mod-wsgi`; otherwise, install mod_wsgi using
+pip as described below.
 
 To compile from source, first obtain the source code from:
-https://www.python.org/downloads/release/python-374
+https://www.python.org/downloads/release/python-395
 And then follow the instructions in the README.rst file, which amount to:
 
     sudo apt-get build-dep python3.5
-    ./configure
+    ./configure --enable-optimizations --enable-shared LDFLAGS=-Wl,-rpath=/usr/local/lib
     make
-    make test
     sudo make install
 
+The configure options, except --enable-optimization, which is optional,
+are needed for Python to work well with mod_wsgi.
 (`*`See the bottom of this section for a tip in case you get an error message
 about needing to add a source repository in order to install build
 dependencies--the first step listed above.)
 
 
-Next, use pip to install the Python packages:
+Next, install pip:
 
 ```
-sudo python3.7 -m ensurepip
-sudo python3.7 -m pip install --upgrade pip
-sudo python3.7 -m pip install pygraphviz json-rpc problog ZODB Werkzeug flup RPyC persistent transaction  atomic readerwriterlock argon2-cffi cryptography typing python-daemon
+sudo python3.9 -m ensurepip
+sudo python3.9 -m pip install --upgrade pip
 ```
 
 Install the Allsembly™ package:
@@ -86,11 +94,11 @@ Clone or download the [source code repository](https://github.com/waleedmebane/a
 files into a directory, "allsembly-prototype". <br />
 cd to the directory allsembly-prototype, then:
 
-```sudo python3.7 -m pip install .```
+```sudo python3.9 -m pip install .```
 
 OR to install for easy development:
 
-```sudo python3.7 -m pip install --editable .```
+```sudo python3.9 -m pip install --editable .```
 
 Create a new system user named, e.g., "allsembly"
   and give that user permission to read and write /var/allsembly-prototype/data 
@@ -101,25 +109,28 @@ sudo mkdir -p /var/allsembly-prototype/data
 sudo chown allsembly /var/allsembly-prototype/data
 ```
 
-Make sure the Python scripts have the executable bit set:
+Make sure the server script has the executable bit set:
 
-```chmod a+x allsembly-prototype/scripts/allsembly*.py```
+```chmod a+x allsembly-prototype/scripts/allsembly-server.py```
+
+Create the user database:
+
+```
+cd allsembly-prototype
+python3.9 manage.py migrate
+```
 
 Add an Allsembly™ user:
 
-This should ideally be done while the Allsembly™ server
-  is not running.
-
 ```
-sudo su allsembly -s /bin/bash
-allsembly-prototype/scripts/allsembly_add_user.py
-```
-
-Follow the prompts.<br />
-Then:
-
-```
-exit
+python3.9 manage.py shell
+Python 3.9.5 (default, Jul 19 2021, 01:21:38) 
+[GCC 5.4.0 20160609] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+>>> from django.contrib.auth.models import User
+>>> user = User.objects.create_user('username', '', 'password')
+>>> exit()
 ```
 
 Run the Allsembly™ server:
@@ -144,97 +155,62 @@ In the meantime, you could put a line like:
 
 ### Setup and start the Apache web server:
 
-_(You may skip this step and return to it later if you just want to
-try out Allsembly.  Go to the section, below: "...development web server".)_
-
+#### Setup SSL (Recommended)
 Add an SSL certificate, either by following the directions given by
   your webhosting provider or by using Certbot to install a Let's Encrypt
   certificate: https://certbot.eff.org
 
-Enable mod-fcgi:
-
-```sudo a2enmod fcgid```
-
-Add the following lines to /etc/apache2/apache2.conf:
+#### Enable mod-wsgi:
 
 ```
-FcgidIOTimeout 1800
-
-Alias "/cgi-bin/" "/usr/local/apache2/cgi-bin/"
-<Location "/cgi-bin">
-SetHandler fcgid-script
-Options +ExecCGI
-Require all granted
-#Optionally uncomment the lines below to limit the number of bytes
-# that can be sent in a single request to the FastCGI scripts in 
-# this directory.
-#LimitRequestBody 64000
-#LimitXMLRequestBody 64000
-</Location>
+sudo python3.9 -m pip install mod_wsgi
+sudo sh -c 'mod_wsgi-express module-config > /etc/apache2/mods-available/wsgi.load'
+sudo a2enmod wsgi
 ```
 
-Make the directory /usr/local/apache2/cgi-bin/:
-
-```sudo mkdir -p /usr/local/apache2/cgi-bin/```
-
-Copy the FastCGI script into that directory:
-
-```sudo cp -i allsembly-prototype/scripts/allsembly_demo.py /usr/local/apache2/cgi-bin/```
-
-Move the web files to the web root:
+Add the lines printed by the following command to the bottom of 
+/etc/apache2/apache2.conf:
 
 ```
-sudo mkdir -p /var/www/html/allsembly
-sudo cp -ir allsembly-prototype/web/* /var/www/html/allsembly
+mod_wsgi-express module-config
 ```
+
+Add the following lines between of your virtual host's VirtualHost 
+open/close tags (e.g., `<Virtualhost ...>...</VirtualHost>`), which may
+be in one of your configuration files in /etc/apache2/sites-enabled, 
+such as /etc/apache2/sites-enabled/000-default.conf or
+/etc/apache2/sites-enabled/default-ssl.conf (if you have SSL configured):
+
+```
+Alias "/static/" "/home/<user>/allsembly-prototype/web/scripts/"
+WSGIScriptAlias "/allsembly" "/home/<user>/allsembly-prototype/django_site/wsgi.py"
+<Directory /home/user/allsembly-prototype-django-version/django_site>
+  <Files wsgi.py>
+    Require all granted
+  </Files>
+</Directory>
+<Directory /home/user/allsembly-prototype-django-version/web/scripts>
+  Require all granted
+</Directory>
+```
+
+Replace ```/home/<user>``` with the path into which you have cloned or
+copied the allsembly-prototype repository.
 
 Restart the Apache server:
 
 ```sudo apachectl restart```
 
-Open a web browser and navigate to https://\<your-server-hostname\>/cgi-bin/allsembly_demo.py
+Add your hostname and/or IP address to the list of allowed hosts in the
+Django settings file by editing allsembly-prototype/django_site/settings.py
+changing ```ALLOWED_HOSTS = []``` to ```ALLOWED_HOSTS = ['hostname']```.
+Replace "hostname" with your hostname, e.g., "waleedmebane.com". 
+
+Open a web browser and navigate to https://\<your-server-hostname\>/allsembly <br />
 Enter the userid and password of the user you created in a previous step.
 
 
-### Try out Allsembly™ using the development web server.
-Create a directory to store the SSL certificate:
-
-`mkdir ~/allsembly_test_cert`
-
-Create a self-signed SSL certificate.  You only need to do this step once.
-(Replace '\<your-linux-userid\>' below with your own userid.)
-
-```
-python3.7
-Python 3.7.4 (default, Apr 22 2021, 18:55:44) 
-[GCC 5.4.0 20160609] on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> from werkzeug.serving import make_ssl_devcert
->>> make_ssl_devcert('/home/<your-linux-userid>/allsembly_test_cert/', host='localhost')
-('/home/<your-linux-userid>/allsembly_test_cert/.crt', '/home/<your-linux-userid>/allsembly_test_cert/.key')
->>> quit()
-```
-
-Start the development server:
-
-```allsembly-prototype/scripts/allsembly_dev_demo.py -c '/home/<your-linux-userid>/allsembly_test_cert/' -w 'allsembly-prototype/web/'```
-
-That will start a server running on locahost port 8443.
-If you are running the server on a remote machine, use the -s or --host option 
-to give the IP address of the server.  You should also create your SSL 
-certifcate with host='\<your-server-hostname\>' in the previous step, e.g.: 
-`make_ssl_devcert('/home/\<your-linux-userid\>/allsembly_test_cert/', host='waleedmebane.com')`.
-
-Your firewall might block ports other than 80 and 443.  If so, you can run the server with the option -p 443, but you also have to run it as root (using sudo) since access to ports <=1024 is privileged.
-
-Open your browser and go to https://localhost:8443 or https://\<your-server-hostname\>:\<your-server-port-number\> 
-Your browser will warn you that the connection is not secure since you are
-using a self-signed certificate.  Click the appropriate button to bypass the
-warning.
-Enter the userid and password of the user you created in a previous step.
-
-
-*NOTE: When building Python3.7.4 from source code, you might get an error
+*NOTE: When building Python3.9.5 from source code, you might get an error
 message on the first step of installing build dependencies.
 In that case, you might have to uncomment a line beginning with "deb-src"
 near the top of your /etc/apt/sources.list file and then run 
@@ -267,5 +243,5 @@ With pytest installed, simply run pytest from the main directory of the
 distribution by typing `pytest`.  It will automatically discover the tests 
 (which are in the subdirectory "test"), run them, and report the results.
 
-pytest may be installed with `python3.7 -m pip install pytest`.
+pytest may be installed with `python3.9 -m pip install pytest`.
 

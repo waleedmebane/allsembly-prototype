@@ -142,10 +142,7 @@ def test_allsembly():
         #(in the actual allsembly program it will be processed
         # in another thread).
         assert not graph_pos_queue #nothing on the queue
-        my_user_services = server.exposed_get_user_services_noexcept(AuthCredentialsStr(
-            userid=userid,
-            password=password
-        ))
+        my_user_services = server.exposed_get_user_services(bytes(userid, 'utf-8'))
         assert my_user_services is not None
         assert my_user_services.propose(0, "",
                                         pickle.dumps(ProposeSpeechAct(

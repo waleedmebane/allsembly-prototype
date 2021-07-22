@@ -1,5 +1,3 @@
-#!/usr/local/bin/python3
-
 # Copyright © 2021 Waleed H. Mebane
 #
 #   This file is part of Allsembly™ Prototype.
@@ -29,12 +27,18 @@
 #   any of the trademarks of any of the authors of or contributors to this
 #   software.
 #
-""" Starts a FastCGI program that receives requests from the web
-server.  See the module allsembly.demo for details.
-"""
-from flup.server.fcgi import WSGIServer
-from allsembly.demo import application
+from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from . import views
 
-
-WSGIServer(application).run()
-
+urlpatterns = [
+    path('', views.login_view, name='login'),
+    path('logged_out/', views.logout_view, name='logged_out'),
+    path('demo/', views.demo, name='demo'),
+    path('argue/', views.argue, name='argue'),
+    path('propose/', views.propose, name='propose'),
+    path('get_arg_graph/', views.get_arg_graph, name='get_arg_graph'),
+    path('get_position_details/', views.get_position_details, name='get_position_details'),
+    path('clear_graph/', views.clear_graph, name='clear_graph'),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

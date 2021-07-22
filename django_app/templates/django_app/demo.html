@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<!--
+ Copyright © 2021 Waleed H. Mebane
+
+   This file is part of Allsembly™ Prototype.
+
+   Allsembly™ Prototype is free software: you can redistribute it and/or
+   modify it under the terms of the Lesser GNU General Public License,
+   version 3, as published by the Free Software Foundation and the
+   additional terms directly below this notice.
+
+   Allsembly™ Prototype is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   Lesser GNU General Public License for more details.
+
+   You should have received a copy of the Lesser GNU General Public
+   License along with Allsembly™ Prototype.  If not, see
+   <https://www.gnu.org/licenses/>.
+
+   Additional terms:
+
+   Without his or her specific prior written permission, neither may the names
+   of any author of or contributor to this software be used to endorse products
+   derived from this software nor may his or her names, image, or likeness be
+   used to promote products derived from this software.
+
+   Nothing in this license shall be interpreted as granting any license to
+   any of the trademarks of any of the authors of or contributors to this
+   software.
+-->
+<!--
+This implements the client side of Allsembly, except for logging in, the
+client side of which is implemented by the Django template login.html.
+The CGI just produces a trivial XML string that contains a document root,
+and a reference to this file as its default XML stylesheet.
+Implementing it as an XSL template simplifies what the CGI has to do,
+but will also make it easy to do localization in the future by including
+(using "xsl-include") an XML file that contains the strings to use.
+This approach also provides flexibility to either preload some data via XML
+tags, such as to alter the page according to user preferences, or to wait
+and load the data via XmlHttpRequests with Javascript.
+
+The library, "d3", is used to make the SVG image of the graph pan and
+zoom in response to mouse events.
+
+The "dialog-polfill" library provides the functionality of the <DIALOG>
+tag for making modal dialogs even when the browser doesn't support it
+yet.
+
+The jquery library is used for AJAX.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+	{% load static %}
+<script src="{% static 'jquery-3.6.0.js' %}"></script>
+<script src="{% static 'd3.js' %}"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+html, body {
+  height: 100%;
+}
+	body {
+		background-color: WhiteSmoke;
+	}
+
+.col-1 {
+overflow: hidden;
+    width: 100%;
+    background-color: white;
+}
+/*
+.col-2 {
+overflow: auto;
+    width: 30%;
+}
+*/
+[class*="col-"] {
+    float: left;
+    padding: 15px;
+    border: none;
+    height: 75%;
+}
+.row {
+overflow: auto;
+    height: 100%;
+/*  background-color: white;
+*/
+}
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+.header {
+height: 12%;
+overflow: auto;
+  padding: 15px;
+}
+.footer {
+overflow: auto;
+  padding: 15px;
+}
+</style>
+</head>
+<body>
+	<div class="header">
+		<table style="border: none" width="100%">
+			<tr>
+				<td align="left">
+					<table style="border: none">
+						<tr>
+							<td>
+								<form id="add_initial_position_form">
+									<button type="submit" id="initial_position_button" value="Add initial position">Add Initial Position</button>
+								</form>
+							</td>
+							<td>
+								<form id="clear_graph_form">
+									<button type="submit" id="clear_graph_button" value="Clear graph">Clear Graph</button>
+								</form>
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td align="right">
+					<p style="justify: right"><a href="{% url 'logged_out' %}">Logout</a></p>
+				</td>
+			</tr>
+		</table>
+	</div>
+    <div class="row">
+		<div id='svg' class="col-1">
+		</div>
+    </div>
+	<div class="footer">
+		<form>
+			<button disabled="disabled">Search</button>
+			<input style="width: 80%" value="Not implemented, yet."/>
+		</form>
+	</div>
+	<dialog style="width:500px" id ="positAddDialog" >
+		<!-- Modal dialog box for adding an initial position -->
+		<form method="dialog">
+			{% csrf_token %}
+			{{propose_form.as_p}}
+		  <button value="OK">OK</button>
+		  <button value="Cancel" formnovalidate>Cancel</button>
+		</form>
+	</dialog>
+	<dialog style="width:500px" id ="positShowDialog" >
+		<!-- Modal dialog box for showing a positions full text
+		     and showing position options, such as to create
+		     a new argument pro or con the position, "Argue".
+		-->
+		<form method="dialog">
+			<input id="position_id" type="hidden" />
+			<div id="posit_details_div"></div>
+			<button value="Argue">Argue</button>
+			<!-- Disabled buttons are to show future features to expect -->
+			<button disabled="true" value="Relate">Relate</button>
+			<button disabled="true" value="Discuss">Discuss</button>
+			<button disabled="true" value="Bet">Bet</button>
+
+			<button value="Cancel" formnovalidate>Cancel</button>
+		</form>
+	</dialog>
+	<dialog style="width:500px" id ="argueDialog" >
+		<!-- Modal dialog box for adding a new argument -->
+		<form id="argueDialogForm" method="dialog">
+			{% csrf_token %}
+			{{argue_form.as_p}}
+			<br /> <button disabled="true">Add premise</button>
+
+			<button value="OK">OK</button>
+			<button value="Cancel" formnovalidate>Cancel</button>
+		</form>
+	</dialog>
+
+	<script src="{% static 'dialog-polyfill.js' %}"></script>
+	<script>
+		var positAddDialog = document.getElementById('positAddDialog');
+		positAddDialog.addEventListener('close', positDialogOnClose);
+		dialogPolyfill.registerDialog(positAddDialog);
+		function showPositAddDialog(event) {
+			//function to open the dialog for adding an initial position
+			positAddDialog.showModal();
+			event.preventDefault();
+			return false;
+		}
+		var initialPositionForm = document.getElementById('add_initial_position_form');
+		initialPositionForm.addEventListener('submit', showPositAddDialog);
+		var clearGraphForm = document.getElementById('clear_graph_form');
+		clearGraphForm.addEventListener('submit', clearGraph);
+		var positShowDialog = document.getElementById('positShowDialog');
+		positShowDialog.addEventListener('close', positShowOnClose);
+		dialogPolyfill.registerDialog(positShowDialog);
+		var argueDialog = document.getElementById('argueDialog');
+		argueDialog.addEventListener('close', argueOnClose);
+		dialogPolyfill.registerDialog(argueDialog);
+
+		function zoomed({transform}) {
+			//callback function, used by the d3 library to implement
+			//panning and zooming in the SVG image (the argument graph)
+			//pan with click and drag and zoom with the mouse scroll wheel.
+		   	document.querySelector("#svg svg").setAttribute("transform", transform);
+		}
+
+        $(document).ajaxError(function() {
+            window.location.href = window.location.href.split(window.location.pathname)[0] + "{% url 'login' %}";
+        });
+
+		function get_arg_graph() {
+			//load the argument graph SVG string and overwrite the previous graph
+			$.get("{% url 'get_arg_graph' %}", function(res) {
+				console.log(res);
+				var elem = document.querySelector('#svg');
+				elem.innerHTML = res;
+				if (res != "") {
+					var svgn = document.querySelector("#svg svg").getAttribute("transform");
+					var trf = document.querySelector("#svg svg g").getAttribute("transform");
+					console.log(trf);
+					if (-1 != trf.indexOf("translate")) {
+						var trf_split = trf.split("translate(");
+						var trans = trf_split[1].split(" ");
+						var trans_x = parseFloat(trans[0]);
+						var trans_y = parseFloat(trans[1]);
+					}
+					console.log(trans_x);
+					console.log(trans_y);
+					var d3trans = d3.zoomTransform(trf);
+					console.log(d3trans);
+
+					var selection = d3.select("svg g");
+					zoom = d3.zoom().on("zoom", zoomed);
+
+					zoom(selection);
+					d3.select("svg").style("background-color", "white");
+					d3.select("svg").style("display", "inline-block");
+				}
+			});
+		}
+
+		//load the initial argument graph on startup
+		get_arg_graph();
+
+		function positDialogOnClose() {
+			if (positAddDialog.returnValue == "OK") {
+				form_data = new FormData(positAddDialog.querySelector("form:first-of-type"));
+				$.ajax({
+					url: "{% url 'propose' %}",
+					type: 'POST',
+					data: form_data,
+					processData: false,
+					contentType: false, //'multipart/form-data',
+					dataType: 'json',
+					success: function(res) {
+								if ('success' in res && res.success) {
+									console.log(res);
+									get_arg_graph();
+								}
+								else if ('error_text' in res) {
+									alert("Error:" + res.error_text);
+								}
+								else {
+									alert("Action failed for an unknown reason.");
+								}
+							 }
+				});
+			}
+			return false;
+		}
+
+		function positShowOnClose() {
+			if (positShowDialog.returnValue == "Argue") {
+				document.getElementById("id_target_position").value =
+				//% argue_form.target_position.auto_id %").value =
+				  document.getElementById("position_id").value;
+				//document.getElementById("% argue_form.target_position_text.auto_id %").value =
+				document.getElementById("id_target_position_text").value =
+				  document.getElementById("posit_details_div").innerText;
+				argueDialog.showModal();//open argue dialog
+			}
+			return false;
+		}
+
+		function argueOnClose() {
+			if (argueDialog.returnValue == "OK") {
+/*				inf_premise = document.getElementById("id_inf_premise").value;
+				first_premise = document.getElementById("id_first_premise").value;
+				argument_is_PRO = document.getElementsByName("pro_or_con")[0].checked;
+				if ("" == inf_premise) {
+					document.getElementById("id_inf_premise").value =
+						"IF " + first_premise
+								  + "\nTHEN "
+								  + (argument_is_PRO ? "" : "NOT ")
+								  + document.getElementById("posit_details_div").innerText
+								  ;
+				}*/
+				form_data = new FormData(argueDialog.querySelector("form:first-of-type"));
+				$.ajax({
+					url: "{% url 'argue' %}",
+					type: 'POST',
+					data: form_data,
+					processData: false,
+					contentType: false,
+					dataType: 'json',
+					success: function(res) {
+								if ('success' in res && res.success) {
+									console.log(res);
+								 	get_arg_graph();
+								}
+								else if ('error_text' in res) {
+									alert("Error:" + res.error_text);
+								}
+								else {
+									alert("Action failed for an unknown reason.");
+								}
+							 }
+				});
+			}
+			return false;
+		}
+
+		function clearGraph() {
+			if (confirm("Are you sure you want to clear the graph, deleting all nodes?")) {
+				$.get("{% url 'clear_graph' %}", function(res) {
+					if ('success' in res && res.success) {
+						console.log(res);
+						get_arg_graph();
+					}
+					else if ('error_text' in res) {
+						alert("Error:" + res.error_text);
+					}
+					else {
+						alert("Action failed for an unknown reason.");
+					}
+				}, 'json');
+			}
+			event.preventDefault();
+			return false;
+		}
+
+		function show_position_details(pos_id) {
+			$.get("{% url 'get_position_details' %}" + "?id=" + pos_id, function(res) {
+				console.log(res);
+				if ('success' in res && res.success && 'result' in res) {
+					document.getElementById("posit_details_div").innerHTML = res.result;
+					document.getElementById("position_id").value = pos_id;
+					positShowDialog.showModal();
+				}
+				else if ('error_text' in res) {
+					alert("Error:" + res.error_text);
+				}
+				else {
+					alert("Action failed for an unknown reason.");
+				}
+			}, 'json');
+			return true;
+		}
+	</script>
+</body>
+</html>

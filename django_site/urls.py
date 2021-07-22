@@ -1,5 +1,3 @@
-#!/usr/local/bin/python3
-
 # Copyright © 2021 Waleed H. Mebane
 #
 #   This file is part of Allsembly™ Prototype.
@@ -29,32 +27,23 @@
 #   any of the trademarks of any of the authors of or contributors to this
 #   software.
 #
-""" Convenience script for adding a new user.
-Do this when the server is not running, since ZODB is not
- a multi-process database.
+"""django_site URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/3.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-# In a future version, I can create a new UserAuth object and
-#  wrap it in a (yet to be written) add, update, or delete
-#  request object, pickle it and write it to disk in a special
-#  folder.  Then send SIGHUP to the server, which would
-#  instruct it to load the requests from disk.
-#  It would have to get a write lock on the database so that
-#  it writes the new users when no service threads are trying
-#  to use the database for authentication.  Then it would
-#  update the database and release the lock.
-#  Updates could also include changes, such as to passwords, or
-#  to temporarily suspend a user, in addition to additions.
+from django.urls import path, include
 
-import ZODB
-from ZODB.FileStorage import FileStorage
-from allsembly.user import add_user
-from server_config import AUTHDB_FILENAME
-
-userid = input("UserId: ")
-password = input("Password: ")
-storage = FileStorage(AUTHDB_FILENAME)
-db = ZODB.DB(storage)
-conn = db.open()
-add_user(userid, password, conn)
-conn.close()
-db.close()
+urlpatterns = [
+    path('', include('django_app.urls')),
+]
