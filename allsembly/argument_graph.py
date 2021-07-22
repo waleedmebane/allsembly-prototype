@@ -164,6 +164,7 @@ class ArgumentGraph(persistent.Persistent):
         self._v_gv_graph.graph_attr["packmode"] = "clust"
         self._v_my_g_svg = ["", ""]
         self._build_initial_gv_graph()
+        self.prepare_graph()
 
 
     def _add_position_to_gv_graph(self, pos_id: int, pos: PositionNode) -> None:
@@ -200,7 +201,12 @@ class ArgumentGraph(persistent.Persistent):
                                   label=label,
                                   shape="Mrecord"
                                   )
-        self._prepare_graph()
+    # This is commented out because rpyc_server.GraphRequest
+    # might call draw_graph() on a reference to this object
+    # and get a partially completed graph.  As a temporary
+    # workaround, prepare_graph is called after processing, from
+    # AllsemblyServer.process_one_position_from_queue
+    #    self._prepare_graph()
 
     def _add_argument_to_gv_graph(self, arg_id: int, arg: ArgumentNode) -> None:
         a_key = arg_id
@@ -246,8 +252,15 @@ class ArgumentGraph(persistent.Persistent):
                                            self.pos_node_index[
                                                a_value.conclusion_id
                                            ])
-        else:
-            self._prepare_graph()
+
+    # This is commented out because rpyc_server.GraphRequest
+    # might call draw_graph() on a reference to this object
+    # and get a partially completed graph.  As a temporary
+    # workaround, prepare_graph is called after processing, from
+    # AllsemblyServer.process_one_argument_from_queue
+    #        else:
+    #            self._prepare_graph()
+
         #done
 
     def _update_gv_graph_nodes(self) -> None:
@@ -395,7 +408,12 @@ class ArgumentGraph(persistent.Persistent):
             #  getting current price from betting market and
             #  marginal probability from cached problog model results
             self._add_position_to_gv_graph(pos_id, position)
-            self._prepare_graph()
+            # This is commented out because rpyc_server.GraphRequest
+            # might call draw_graph() on a reference to this object
+            # and get a partially completed graph.  As a temporary
+            # workaround, prepare_graph is called after processing, from
+            # AllsemblyServer.process_one_position_from_queue
+            #self._prepare_graph()
             #add probabilistic term to problog model
 
             return pos_id
@@ -406,7 +424,7 @@ class ArgumentGraph(persistent.Persistent):
         #stub
         pass
 
-    def _prepare_graph(self) -> None:
+    def prepare_graph(self) -> None:
         self._v_gv_graph.layout(prog="dot")
         self._v_my_g_svg[self.write_buffer_index] = self._v_gv_graph.draw(None, "svg").decode("utf-8")
         self._v_my_g_svg[self.write_buffer_index] = re.sub(

@@ -214,7 +214,7 @@ overflow: auto;
             window.location.href = window.location.href.split(window.location.pathname)[0] + "{% url 'login' %}";
         });
 
-		function get_arg_graph() {
+		function get_arg_graph(retry) {
 			//load the argument graph SVG string and overwrite the previous graph
 			$.get("{% url 'get_arg_graph' %}", function(res) {
 				console.log(res);
@@ -243,10 +243,18 @@ overflow: auto;
 					d3.select("svg").style("display", "inline-block");
 				}
 			});
+			if (retry) {
+				//Try again after 2 seconds regardless of the outcome of the
+				//first try as a temporary workaround for the updated argument
+				//graph sometimes not being ready by the time of the first call.
+				//Currently, no revision status is being tracked, as will be
+				//needed for the eventual fix.
+				setTimeout(get_arg_graph, 2000, false);
+			}
 		}
 
 		//load the initial argument graph on startup
-		get_arg_graph();
+		get_arg_graph(false);
 
 		function positDialogOnClose() {
 			if (positAddDialog.returnValue == "OK") {
@@ -261,7 +269,7 @@ overflow: auto;
 					success: function(res) {
 								if ('success' in res && res.success) {
 									console.log(res);
-									get_arg_graph();
+									get_arg_graph(true);
 								}
 								else if ('error_text' in res) {
 									alert("Error:" + res.error_text);
@@ -312,7 +320,7 @@ overflow: auto;
 					success: function(res) {
 								if ('success' in res && res.success) {
 									console.log(res);
-								 	get_arg_graph();
+								 	get_arg_graph(true);
 								}
 								else if ('error_text' in res) {
 									alert("Error:" + res.error_text);
@@ -331,7 +339,7 @@ overflow: auto;
 				$.get("{% url 'clear_graph' %}", function(res) {
 					if ('success' in res && res.success) {
 						console.log(res);
-						get_arg_graph();
+						get_arg_graph(false);
 					}
 					else if ('error_text' in res) {
 						alert("Error:" + res.error_text);

@@ -88,7 +88,7 @@ sudo python3.9 -m ensurepip
 sudo python3.9 -m pip install --upgrade pip
 ```
 
-Install the Allsembly™ package:
+#### Install the Allsembly™ package:
 
 Clone or download the [source code repository](https://github.com/waleedmebane/allsembly-prototype) 
 files into a directory, "allsembly-prototype". <br />
@@ -120,7 +120,7 @@ cd allsembly-prototype
 python3.9 manage.py migrate
 ```
 
-Add an Allsembly™ user:
+#### Add an Allsembly™ user:
 
 ```
 python3.9 manage.py shell
@@ -133,7 +133,10 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> exit()
 ```
 
-Run the Allsembly™ server:
+Replace "username" and "password", above, with your desired username
+and password.
+
+#### Run the Allsembly™ server:
 
 Before running the server, you may change any configuration settings
   in the server_config.py file.

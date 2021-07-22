@@ -228,6 +228,17 @@ def process_one_argument_from_queue(issues: Issues,
                 process_one_order_from_queue(issues, order_queue)
 
             issues.graphs[update_issue].add_argument(new_arg_node)
+            # Temporary workaround for unfinished graphs getting sent to
+            # users.  The problem is with rypc_server.GraphRequest.
+            # It calls draw_graph() directly on a reference to the
+            # ArgumentGraph object from the AllsemblyServer's thread.
+            # Instead, it should load its own ArgumentGraph object
+            # from the committed version in the database.  That would
+            # require it opening a database connection, etc., so it
+            # will be a task for future work.
+            # Temporarily only call prepare_graph() when ready to
+            # commit.
+            issues.graphs[update_issue].prepare_graph()
             #put new argument bid on order queue
             if new_arg.bid_on_target is not None:
                 order_queue.append((current_update[0],
@@ -271,6 +282,17 @@ def process_one_position_from_queue(issues: Issues,
                          updating_user_userid,
                          new_pos.conclusion)
                        )
+            # Temporary workaround for unfinished graphs getting sent to
+            # users.  The problem is with rypc_server.GraphRequest.
+            # It calls draw_graph() directly on a reference to the
+            # ArgumentGraph object from the AllsemblyServer's thread.
+            # Instead, it should load its own ArgumentGraph object
+            # from the committed version in the database.  That would
+            # require it opening a database connection, etc., so it
+            # will be a task for future work.
+            # Temporarily only call prepare_graph() when ready to
+            # commit.
+            issues.graphs[update_issue].prepare_graph()
     return bool(graph_pos_queue)
 
 def process_one_order_from_queue(issues: Issues,
@@ -299,6 +321,7 @@ def process_one_order_from_queue(issues: Issues,
                 new_bid.max_price if pro_or_con is ProOrCon.PRO \
                     else 1.0 - new_bid.min_price
     return bool(order_queue)
+
 
 def process_one_issue_from_queue(issues: Issues, 
                                  issue_queue: IssueQueue) -> bool:

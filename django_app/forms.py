@@ -12,13 +12,13 @@ class ArgueForm(forms.Form):
                                    widget=forms.RadioSelect,
                                    initial='Pro')
     first_premise = forms.CharField(label='Premises:', widget=forms.Textarea)
-    bid_on_first_premise = forms.DecimalField(label="Bid: ", initial=51.0,
+    bid_on_first_premise = forms.DecimalField(label='Bid:', initial=51.0,
                                               max_value=99.999999999,
                                               min_value=0.000000001)
     inf_premise = forms.CharField(label='Inferential premise (optional):',
                                   widget=forms.Textarea,
                                   required=False)
-    bid_on_inf_premise = forms.DecimalField(label="Bid: ", initial=99.0,
+    bid_on_inf_premise = forms.DecimalField(label='Bid:', initial=99.0,
                                             max_value=99.999999999,
                                             min_value=0.000000001)
 

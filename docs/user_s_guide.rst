@@ -90,7 +90,7 @@ to the diagram.
 
 .. image:: images/07graph_mortal_plus_con.png
 
-The computer updates the probability estimates based on the prices of
+The software updates the probability estimates based on the prices of
 the positions pro and con.  Since a "con" position was added, there is
 only evidence against the position that "Achilles is mortal", namely
 that "Weapons do not wound him."  Prices are between 0 and 100 "cents".
@@ -128,10 +128,8 @@ and so has the probability estimate of the position supported by that position
 
 *Note that in the current version of the prototype, the software sometimes
 requests a new version of the argument graph before it has finished
-being drawn.  When that happens, some just added nodes appear to the
-far left of the diagram, not connected to the rest of the graph, and
-the probabilities might not have been updated.  If that situations occurs, 
-you can get the correct latest version of the graph by loading the page again.  
+being drawn.  If that situations occurs, 
+you can get the latest version of the graph by loading the page again.  
 Just press enter in the location line after the URL.  (Do not use the 
 browser's reload or refresh button since that would cause the last form
 to be resubmitted.)*
