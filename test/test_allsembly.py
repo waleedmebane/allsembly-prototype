@@ -42,7 +42,7 @@ from argon2 import PasswordHasher
 from allsembly.CONSTANTS import UserPasswordType
 from allsembly.allsembly import OrderQueue, GraphUpdateArgQueue, GraphUpdatePosQueue, process_one_position_from_queue
 from allsembly.betting_exchange import BettingExchange
-from allsembly.argument_graph import Issues
+from allsembly.argument_graph import Issues, IssuesDBAccessor
 from allsembly.rpyc_server import IssueQueue, _UserAuthenticator, GraphRequest, LedgerRequest, \
     AllsemblyServices, AuthCredentialsStr
 from allsembly.speech_act import ProposeSpeechAct, InitialPosition, Bid, Premise
@@ -89,7 +89,7 @@ def test_allsembly():
                                                    graph_arg_queue,
                                                    graph_pos_queue,
                                                        issue_queue,
-                                                   GraphRequest(issues),
+                                                   GraphRequest(IssuesDBAccessor(argumentdb, read_only=True)),
                                                    LedgerRequest(),
                                                        user_authenticator
                         )

@@ -69,7 +69,7 @@ import transaction  #type: ignore[import]
 from BTrees.OOBTree import OOBTree #type: ignore [import]
 from cryptography.fernet import Fernet
 
-from allsembly.argument_graph import Issues, ArgumentGraph
+from allsembly.argument_graph import Issues, ArgumentGraph, IssuesDBAccessor
 from allsembly.common import FinalVar
 from allsembly.config import Config, Limits
 from allsembly.speech_act import IndependentBid, Argument, InitialPosition
@@ -260,22 +260,27 @@ class GraphRequest:
     """
     # This seems no longer really to be needed since the read-lock
     # is taken out in the ArgumentGraph class instance itself and not here
-    def __init__(self, issues: Issues) -> None:
-        self.issues: Final[Issues] = issues #read-only
+    def __init__(self, issues: IssuesDBAccessor) -> None:
+        self._issues_accessor: Final[IssuesDBAccessor] = issues
 
     def draw(self, issue: Tuple[bytes, int]) -> str:
-        if self.issues.graphs.has_key(issue):
-            issue_ref: Final[ArgumentGraph] = self.issues.graphs[issue]
-            #with issue_ref.arg_graph._v_my_rwlock.gen_rlock():
-            return issue_ref.draw_graph()
+        # Each thread needs its own context (provided by its own IssuesAccessor copy).
+        #issues_accessor = copy.copy(self._issues_accessor)
+        with self._issues_accessor.get_context() as issues:
+            if issues.graphs.has_key(issue):
+                graph_ref: Final[ArgumentGraph] = issues.graphs[issue]
+                return graph_ref.get_drawn_graph()
         return ""
 
     def get_position_details(self, issue: Tuple[bytes, int],
                              pos_id: int) -> str:
-        if self.issues.graphs.has_key(issue):
-            issue_ref: Final[ArgumentGraph] = self.issues.graphs[issue]
-            position: Final = issue_ref.get_position_copy(pos_id)
-            return position.statement
+        # Each thread needs its own context (provided by its own IssuesAccessor copy).
+        #issues_accessor = copy.copy(self._issues_accessor)
+        with self._issues_accessor.get_context() as issues:
+            if issues.graphs.has_key(issue):
+                graph_ref: Final[ArgumentGraph] = issues.graphs[issue]
+                position: Final = graph_ref.get_position_copy(pos_id)
+                return position.statement
         return ""
 
 class LedgerRequest:
@@ -308,7 +313,9 @@ class UserInfoAndCookie(NamedTuple):
     encrypted_cookie: bytes
 
 class _UserAuthenticator:
-    """ User authentication takes place in a different thread
+    """ THIS CLASS IS OBSOLETE AND TO BE REMOVED.
+    USER AUTHENTICATION IS NOW DONE THROUGH DJANGO.
+    User authentication takes place in a different thread
     per connection (because the RPyC service uses threads).
     This class is initialized with all of the information needed to
     open and connect to the database, but defers those actions
@@ -318,6 +325,7 @@ class _UserAuthenticator:
     if necessary and then tries to authenticate the user.
     This class is not the same as an RPyC "authenticator".
     """
+    # See replacement code in the 'django_app' module.
     authdb_storage: ZODB.FileStorage.FileStorage
     userdb_storage: ZODB.FileStorage.FileStorage
     authdb: ZODB.DB
@@ -695,19 +703,6 @@ class AllsemblyServices(rpyc.Service):
         #RPyC boilerplate
         pass
 
-    # def exposed_get_user_services_noexcept(self,
-    #                               credentials: Union[AuthCredentialsStr, bytes]
-    #                               ) -> Optional['AllsemblyServices.UserServices']:
-    #     """If authentication with the provided credentials is successful,
-    #     Returns a class instance that provides the services that require
-    #     authentication.
-    #     Otherwise, returns None.
-    #     """
-    #     try:
-    #         my_userv = AllsemblyServices.UserServices(self, credentials)
-    #         return my_userv
-    #     except AllsemblyServices.NotAuthenticated:
-    #         return None
 
     def exposed_get_user_services(self,
                                   userid: bytes

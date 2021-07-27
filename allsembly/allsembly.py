@@ -96,7 +96,7 @@ from typing import Any
 from rpyc.utils.helpers import classpartial #type: ignore[import]
 from typing_extensions import Final
 
-from allsembly.argument_graph import Issues, build_ArgumentNode, build_PositionNode, ArgumentGraph
+from allsembly.argument_graph import Issues, IssuesDBAccessor, build_ArgumentNode, build_PositionNode, ArgumentGraph
 from allsembly.speech_act import IndependentBid, MarketLocator
 from allsembly.betting_exchange import BettingMarket
 from allsembly.common import FinalVar
@@ -228,17 +228,7 @@ def process_one_argument_from_queue(issues: Issues,
                 process_one_order_from_queue(issues, order_queue)
 
             issues.graphs[update_issue].add_argument(new_arg_node)
-            # Temporary workaround for unfinished graphs getting sent to
-            # users.  The problem is with rypc_server.GraphRequest.
-            # It calls draw_graph() directly on a reference to the
-            # ArgumentGraph object from the AllsemblyServer's thread.
-            # Instead, it should load its own ArgumentGraph object
-            # from the committed version in the database.  That would
-            # require it opening a database connection, etc., so it
-            # will be a task for future work.
-            # Temporarily only call prepare_graph() when ready to
-            # commit.
-            issues.graphs[update_issue].prepare_graph()
+
             #put new argument bid on order queue
             if new_arg.bid_on_target is not None:
                 order_queue.append((current_update[0],
@@ -282,17 +272,6 @@ def process_one_position_from_queue(issues: Issues,
                          updating_user_userid,
                          new_pos.conclusion)
                        )
-            # Temporary workaround for unfinished graphs getting sent to
-            # users.  The problem is with rypc_server.GraphRequest.
-            # It calls draw_graph() directly on a reference to the
-            # ArgumentGraph object from the AllsemblyServer's thread.
-            # Instead, it should load its own ArgumentGraph object
-            # from the committed version in the database.  That would
-            # require it opening a database connection, etc., so it
-            # will be a task for future work.
-            # Temporarily only call prepare_graph() when ready to
-            # commit.
-            issues.graphs[update_issue].prepare_graph()
     return bool(graph_pos_queue)
 
 def process_one_order_from_queue(issues: Issues,
@@ -627,7 +606,7 @@ class AllsemblyServer:
                                                        self.graph_arg_queue,
                                                        self.graph_pos_queue,
                                                        self.issue_queue,
-                                                       GraphRequest(self.issues),
+                                                       GraphRequest(IssuesDBAccessor(self.argumentdb, read_only=True)),
                                                        LedgerRequest(),
                                                        self.user_authenticator
                                                        ),

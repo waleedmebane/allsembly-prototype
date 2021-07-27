@@ -43,6 +43,7 @@ import copy
 import time
 import logging
 
+import ZODB #type: ignore[import]
 import persistent #type: ignore[import]
 from persistent.list import PersistentList #type: ignore[import]
 from persistent.mapping import PersistentMapping #type: ignore[import]
@@ -125,7 +126,6 @@ class ArgumentGraph(persistent.Persistent):
        and the probabilistic logic program representation using
        Problog.
     """
-    _v_my_rwlock = rwlock.RWLockWrite()
 
     def __init__(self, issue_name: str):
         self.issue_name = issue_name
@@ -133,8 +133,6 @@ class ArgumentGraph(persistent.Persistent):
         self.pos_node_index = PersistentMapping()
         self.betting_exchange = BettingExchange()
         self.problog_model: ProblogModel = ProblogModel()
-        self._v_my_wlock = ArgumentGraph._v_my_rwlock.gen_wlock()
-        self._v_my_rlock = ArgumentGraph._v_my_rwlock.gen_rlock()
         self.next_arg_id = int(0) #PicklableAtomicLong(0)
         self.next_pos_id = int(0) #PicklableAtomicLong(0)
         self._v_gv_graph = pgv.AGraph(strict=False, directed=True)
@@ -149,12 +147,11 @@ class ArgumentGraph(persistent.Persistent):
         self.read_buffer_index = 0
         self.write_buffer_index = 1
         self.my_problog_prog = str()
+        self.my_g_svg = ""
 
 
     def __setstate__(self, state: Dict[Any, Any]) -> None:
         self.__dict__ = state
-        self._v_my_wlock = ArgumentGraph._v_my_rwlock.gen_wlock()
-        self._v_my_rlock = ArgumentGraph._v_my_rwlock.gen_rlock()
         self._v_gv_graph = pgv.AGraph(strict=False, directed=True)
         self._v_gv_graph.graph_attr["rankdir"] = "LR"
         self._v_gv_graph.graph_attr["splines"] = "line"
@@ -164,7 +161,7 @@ class ArgumentGraph(persistent.Persistent):
         self._v_gv_graph.graph_attr["packmode"] = "clust"
         self._v_my_g_svg = ["", ""]
         self._build_initial_gv_graph()
-        self.prepare_graph()
+        self._prepare_graph()
 
 
     def _add_position_to_gv_graph(self, pos_id: int, pos: PositionNode) -> None:
@@ -201,12 +198,7 @@ class ArgumentGraph(persistent.Persistent):
                                   label=label,
                                   shape="Mrecord"
                                   )
-    # This is commented out because rpyc_server.GraphRequest
-    # might call draw_graph() on a reference to this object
-    # and get a partially completed graph.  As a temporary
-    # workaround, prepare_graph is called after processing, from
-    # AllsemblyServer.process_one_position_from_queue
-    #    self._prepare_graph()
+        self._prepare_graph()
 
     def _add_argument_to_gv_graph(self, arg_id: int, arg: ArgumentNode) -> None:
         a_key = arg_id
@@ -252,15 +244,8 @@ class ArgumentGraph(persistent.Persistent):
                                            self.pos_node_index[
                                                a_value.conclusion_id
                                            ])
-
-    # This is commented out because rpyc_server.GraphRequest
-    # might call draw_graph() on a reference to this object
-    # and get a partially completed graph.  As a temporary
-    # workaround, prepare_graph is called after processing, from
-    # AllsemblyServer.process_one_argument_from_queue
-    #        else:
-    #            self._prepare_graph()
-
+        else:
+            self._prepare_graph()
         #done
 
     def _update_gv_graph_nodes(self) -> None:
@@ -408,12 +393,7 @@ class ArgumentGraph(persistent.Persistent):
             #  getting current price from betting market and
             #  marginal probability from cached problog model results
             self._add_position_to_gv_graph(pos_id, position)
-            # This is commented out because rpyc_server.GraphRequest
-            # might call draw_graph() on a reference to this object
-            # and get a partially completed graph.  As a temporary
-            # workaround, prepare_graph is called after processing, from
-            # AllsemblyServer.process_one_position_from_queue
-            #self._prepare_graph()
+            self._prepare_graph()
             #add probabilistic term to problog model
 
             return pos_id
@@ -424,7 +404,7 @@ class ArgumentGraph(persistent.Persistent):
         #stub
         pass
 
-    def prepare_graph(self) -> None:
+    def _prepare_graph(self) -> None:
         self._v_gv_graph.layout(prog="dot")
         self._v_my_g_svg[self.write_buffer_index] = self._v_gv_graph.draw(None, "svg").decode("utf-8")
         self._v_my_g_svg[self.write_buffer_index] = re.sub(
@@ -450,16 +430,15 @@ class ArgumentGraph(persistent.Persistent):
 
         #do this to prevent a participant injecting html or javascript into other participants' browsers
         self._v_my_g_svg[self.write_buffer_index] = re.sub(r'<text (.*)>(.*)</text>', r'<text \1><![CDATA[\2]]></text>', self._v_my_g_svg[self.write_buffer_index])
+        self.my_g_svg = self._v_my_g_svg[self.write_buffer_index]
         swap_index: int = self.write_buffer_index
         self.write_buffer_index = self.read_buffer_index
-        with self._v_my_wlock:
-            self.read_buffer_index = swap_index
+    #     with self._v_my_wlock:
+        self.read_buffer_index = swap_index
 
+    def get_drawn_graph(self) -> str:
+        return self.my_g_svg
 
-    def draw_graph(self) -> str:
-        with self._v_my_rlock:
-            ret = self._v_my_g_svg[self.read_buffer_index]
-        return ret
 
 class Issues(persistent.Persistent):
     """ Stores argument graphs for all issues.
@@ -467,4 +446,53 @@ class Issues(persistent.Persistent):
     def __init__(self) -> None:
         self.graphs = OOBTree()
         self.next_issue_id = int() #PicklableAtomicLong(0)
+
+
+class IssuesDBAccessor:
+    """ Instantiate one of these with a ZODB database object and pass it
+        to another thread or threads.
+        In the other thread(s) obtain an issues object from the database
+        using the context manager by calling get_context() as part of
+        a 'with' statement, e.g.:
+
+        ... # set backend
+        db = ZODB.DB(my_backend)
+        issue_access = IssuesDBAccessor(db)
+        ... # pass issue_access into thread class and start thread
+        # in new thread ('my_iss_access' is a local variable corresponding to
+        # 'issue_access')
+        with my_iss_access.get_context() as issues:
+            diagram_svg: str = issues.graph[issue_id].get_drawn_graph()
+    """
+    # Encapsulates a ZODB database object to allow acces from a different
+    # thread or threads
+    def __init__(self, db: ZODB.DB, read_only: bool = False) -> None:
+        self._db = db
+        self._read_only = read_only
+
+    class _Context:
+        """ Instantiate a separate _Context per thread
+        using the function IssuesDBAccessor.get_context().
+        This is to avoid race conditions.  Use instances with
+        the context manager (i.e., in 'with' statements).
+        """
+        def __init__(self, db: ZODB.DB, read_only: bool) -> None:
+            self._db = db
+            self._read_only = read_only
+
+        def __enter__(self) -> Issues:
+            if self._read_only:
+                self._conn = self._db.open(at=self._db.lastTransaction())
+            else:
+                self._conn = self._db.open()
+            return cast(Issues, self._conn.root().issues)
+
+        def __exit__(self, *_: Any) -> None:
+            self._conn.close()
+
+    def get_context(self) -> _Context:
+        # Each thread needs its own context;
+        # So, provide it through its own instance of _Context
+        # rather than directly through a shared copy of IssuesAccessor.
+        return type(self)._Context(self._db, self._read_only)
 
