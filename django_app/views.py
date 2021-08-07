@@ -108,7 +108,7 @@ def argue(request):
         Premise(
           first_premise,
           Bid(min(100.0-1e-9,
-                  max(1e-9, float(form.cleaned_data['bid_on_first_premise']))
+                  max(1e-9, form.cleaned_data['bid_on_first_premise'])
                   ),
               50.0,
               1)
@@ -119,7 +119,7 @@ def argue(request):
         [(Premise(
           inf_premise,
           Bid(min(100.0-1e-9,
-                  max(1e-9, float(form.cleaned_data['bid_on_inf_premise']))
+                  max(1e-9, form.cleaned_data['bid_on_inf_premise'])
                   ),
               50.0,
               1)

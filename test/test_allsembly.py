@@ -32,22 +32,16 @@ import pickle
 
 import transaction
 import ZODB, ZODB.FileStorage
-import hashlib
 import os
 import tempfile
 from collections import deque
 
-from argon2 import PasswordHasher
-
-from allsembly.CONSTANTS import UserPasswordType
 from allsembly.allsembly import OrderQueue, GraphUpdateArgQueue, GraphUpdatePosQueue, process_one_position_from_queue
 from allsembly.betting_exchange import BettingExchange
 from allsembly.argument_graph import Issues, IssuesDBAccessor
-from allsembly.rpyc_server import IssueQueue, _UserAuthenticator, GraphRequest, LedgerRequest, \
-    AllsemblyServices, AuthCredentialsStr
+from allsembly.rpyc_server import IssueQueue, GraphRequest, LedgerRequest, \
+    AllsemblyServices
 from allsembly.speech_act import ProposeSpeechAct, InitialPosition, Bid, Premise
-from allsembly.user import add_user
-from allsembly.config import Config
 
 
 def test_allsembly():
@@ -76,60 +70,10 @@ def test_allsembly():
         betting_exchange = dbroot.betxch
         issue_queue = IssueQueue(issues)
 
-        #instance of a class that defers opening its databases until
-                #they are needed to authenticate a user
-                #this is done so that the database will get a thread local
-                #transaction manager
-        user_authenticator = _UserAuthenticator(
-                                                    os.path.join(tmpdirname, "allsembly_test_authdb"),
-                                                    os.path.join(tmpdirname, "allsembly_test_userdb"),
-                                                   )
-        server = AllsemblyServices(
-                                                   order_queue,
-                                                   graph_arg_queue,
-                                                   graph_pos_queue,
-                                                       issue_queue,
-                                                   GraphRequest(IssuesDBAccessor(argumentdb, read_only=True)),
-                                                   LedgerRequest(),
-                                                       user_authenticator
-                        )
-        #test adding a user
+        server = AllsemblyServices(order_queue, graph_arg_queue, graph_pos_queue, issue_queue,
+                                   GraphRequest(IssuesDBAccessor(argumentdb, read_only=True)), LedgerRequest())
         userid = "testuser"
-        password = "test123"
-        authdb_storage = ZODB.FileStorage.FileStorage(os.path.join(tmpdirname, "allsembly_test_authdb"))
-        authdb = ZODB.DB(authdb_storage)
-        authdb_conn = authdb.open()
 
-        add_user(userid, password, authdb_conn)
-        #test that transaction was committed;
-        #otherwise, this will cause changed to get rolled back
-        transaction.abort()
-        authdb_root = authdb_conn.root()
-        assert hasattr(authdb_root, "userid_salt")
-        print(authdb_root.userid_salt)
-        assert hasattr(authdb_root, "passwords")
-        userid_scrypt = bytes(userid, 'utf-8')
-        assert authdb_root.passwords.has_key(userid_scrypt)
-        print(authdb_root.passwords[userid_scrypt])
-        if Config.user_password_type == UserPasswordType.pbkdf2_hmac_sha512:
-            password_salt = authdb_root.passwords[userid_scrypt].pwd_salt
-            password_scrypt = hashlib.pbkdf2_hmac('sha512',
-                                              bytes(password, 'utf-8'),
-                                              password_salt,
-                                              200000)
-            assert authdb_root.passwords[userid_scrypt].password_hashed == password_scrypt
-        elif Config.user_password_type == UserPasswordType.argon2id:
-            assert PasswordHasher().\
-                verify(authdb_root.passwords[userid_scrypt].password_hashed,
-                       password)
-        #connections need to be closed here so that the
-        #auth database can be used by the AllsemblyServices instance (server)
-        #to authenticate the user (i.e., check whether the userid exists
-        #in the database with the hashed password
-        #only one non-read-only connection can be open to the database
-        #at a time
-        authdb_conn.close()
-        authdb.close()
         assert not issue_queue.queue #nothing on the queue
         #assert server.exposed_add_issue(username, password, "my_issue") == 0
         #assert issue_queue.queue

@@ -46,20 +46,6 @@ class LedgerRequest {
 {field} (unused)
 }
 
-class _UserAuthenticator {
-- userauth_dbfilename: str
-- user_dbfilename: str
-- authdb_storage: ZODB..FileStorage
-- userdb_storage: ZODB..FileStorage
-- authdb: ZODB.DB
-- userdb: ZODB.DB
-- authdb_conn: ZODB..Connection
-- userdb_conn: ZODB..Connection
-- _fernet_cryptor: bytes
-- {field} userid_salt (unused)
-+ authenticate_user()
-+ close_databases()
-}
 
 class "AllsemblyServices(rpyc.Service)" as AllsemblyServices {
 - order_queue: deque[Tuple]
@@ -139,31 +125,6 @@ class ArgumentNode(Persistent) {
 "Issues(Persistent)" *-- AllsemblyServer: <<create>>
 IssueQueue *-- AllsemblyServer: <<create>>
 "Issues(Persistent)" o-- IssueQueue
-_UserAuthenticator <.. AllsemblyServer: <<create>>
-
-package user.py {
-class UserAuth(Persistent) {
-userid_hashed: bytes
-password_hashed: bytes
-pwd_salt: bytes
-}
-
-class UserInfo(Persistent) {
-userid_hashed: bytes
-last_login: int
-{field} current_isssue: int (unused)
-{field} current_subuser: str (unused)
-{field} subusers: PersistentMapping (unused)
-}
-
-class UserClientSettings(Persistent) {
-{field} (unused)
-}
-}
-
-_UserAuthenticator "1" o.. "0..*" "UserAuth(Persistent)"
-_UserAuthenticator "1" o.. "0..*" "UserInfo(Persistent)"
-"UserInfo(Persistent)" *-- "UserClientSettings(Persistent)"
 
 
 "Issues(Persistent)" o-- GraphRequest
@@ -171,7 +132,6 @@ _UserAuthenticator "1" o.. "0..*" "UserInfo(Persistent)"
 
 GraphRequest o-- AllsemblyServices
 LedgerRequest o-- AllsemblyServices
-_UserAuthenticator o-- AllsemblyServices
 
 UserServices <--+ AllsemblyServices
 

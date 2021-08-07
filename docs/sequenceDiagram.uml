@@ -1,25 +1,14 @@
 @startuml
 caption Figure 2
-UserAgent -> "(Fast)CGI": Authentication request
-"(Fast)CGI" -> AllsemblyServices: Process auth request
+UserAgent -> "Django app": Authentication request
 
 alt sucessful authentication
 
-    AllsemblyServices -> "(Fast)CGI": encrypted cookie
-    "(Fast)CGI" -> UserAgent: set cookie
-    UserAgent -> "(Fast)CGI": service request with cookie(s)
-    "(Fast)CGI" -> AllsemblyServices: service request with encrypted credentials
-    alt encrypted credentials authentic
-        AllsemblyServices -> "(Fast)CGI": request result
-        "(Fast)CGI" -> UserAgent: request result
-    else credentials not authentic
-        AllsemblyServices -> "(Fast)CGI": error NotAuthenticated
-        "(Fast)CGI" -> UserAgent: display login page (or status 401)
-    end
+    UserAgent -> "Django app": service request with logged in session
+    "Django app" -> AllsemblyServices: service request
 
 else authentication failed
-    AllsemblyServices -> "(Fast)CGI": error NotAuthenticated
-    "(Fast)CGI" -> UserAgent: display error message and allow retry
+    "Django app" -> UserAgent: Redirect to login page with error message
 
 end
 @enduml

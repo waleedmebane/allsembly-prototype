@@ -7,12 +7,12 @@ Dependencies
 
 Apache2
     This is the web server.  Other web servers could be substituted.  I chose Apache because it is the premier free and open source web server.  We can have confidence in its security and robustness, as much as is possible for web server software.
+    
+Apache2 mod_wsgi
+	For interacting with Django (using the Python WSGI standard directly instead of CGI)
 
 openssl
     The Python encryption library "cryptography" and one of the password hashing libraries (the Python standard library's "hashlib") rely on openssl for encryption features.  It is the premier free and open source encryption library, widely used.
-
-Apache2 mod-fcgid
-    This starts the FastCGI scripts and communicates with them.  I plan to replace this with mod-proxy-fcgi (see below under :ref:`Future possible dependencies`.
 
 graphviz
 
@@ -29,15 +29,6 @@ ZODB
 PyGraphviz
     Easy to use Python bindings to the Graphviz library.
 
-json-rpc
-    A library for a simple form of remote procedure call (RPC) that is used for communication between the web client software and the server (CGI) software.  In the future the code using this should be improved to validate data and to ensure that the data types of functions on client and server sides match.  See :ref:`User data validation and type safety`.
-
-Werkzeug
-    This provides classes for reading web CGI request data and constructing response data conveniently.  It also has a built-in, simple web server that can be used to play with the software without installing Apache.
-
-flup
-    Threaded FastCGI client that adapts the FastCGI API to WSGI, a Python web standard.  So we can use a WSGI application to serve FastCGI responses.
-
 RPyC
     Python to Python RPC used to communicate between the FastCGI script and the Allsembly™ server.  This will no longer be needed when we switch to mod-proxy-fcgi and incorporate the FastCGI directly into the Allsembly™ server.  (See :ref:`Future possible dependencies`.)  However, it could be useful later for implementing communication with a registration server.  (See :ref:`Design for confidentiality`.)
 
@@ -52,12 +43,6 @@ atomic
 
 readerwriterlock
     This provides thread synchronization using separate locks for readers and writers.  There can be multiple readers but only one writer.
-
-argon2-cffi
-    This provides the Argon2 password hashing algorithm.  It uses the C reference implementation.
-
-cryptography
-    I am using this for AES-256 (symmetric) encryption, to encrypt a web login cookie.  It uses openssl for encryption.
 
 python-daemon
     This provides an easy API for making a Python program run as a Unix daemon.
@@ -75,14 +60,8 @@ simple-jsonrpc-js.js
 Future possible dependencies
 ----------------------------
 
-Apache2 mod-proxy-fcgi
-    to replace mod-fcgid.  This Apache2 module connects to the already running FastCGI program rather than starting it.  So, we won't need a separate FastCGI script.  The FastCGI can be directly integrated into the server.  The same approach works with other web servers, and I believe it is the standard way.  I did not, at first, realize that this option was available with Apache2.  The software will appear to be more responsive since Apache won't need to start new FastCGI scripts to process requests; it will send them to the already running (threaded) server.
-
 GPGME
     for encrypting the stream encryption keys with the public key(s) of the admins.  (The stream encryption key will also be encrypted with the user's hashed password.)  See more details about this in the section :ref:`Design for confidentiality`, below).
-
-Pydantic
-    to validate incoming user provided data (getting some validation almost for free as a side-effect of using static types).
 
 PyNaCl
     for stream encryption or salsa20 to encrypt a database field containing users' anonymized ids (see more details about this in the section :ref:`Design for confidentiality`, below).
@@ -105,6 +84,15 @@ Files
 | 
 | allsembly/
 |     All of the modules of the Python package
+|
+| django_app/
+|     App for communicating with users to log them in and to generate
+|     the html and JavaScript of the site.  It communicates with the
+|     AllsemblyServer to provide the services.
+|
+| django_site/
+|     Configuration information for the Django site, which uses the
+|     Django app, the code for which is in the django_app directory.
 | 
 | docs/
 | 
@@ -134,35 +122,18 @@ Files
 |     notes.md
 | 
 |     prospectus.pdf
+|
+|     how_it_works.md
 | 
 | scripts/
 | 
-|     allsembly_add_user.py*
-|         Use this to add new Allsembly™ users.  It is better to do this when the Allsembly™ server is not running.
-| 
-|     allsembly_demo.py*
-|         FastCGI script for providing the Allsembly™ services.  The client communicates with the web server (Apache) which communicates with the FastCGI script, starting it and stopping it when expedient, and the FastCGI script communicates with the Allsembly™ server.
-| 
-|     allsembly_dev_demo.py*
-|         FastCGI script for use with the Werkzeug library web server.  This allows for quick testing of Allsembly™ without a production web server like Apache.
-| 
 |     allsembly-server.py*
 |         Use this script to start the Allsembly™ server.  Run it with the ``--help`` option to get usage information.  Also, see, the section :ref:`Installation and Testing` for some instructions.
-| 
-|     server_config.py
-|         Configuration file for allsembly-server.py--it is not intended to contain code.
-| 
+|  
 | test/
 |     The tests.
 | 
 | web/
-| 
-|     allsembly_demo_login.xsl
-|         XML stylesheet template for constructing the login page: The server currently just produces an empty XML document with this as its default XSL template.  So, all of the information to produce the page is actually in this file.  See :ref:`Localization` for information about how XML might be used in the future.
-| 
-|     allsembly_demo.xsl
-|         XML stylesheet template for constructing the demo page.
-| 
 |     scripts/
 |         The javascript libraries
 
@@ -188,13 +159,13 @@ Design overview
 .. uml:: sequenceDiagram.uml
 
 
-The client-side code is in the file "web/allsembly_demo.xsl", with a separate page for login in the file "web/allsembly_demo_login.xsl".  The client code is delivered to the web browser by the FastCGI script, "scripts/allsembly_demo.py".  When a user visits the page hosting the script, e.g., `https://my.webserver.com/cgi-bin/allsembly_demo.py`, the script determines which content to deliver based on whether the user is logged in.  If the user is not logged in, it delivers an empty XML document that gives "allsembly_demo_login.xsl" as its default XML stylesheet template; otherwise, it delivers a document with "allsembly_demo.xsl" as its default.
+The client-side code is generated by the Django templates in django_app/templates according to the code in django_app/views.py.
 
-The browser generates the HTML and Javascript for the page from the directives in the XSL document.  In this case it is trivial.  If the user is already logged in, that is recognized from the contents of a login cookie.  The code for the Fast CGI that is invoked by the script, "scripts/allsembly_demo.py" is in the demo.py module.  It communicates with the Allsembly™ server using RPC (provided by the RPyC library).  The code on the Allsembly™ server side is in the rpyc_server.py module, especially the AllsemblyServices class.
+It communicates with the Allsembly™ server using RPC (provided by the RPyC library).  The code on the Allsembly™ server side is in the rpyc_server.py module, especially the AllsemblyServices class.
 
 The interaction proceeds as shown in Figure 2, above.  Currently, since there is no interaction between users--each user is in a kind of *sandbox* of its own--which graph to display is dependent on which user is logged it (i.e., the userid in the encrypted login cookie).
 
-The AllsemblyServices class uses a _UserAuthentication object to check the user's authentication credentials and create the encrypted login cookie.  Subsequently, The UserServices object is used to provide each of the specific services that require login.  In most cases, the request is just added to a queue.  This is done for thread-safety since the RPyC server is multi-threaded.  The AllsemblyServices RPyC server object is running its event loop in a separate thread from the server main loop.
+The UserServices object is used to provide each of the specific services that require login, and it is provided with a login username by the django_app, which must have logged in the user.  In most cases, the request is just added to a queue.  The AllsemblyServices RPyC server object is running its event loop in a separate thread from the server main loop.
 
 The server main loop, allsembly.allsembly.AllsemblyServer.server_main_loop(), is started by the script, "scripts/allsembly-server.py", and it, in turn, starts the RPyC service in a separate thread.  In the main loop, each queue is checked and the requests there are processed.  Most of the processing involves calling functions in an ArgumentGraph object.  There is a separate ArgumentGraph object for each graph and it is stored in a mapping that is persisted in the database.  The ArgumentGraph object draws a new graph and calculates new probabilities with each client request that changes the graph.  Currently, after the client makes a request that changes the graph, it immediately after that requests a new drawn graph.  The intention is that in a future version, the client would be subscribed to a server sent events or websockets channel or be waiting on a long poll, to learn when a new graph is ready to be loaded.
 
@@ -248,12 +219,6 @@ For now this section just contains the docstrings from the modules.
 Future design
 -------------
 
-User data validation and type safety
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Generate Typescript function signatures for JSON-RPC and generate HTML5 forms
-with "type" fields using a combination of Python and XSLT.
-Use Pydantic for basic validation from type hints.
 
 Design for confidentiality
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -382,6 +347,12 @@ becomes a widely used piece of software.
 
 Localization
 ^^^^^^^^^^^^
+UPDATE: Part of this can be handled using Django.  More information
+to be added.  I would still like to use XML in order to give clients
+more control over the presentation, but XML containing the translated
+strings can be generated by Django.  The default XSL can also be 
+generated by Django, but in advance, rather than on-the-fly.
+
 My current intention is to implement localization by putting the strings
 in XML files and using XSLT transforms to select the appropriate
 string and to combine it with any dynamic data.

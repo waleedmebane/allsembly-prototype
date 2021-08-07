@@ -32,11 +32,6 @@
 """Starts the Allsembly server.
 Run with -h to see descriptions of available command line options.
 
-Edit server_config.py, which should be located in the same
- directory, to set the location of the authentication
- database that stores user authentication information to
- use when authenticating Allsembly users.
-
 To test,
  Run like: ./allsembly-server.py
 
@@ -58,8 +53,7 @@ This server start script is written for and tested with Linux, but
  it might work with Windows if you don't use the
  --daemon or --user command line options and you set
  Windows style path names for the locations of the database
- files in server_config.py and using the --userdb_filename
- and --argdb_filename command line options.
+ files using the --userdb_filename and --argdb_filename command line options.
 """
 import argparse
 import io
@@ -78,7 +72,6 @@ from typing_extensions import Final
 from allsembly.allsembly import ServerControl, AllsemblyServer
 from allsembly.common import FinalVar
 from allsembly.config import Config
-from server_config import AUTHDB_FILENAME
 
 logger: Logger = logging.getLogger(__name__)
 
@@ -109,7 +102,7 @@ def start_service(daemonize: bool = False) -> None:
 				gid=RUNAS_GID
 			):
 		logger.info("starting server")
-		AllsemblyServer(AUTHDB_FILENAME,
+		AllsemblyServer(
 					   USERDB_FILENAME,
 					   ARGDB_FILENAME).server_main_loop(
 					   NOTIFICATION_FILEOBJ,
@@ -136,14 +129,6 @@ parser.add_argument("-u", "--user",
 					help="user to run as when using the --daemon option",
 					type=str,
 					default=None)
-#SET AUTHDB_FILENAME in server_config.py since it is shared with
-# the allsembly_add_user.py script and should be the same for it
-# parser.add_argument("--authdb_filename",
-#                     help="path to the database that stores information "
-# 					     "needed to authenticate a user, such as "
-# 						 "userids and hashed passwords or an SRP6a verifier. "
-# 						 "defaults to: /var/allsembly-prototype/data/authdb",
-#                     default="/var/allsembly-prototype/data/authdb")
 parser.add_argument("--userdb_filename",
                     help="path to the database that stores user "
 						 "info other than login credentials"

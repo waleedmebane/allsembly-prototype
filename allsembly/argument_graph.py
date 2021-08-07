@@ -47,7 +47,6 @@ import ZODB #type: ignore[import]
 import persistent #type: ignore[import]
 from persistent.list import PersistentList #type: ignore[import]
 from persistent.mapping import PersistentMapping #type: ignore[import]
-from readerwriterlock import rwlock
 import heapq
 import pygraphviz as pgv #type: ignore[import]
 import re

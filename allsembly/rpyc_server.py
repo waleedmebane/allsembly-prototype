@@ -30,9 +30,6 @@
 """ Provides the Allsembly services via RPC.
 The AllsemblyServices class is an RPyC (RPC server) which can be
  started to provide the services.
-It needs to be provided with an _UserAutheticator object that
- enables it to authenticate a user from the credentials stored
- in a database.
 And it needs to be provided with queues onto which to place
  the requests that will be handled elsewhere.
  (See the module "allsembly".)
@@ -51,8 +48,6 @@ The RPyC server is threaded, so multiple threads might try to access
  the requests through thread safe queues and request objects.
 """
 import pickle
-import copy
-import time
 import logging
 from threading import Event
 from logging import Logger
@@ -60,31 +55,14 @@ from collections import deque
 from typing import Tuple, Optional, cast, Any, Deque, Union, NamedTuple
 from typing_extensions import Final
 
-import ZODB  #type: ignore[import]
-from ZODB.FileStorage import FileStorage #type: ignore[import]
-from ZODB.Connection import Connection #type: ignore[import]
-from ZODB.POSException import ConflictError #type: ignore[import]
 import rpyc  #type: ignore[import]
-import transaction  #type: ignore[import]
-from BTrees.OOBTree import OOBTree #type: ignore [import]
-from cryptography.fernet import Fernet
 
 from allsembly.argument_graph import Issues, ArgumentGraph, IssuesDBAccessor
-from allsembly.common import FinalVar
 from allsembly.config import Config, Limits
 from allsembly.speech_act import IndependentBid, Argument, InitialPosition
 from allsembly.user import UserInfo
-from allsembly.config import Config
-from allsembly.CONSTANTS import UserPasswordType
 
 logger: Logger = logging.getLogger(__name__)
-
-if UserPasswordType.pbkdf2_hmac_sha512 == Config.user_password_type:
-    import hashlib
-elif UserPasswordType.argon2id == Config.user_password_type:
-    from argon2 import PasswordHasher #type: ignore[import]
-    from argon2.exceptions import VerificationError #type: ignore[import]
-    from argon2.exceptions import VerifyMismatchError, InvalidHash
 
 #TODO: Use just one queue for posting all requests.  Use a Union type.
 # And probably use classes instead of type aliases for each Union member type.
@@ -100,13 +78,6 @@ elif UserPasswordType.argon2id == Config.user_password_type:
 # with the admins' public keys (in addition to encrypting with the user's
 # hashed password). The admins should store their private keys
 # passphrase-encrypted and elsewhere than on the server.
-# From my investigation, the SQLCipher library seems to be a good
-# DBMS for the task since it can encrypt an entire database including
-# the database's metadata.  E.g., put only a table containing all of
-# the anonymous identifies for one user in each database, encrypt it
-# and store the encryption key and the name of the file in an encrypted
-# field of the UserAuth object in the separate authentication database
-# (the same database as used now for storing authentication information).
 
 OrderQueueElement = Tuple[bytes,  # (hashed) userid
                          str,  # subuser
@@ -312,237 +283,6 @@ class UserInfoAndCookie(NamedTuple):
     user_settings: UserInfo
     encrypted_cookie: bytes
 
-class _UserAuthenticator:
-    """ THIS CLASS IS OBSOLETE AND TO BE REMOVED.
-    USER AUTHENTICATION IS NOW DONE THROUGH DJANGO.
-    User authentication takes place in a different thread
-    per connection (because the RPyC service uses threads).
-    This class is initialized with all of the information needed to
-    open and connect to the database, but defers those actions
-    until it is used in the appropriate thread.  This is so that
-    each thread gets its own database connection.
-    Method "authenticate_user" opens and connects to a database
-    if necessary and then tries to authenticate the user.
-    This class is not the same as an RPyC "authenticator".
-    """
-    # See replacement code in the 'django_app' module.
-    authdb_storage: ZODB.FileStorage.FileStorage
-    userdb_storage: ZODB.FileStorage.FileStorage
-    authdb: ZODB.DB
-    userdb: ZODB.DB
-    authdb_conn: ZODB.Connection.Connection
-    userdb_conn: ZODB.Connection.Connection
-    # As far as I can tell, the class name of a ZODB root node
-    # is not documented in its API documentation so could change
-    # authdb_root: Any
-    # userdb_root: Any
-    userid_salt: bytes
-
-    def __init__(self, userauth_dbfilename: str,
-                 user_dbfilename: str) -> None:
-        self.userauth_dbfilename = userauth_dbfilename
-        self.user_dbfilename = user_dbfilename
-
-        #Instance initialization takes place in a single-thread
-        #context, so we are free to write to the database here,
-        #but we have to close it afterward since we want to
-        #later use a different, read-only, database object.
-        authdb_storage = ZODB.FileStorage.FileStorage(
-                self.userauth_dbfilename, read_only=False)
-        authdb = ZODB.DB(authdb_storage)
-        authdb_conn = authdb.open()
-        authdb_root = authdb_conn.root()
-        if not hasattr(authdb_root, "cookie_encryption_key"):
-            authdb_root.cookie_encryption_key = Fernet.generate_key()
-        transaction.commit()
-        authdb_conn.close()
-        authdb.close()
-
-    def authenticate_user(self,
-                          credentials: Union[AuthCredentialsStr, bytes]
-                          ) -> Optional[UserInfoAndCookie]:
-        """ If the userid is in the auth database
-        and the password is correct, then return
-        that user's UserInfo object from the
-        users database together with an encrypted version
-        of the userid and password that can be used to set
-        a cookie;
-        Otherwise, return "None".
-        """
-        if not hasattr(self, "authdb_storage"):
-            self.authdb_storage = ZODB.FileStorage.FileStorage(
-                self.userauth_dbfilename, read_only=True)
-        if not hasattr(self, "authdb"):
-            self.authdb = ZODB.DB(self.authdb_storage)
-        if not hasattr(self, "authdb_conn"):
-            self.authdb_conn = self.authdb.open()
-        if not hasattr(self, "authdb_root"):
-            self.authdb_root = self.authdb_conn.root()
-            if not hasattr(self.authdb_root, "passwords"):
-                self.authdb_root.passwords = OOBTree()
-        if not hasattr(self, "_fernet_cryptor"):
-            if hasattr(self.authdb_root, "cookie_encryption_key"):
-                self._fernet_cryptor = Fernet(
-                    self.authdb_root.cookie_encryption_key)
-            else:
-                logger.error("No cookie encryption key!")
-
-        #Need a separate database connection per thread
-        #so don't use instance ("self") variables
-        #Instance variables are fine for the auth db because
-        #it is being used read-only.
-        userdb_storage = ZODB.FileStorage.FileStorage(
-            self.user_dbfilename)
-        userdb: Final = ZODB.DB(userdb_storage)
-        userdb_conn: Final = userdb.open()
-        userdb_root: Final = userdb_conn.root()
-        decrypted_credentials: Optional[FinalVar[AuthCredentials]] = None
-        if isinstance(credentials, bytes):
-            # encryption object needed to encrypt data with the
-            # encryption key that was previously stored when
-            # creating the auth database (see __init__)
-            if not hasattr(self, "_fernet_cryptor"):
-                return None
-            decrypted_credentials = FinalVar[AuthCredentials](pickle.loads(
-                self._fernet_cryptor.decrypt(credentials)))
-            userid_hashed = FinalVar[bytes](decrypted_credentials.get().userid)
-        else:
-            if not hasattr(self, "userid_salt"):
-                # no salt means there are no users
-                if not hasattr(self.authdb_root, "userid_salt"):
-                    # self.authdb_root.userid_salt = os.urandom(16)
-                    return None
-                self.userid_salt = self.authdb_root.userid_salt
-            #		userid_hashed = hashlib.scrypt(bytes(userid, 'utf-8'),
-            #						  salt=self.userid_salt,
-            #						  n=16384,
-            #						  r = 8,
-            #						  p = 1)
-            # store userid as plaintext for now
-            userid_hashed = FinalVar[bytes](credentials.userid.encode('utf-8'))
-
-        if self.authdb_root.passwords.has_key(userid_hashed.get()):
-            pwd_record = self.authdb_root.passwords[userid_hashed.get()]
-            #			if hashlib.scrypt(bytes(pwd, 'utf-8'),
-            #						  salt=pwd_record.salt,
-            #						  n=16384,
-            #						  r = 8,
-            #						  p = 1) == pwd_record.password:
-            # using pbkdf2 instead of scrypt for now, to avoid requiring
-            # OpenSSL version 1.1.1
-            #TODO: store the password hash type and hash parameters in the database
-            # in case they change.  (The parameters are probably embedded in the
-            # digest--i.e. included in the hashed password string.)
-            try:
-                #TODO: refactor this if statement into a separate function
-                # without so many boolean connectives
-                if (isinstance(credentials, bytes) and
-                     decrypted_credentials is not None and
-                     decrypted_credentials.get().password ==
-                     pwd_record.password_hashed
-                   ) or \
-                   (isinstance(credentials, AuthCredentialsStr) and
-                    (
-                     (UserPasswordType.pbkdf2_hmac_sha512 == Config.user_password_type and
-                       hashlib.pbkdf2_hmac('sha512',
-                                   bytes(credentials.password, 'utf-8'),
-                                   pwd_record.pwd_salt,
-                                   Config.pbkdf2_hash_iterations
-                                   ) == pwd_record.password_hashed
-                     ) or
-                     (UserPasswordType.argon2id == Config.user_password_type and
-                       PasswordHasher().verify(pwd_record.password_hashed,
-                                               credentials.password)
-                     )
-                    )
-                ):
-                    #TODO: put a creation time in the cookie to expire a
-                    # cookie (e.g., if its creation time is earlier than
-                    # the last login time or the last logout time once
-                    # logouts are implemented) to avoid replay attacks
-                    # (i.e., so that an attacker who gets hold of the
-                    # cookie may not use it after it expires or after the
-                    # user logs out.  But this also means a user could not
-                    # have multiple sessions active on different devices;
-                    # alternatively, store active session tokens in the
-                    # cookies and in the database, with expiration times.
-                    if isinstance(credentials, AuthCredentialsStr):
-                        encrypted_credentials = FinalVar[bytes](
-                            self._fernet_cryptor.encrypt(
-                                pickle.dumps(
-                                    AuthCredentials(
-                                        userid=pwd_record.userid_hashed,
-                                        password=pwd_record.password_hashed
-                                    )
-                                )
-                            )
-                        )
-                    else:
-                        encrypted_credentials = FinalVar[bytes](credentials)
-
-                    #writing into the database is not thread safe, so for
-                    #now just return a per thread UserInfo object
-                    #TODO: fix, maybe using Python's context manager and returning
-                    # a separate per thread object containing an open UserInfo
-                    # DB connection, that will close after being used.
-                    # Code below tries one time to update UserInfo, otherwise
-                    # aborts the transaction, leaving the UserInfo object as is.
-                    # This would happen when some other thread is trying to update it
-                    # and got started first.
-                    #@transaction.manager.run(1) #type: ignore[misc]
-                    #def _get_corresponding_user_settings() -> UserInfo:
-                    if not hasattr(userdb_root, "users"):
-                        userdb_root.users = OOBTree()
-                    if not userdb_root.users.has_key(userid_hashed.get()):
-                        userdb_root.users[userid_hashed.get()] = UserInfo()
-                    user_ref: Final = cast(UserInfo, userdb_root.users[userid_hashed.get()])
-                    #user_ref.userid_hashed = userid_hashed
-                    if not user_ref.userid_hashed or \
-                            user_ref.userid_hashed == b'':
-                        user_ref.userid_hashed = userid_hashed.get()
-                    user_ref.last_login = int(time.time())
-                    #return copy.deepcopy(user_ref)
-                    try:
-                        transaction.commit()
-                        user_settings = FinalVar[UserInfo](copy.deepcopy(user_ref))
-                        userdb_conn.close()
-                        userdb.close()
-                        return UserInfoAndCookie(
-                            user_settings=user_settings.get(),
-                            encrypted_cookie=encrypted_credentials.get()
-                        )
-                    except ConflictError:
-                        transaction.abort()
-                        user_settings = FinalVar[UserInfo](UserInfo())
-                        userdb_conn.close()
-                        userdb.close()
-                        return UserInfoAndCookie(
-                            user_settings=user_settings.get(),
-                            encrypted_cookie=encrypted_credentials.get()
-                        )
-                    #user_settings: Final = cast(UserInfo, _user_settings)
-    #                userdb_conn.close()
-    #                userdb.close()
-    #                return user_settings
-            except VerifyMismatchError:
-                pass
-            except (InvalidHash, VerificationError) as e:
-                #this probably means you've tried to change hash functions,
-                #but the hashed password in the database is still
-                #using the old hash type.
-                logger.exception(e)
-        userdb_conn.close()
-        userdb.close()
-        return None
-
-
-    def close_databases(self) -> None:
-        if hasattr(self, "authdb_conn"):
-            transaction.abort()
-            self.authdb_conn.close()
-        if hasattr(self, "authdb"):
-            self.authdb.close()
-
 
 class AllsemblyServices(rpyc.Service):
     """ Provides a user with the services through
@@ -685,12 +425,10 @@ class AllsemblyServices(rpyc.Service):
                  graph_pos_queue: GraphUpdatePosQueue,
                  issue_queue: IssueQueue,
                  graph_req: GraphRequest,
-                 ledger_req: LedgerRequest,
-                 user_auth: _UserAuthenticator):
+                 ledger_req: LedgerRequest):
         self.order_queue = order_queue
         self.graph_arg_queue = graph_arg_queue
         self.graph_pos_queue = graph_pos_queue
-        self.user_auth = user_auth
         self.graph_req = graph_req
         self.ledger_req = ledger_req
         self.issue_queue = issue_queue
@@ -709,19 +447,6 @@ class AllsemblyServices(rpyc.Service):
                                   # credentials: Union[AuthCredentialsStr, bytes]
                                   ) -> 'AllsemblyServices.UserServices':
         return AllsemblyServices.UserServices(self, userid)
-
-    def exposed_authenticate_user(self,
-                                  credentials: Union[AuthCredentialsStr, bytes]
-                                  ) -> Optional[bytes]:
-        """Returns encrypted cookie if userid exists in the database
-           and password matches; None, otherwise
-        """
-        user_or_none: Final = self.user_auth.authenticate_user(credentials)
-        if user_or_none is not None:
-            user_or_none.user_settings.last_login = int(time.time())
-            transaction.commit()
-            return user_or_none.encrypted_cookie
-        return None
 
     def _add_issue(self,
                    issue_name: str) -> Optional[int]:

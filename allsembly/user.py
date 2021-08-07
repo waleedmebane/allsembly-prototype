@@ -27,36 +27,12 @@
 #   any of the trademarks of any of the authors of or contributors to this
 #   software.
 #
-""" Classes containing user data and authentication data and
-a function, "add_user(...)", for adding a user to the authentication
-database.
+""" Classes containing user data, currently unused.
 """
-import os
-import ZODB  #type: ignore[import]
 import persistent  #type: ignore[import]
-import transaction  #type: ignore[import]
-from BTrees.OOBTree import OOBTree #type: ignore[import]
 from persistent.mapping import PersistentMapping  #type: ignore[import]
 from typing import List
 
-from allsembly.config import Config
-from allsembly.CONSTANTS import UserPasswordType
-
-if UserPasswordType.pbkdf2_hmac_sha512 == Config.user_password_type:
-    import hashlib
-elif UserPasswordType.argon2id == Config.user_password_type:
-    from argon2 import PasswordHasher #type: ignore[import]
-
-class UserAuth(persistent.Persistent):
-    """ User's stored authentication credentials
-    """
-    def __init__(self,
-                 userid: bytes,
-                 pwd: bytes,
-                 pwd_salt: bytes):
-        self.userid_hashed = userid
-        self.password_hashed = pwd
-        self.pwd_salt = pwd_salt
 
 class UserClientSettings(persistent.Persistent):
     """ Future place for storing a user's web client
@@ -81,50 +57,3 @@ class UserInfo(persistent.Persistent):
         # interacting with any other real person users.
         self.subusers = PersistentMapping()
         self.client_settings = UserClientSettings()
-
-
-def add_user(userid: str, pwd: str,
-             authdb_conn: ZODB.Connection.Connection) -> bool:
-    """Return False if user already exists
-    """
-    authdb_root = authdb_conn.root()
-    if not hasattr(authdb_root, "userid_salt"):
-        authdb_root.userid_salt = 0 #os.urandom(16)
-    if not hasattr(authdb_root, "passwords"):
-        authdb_root.passwords = OOBTree()
-
-    #userid_hashed = hashlib.scrypt(bytes(userid, 'utf-8'),
-    #				  salt=authdb_root.userid_salt,
-    #				  n=16384,
-    #				  r = 8,
-    #				  p = 1)
-    #store userid as plaintext for now
-    userid_hashed = bytes(userid, 'utf-8')
-    if authdb_root.passwords.has_key(userid_hashed):
-        return False
-    else:
-        pwd_salt = os.urandom(16)
-        authdb_root.passwords[userid_hashed] = UserAuth(
-            userid_hashed,
-#			hashlib.scrypt(bytes(pwd, 'utf-8'),
-#					  salt=pwd_salt,
-#					  n=16384,
-#					  r = 8,
-#					  p = 1),
-# using pbkdf2 instead of scrypt for now, to avoid requiring
-# OpenSSL version 1.1.1
-            #TODO: store the password hash type and hash parameters in the database
-            # in case they change.  (The parameters are probably embedded in the
-            # digest--i.e. included in the hashed password string.)
-            hashlib.pbkdf2_hmac('sha512',
-                      bytes(pwd, 'utf-8'),
-                      pwd_salt,
-                      Config.pbkdf2_hash_iterations
-                      ) \
-                if UserPasswordType.pbkdf2_hmac_sha512 == Config.user_password_type \
-                else PasswordHasher().hash(pwd).encode('utf-8'),
-            pwd_salt
-        )
-        transaction.commit()
-        return True
-

@@ -106,7 +106,7 @@ from allsembly import CONSTANTS
 import threading
 from threading import Event
 
-from allsembly.rpyc_server import _UserAuthenticator, AllsemblyServices, GraphRequest, LedgerRequest, GraphUpdatePosQueue, \
+from allsembly.rpyc_server import AllsemblyServices, GraphRequest, LedgerRequest, GraphUpdatePosQueue, \
     OrderQueue, IssueQueue, GraphUpdateArgQueue, IssueDeleteDirective
 from allsembly.speech_act import ProOrCon, UnconcededPosition
 
@@ -334,7 +334,6 @@ class AllsemblyServer:
         uses locks to synchronize access
     """
     def __init__(self,
-                         userauth_dbfilename: str,
                          user_dbfilename: str,
                          arg_dbfilename: str
                 ):
@@ -364,10 +363,7 @@ class AllsemblyServer:
             self.dbroot.issues = Issues()
         self.issues = self.dbroot.issues
         self.issue_queue = IssueQueue(self.issues)
-        self.user_authenticator = _UserAuthenticator(
-                                                userauth_dbfilename,
-                                                user_dbfilename
-                                               )
+
 
     @classmethod
     def check_timeout(cls,
@@ -537,7 +533,6 @@ class AllsemblyServer:
         transaction.abort()
         self.argdb_conn.close()
         self.argumentdb.close()
-        self.user_authenticator.close_databases()
 
     def process_all_items_of_one_request(self,
                           # it might be better to use BinaryIO
@@ -607,8 +602,7 @@ class AllsemblyServer:
                                                        self.graph_pos_queue,
                                                        self.issue_queue,
                                                        GraphRequest(IssuesDBAccessor(self.argumentdb, read_only=True)),
-                                                       LedgerRequest(),
-                                                       self.user_authenticator
+                                                       LedgerRequest()
                                                        ),
                                           hostname = listen_address,
                                           ipv6 = ipv6,

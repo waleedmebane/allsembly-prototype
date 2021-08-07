@@ -36,8 +36,6 @@ import hashlib
 import os
 import tempfile
 
-from argon2 import PasswordHasher
-
 import multiprocessing as mp
 import rpyc
 import io
@@ -49,9 +47,7 @@ from typing_extensions import Final
 from allsembly.CONSTANTS import UserPasswordType
 from allsembly.allsembly import ServerControl, AllsemblyServer
 from allsembly.config import Config
-from allsembly.rpyc_server import AuthCredentialsStr
 from allsembly.speech_act import ProposeSpeechAct, InitialPosition, Premise, Bid
-from allsembly.user import add_user
 
 SERVER_PORT_NUMBER: Final[int] = 10888
 
@@ -72,51 +68,13 @@ def start_service():
     signal.alarm(10) #cause the server to exit after 10 seconds -- should be enough time
 
     with tempfile.TemporaryDirectory() as tmpdirname:
-        #first we need to add a user
         userid = "testuser"
-        password = "test123"
-        authdb_filename = os.path.join(tmpdirname, "allsembly_test_authdb")
-        authdb_storage = ZODB.FileStorage.FileStorage(authdb_filename)
-        authdb = ZODB.DB(authdb_storage)
-        authdb_conn = authdb.open()
-
-        add_user(userid, password, authdb_conn)
-        #test that transaction was committed;
-        #otherwise, this will cause changed to get rolled back
-        transaction.abort()
-        authdb_root = authdb_conn.root()
-        assert hasattr(authdb_root, "userid_salt")
-        print(authdb_root.userid_salt)
-        assert hasattr(authdb_root, "passwords")
-        userid_scrypt = bytes(userid, 'utf-8')
-        assert authdb_root.passwords.has_key(userid_scrypt)
-        print(authdb_root.passwords[userid_scrypt])
-        if Config.user_password_type == UserPasswordType.pbkdf2_hmac_sha512:
-            password_salt = authdb_root.passwords[userid_scrypt].pwd_salt
-            password_scrypt = hashlib.pbkdf2_hmac('sha512',
-                                              bytes(password, 'utf-8'),
-                                              password_salt,
-                                              200000)
-            assert authdb_root.passwords[userid_scrypt].password_hashed == password_scrypt
-        elif Config.user_password_type == UserPasswordType.argon2id:
-            assert PasswordHasher().\
-                verify(authdb_root.passwords[userid_scrypt].password_hashed,
-                       password)
-
-        #connections need to be closed here so that the
-        #auth database can be used by the AllsemblyServices instance (server)
-        #to authenticate the user (i.e., check whether the userid exists
-        #in the database with the hashed password
-        #only one non-read-only connection can be open to the database
-        #at a time
-        authdb_conn.close()
-        authdb.close()
 
         userdb_filename = os.path.join(tmpdirname, "allsembly_test_userdb")
         argdb_filename = os.path.join(tmpdirname, "allsembly_test_argdb")
         notification_textio = io.StringIO("test")
         print("starting server")
-        AllsemblyServer(authdb_filename,
+        AllsemblyServer(
                        userdb_filename,
                        argdb_filename).server_main_loop(
                        notification_textio,
