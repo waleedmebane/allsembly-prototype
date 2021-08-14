@@ -14,7 +14,7 @@ You may also generate the documentation from the files in the docs
 subdirectory using the documentation creation tool, Sphinx
 (https://www.sphinx-doc.org/).
 
-I do not expect to develop the prototype further until September or later.
+I do not expect to develop the prototype further until December or later.
 
 ## License
 

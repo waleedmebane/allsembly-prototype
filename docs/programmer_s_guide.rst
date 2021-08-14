@@ -149,8 +149,7 @@ support a secondary function of having a kind of encyclopedia of arguments
 pro and con issues for repeated reference.  Users should be able to obtain an 
 independent URL to any part of an argument or discussion so as to refer to any specific aspect of that argument or discussion.  The data (only completely anonymous or anonymized data) should also be available in a format like Argument Interchange Format (XML-RDF) or CSV (comma-separated values), for computer assisted processing and exploration.  (Public accessibility is not currently implemented.)
 
-Future requirement: provide for third-party clients, ideally via TCP as well as 
-via HTTP; maintain a stable client interface.
+Future requirement: provide for third-party clients; maintain a stable client interface.
 
 Design overview
 ---------------
@@ -468,6 +467,8 @@ Choosing library dependencies:
 How it works
 ------------
 
+For now, see docs/how_it_works.md in the 
+`source code repository <https://github.com/waleedmebane/allsembly-prototype>`_.
 
 Other uses
 ----------

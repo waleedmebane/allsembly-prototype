@@ -195,12 +195,12 @@ such as /etc/apache2/sites-enabled/000-default.conf or
 ```
 Alias "/static/" "/home/<user>/allsembly-prototype/web/scripts/"
 WSGIScriptAlias "/allsembly" "/home/<user>/allsembly-prototype/django_site/wsgi.py"
-<Directory /home/user/allsembly-prototype/django_site>
+<Directory /home/<user>/allsembly-prototype/django_site>
   <Files wsgi.py>
     Require all granted
   </Files>
 </Directory>
-<Directory /home/user/allsembly-prototype/web/scripts>
+<Directory /home/<user>/allsembly-prototype/web/scripts>
   Require all granted
 </Directory>
 ```
@@ -215,7 +215,12 @@ Restart the Apache server:
 Add your hostname and/or IP address to the list of allowed hosts in the
 Django settings file by editing allsembly-prototype/django_site/settings.py
 changing ```ALLOWED_HOSTS = []``` to ```ALLOWED_HOSTS = ['hostname']```.
-Replace "hostname" with your hostname, e.g., "waleedmebane.com". 
+Replace "hostname" with your hostname, e.g., "waleedmebane.com".
+
+You will likely wish to **set ```DEBUG = False```** in the 
+allsembly-prototype/django_site/settings.py file before making a
+public-facing deployment, but ```DEBUG = True``` is useful while checking
+that one's installation and configuration is correct. 
 
 Open a web browser and navigate to https://\<your-server-hostname\>/allsembly <br />
 Enter the userid and password of the user you created in a previous step.
