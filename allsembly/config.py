@@ -39,13 +39,14 @@ class Limits:
     """ These are arbitrary limits to decrease the likelihood
         of server overload.
     """
-    max_contrib_per_user_per_issue = 250000
-    max_total_nodes_per_issue = 2500000
+    max_contrib_per_user_per_issue = 10000
+    max_total_nodes_per_issue = 25000
     max_issues_per_user = 2500
     max_total_issues = 25000
     max_queue_items = 100000
     max_subusers_per_user = 1000
     max_text_input_string_chars = 4000
+    max_users = 500
 
 
 def set_limits(
@@ -54,7 +55,8 @@ def set_limits(
         max_issues_per_user: int = Limits.max_issues_per_user,
         max_total_issues: int = Limits.max_total_issues,
         max_queue_items: int = Limits.max_queue_items,
-        max_subusers_per_user: int = Limits.max_subusers_per_user
+        max_subusers_per_user: int = Limits.max_subusers_per_user,
+        max_users: int = Limits.max_users
 ) -> None:
     Limits.max_contrib_per_user_per_issue = \
         max_contrib_per_user_per_issue
@@ -63,6 +65,7 @@ def set_limits(
     Limits.max_total_issues = max_total_issues
     Limits.max_queue_items = max_queue_items
     Limits.max_subusers_per_user = max_subusers_per_user
+    Limits.max_users = max_users
 
 
 class Config:

@@ -361,6 +361,7 @@ class AllsemblyServer:
         #TODO: store path in database to "issues" somehow in CONSTANTS
         if not hasattr(self.dbroot, "issues"):
             self.dbroot.issues = Issues()
+        transaction.commit()
         self.issues = self.dbroot.issues
         self.issue_queue = IssueQueue(self.issues)
 

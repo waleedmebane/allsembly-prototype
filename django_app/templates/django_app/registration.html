@@ -34,12 +34,19 @@
 <meta charset="utf-8" />
 </head>
 <body>
-<form action="{% url 'login' %}" method="post">
+{% if user_limit_reached %}
+<p>Sorry, the maximum number of users has been reached. <br />
+Please try again later.
+</p>
+{% else %}
+<form action="{% url 'registration' %}" method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Login" />
+    <input type="submit" value="Register and login" />
 </form>
-<p><a href="{% url 'registration' %}">Register a new user.</a></p>
-{% if auth_failed %}<p style="color:red">Incorrect UserId or Password</p>{% endif %}
+{% endif %}
+{% if auth_failed %}<p style="color:red">Unknown error logging in new user. Try logging in from the login page.</p>{% endif %}
+{% if passwords_mismatched_or_missing %}<p style="color:red">"Password" and "Retype password" field contents do not match or either field was left blank.</p>{% endif %}
+{% if error_nonunique_userid %}<p style="color:red">UserId already exists. Please try a different userid.</p>{% endif %}
 </body>
 </html>

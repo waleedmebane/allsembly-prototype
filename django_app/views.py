@@ -28,25 +28,29 @@
 #   software.
 #
 import pickle
+
+from django.db import IntegrityError
 from typing_extensions import Final
 import rpyc #type: ignore[import]
 from typing import Optional
 
-from allsembly.config import Config
+from allsembly.config import Config, Limits
 from allsembly.speech_act import ArgueSpeechAct, Argument, Premise, Bid, \
     UnconcededPosition, ProposeSpeechAct, InitialPosition, ProOrCon
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
+from django_app.models import RegistrationComment
 
 
 # Create your views here.
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
-from django_app.forms import LoginForm, ProposeForm, ArgueForm
+from django_app.forms import LoginForm, ProposeForm, ArgueForm, RegistrationForm
 
 SERVER_PORT_NUMBER: Final[int] = Config.rpyc_server_default_port
 SUPPORT: Final[str] = 'Pro'
@@ -67,6 +71,52 @@ def login_view(request):
         else:
             context.update({'auth_failed': True})
     return render(request, 'django_app/login.html', context)
+
+
+@require_http_methods(["GET", "POST"])
+def registration_view(request):
+    context = {}
+    limits = Limits() # TODO: using the default Allsembly limits;
+                      #  in future, make this configurable
+    if User.objects.count() < limits.max_users:
+        if request.method == 'POST':
+            form = RegistrationForm(request.POST)
+            context.update({'form': form})
+            if form.is_valid():
+                # check that passwords match
+                password = form.cleaned_data['password']
+                password_again = form.cleaned_data['password_again']
+                if not (password and password_again and
+                        password == password_again):
+                    context.update({'passwords_mismatched_or_missing': True})
+                else:
+                    username = form.cleaned_data['username']
+                    email_address = form.cleaned_data['email_address']
+                    realname = form.cleaned_data['name']
+                    comment = form.cleaned_data['comment']
+                    try:
+                        User.objects.create_user(username=username,
+                                                 password=password)
+                        if comment and comment != '':
+                            reg_comment_entry = RegistrationComment(username=username,
+                                                                    real_name=realname,
+                                                                    email_address=email_address,
+                                                                    comment=comment)
+                            reg_comment_entry.save()
+                        user = authenticate(request, username=username, password=password)
+                        if user is not None:
+                            login(request, user)
+                            return HttpResponseRedirect(reverse(demo))
+                        else:
+                            context.update({'auth_failed': True})
+                    except IntegrityError:
+                        context.update({'error_nonunique_userid': True})
+        else: # GET request
+            form = RegistrationForm()
+            context.update({'form': form})
+    else: # maximum number of users reached
+        context.update({'user_limit_reached': True})
+    return render(request, 'django_app/registration.html', context)
 
 
 def logout_view(request):

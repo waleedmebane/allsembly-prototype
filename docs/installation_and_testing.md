@@ -117,6 +117,7 @@ Create the user database:
 
 ```
 cd allsembly-prototype
+python3.9 manage.py makemigrations
 python3.9 manage.py migrate
 ```
 
@@ -171,12 +172,19 @@ sudo sh -c 'mod_wsgi-express module-config > /etc/apache2/mods-available/wsgi.lo
 sudo a2enmod wsgi
 ```
 
-Add the lines printed by the following command to the bottom of 
-/etc/apache2/apache2.conf:
+Add the following lines to the bottom of /etc/apache2/apache2.conf:
 
 ```
-mod_wsgi-express module-config
+WSGIDaemonProcess wsgipgroup user=<user> python-path="/home/<user>/allsembly-prototype"
+WSGIProcessGroup wsgipgroup
 ```
+Replace ```/home/<user>``` with the path into which you have cloned or
+copied the allsembly-prototype repository, and replace ```<user>``` in
+```user=<user>``` with the name of a user that has read and execute 
+permisions, as appropriate, in the django-site and django-app directories,
+or the owner of those directories.  You may use any name for the name
+of the process group.
+
 
 Add the following lines between of your virtual host's VirtualHost 
 open/close tags (e.g., `<Virtualhost ...>...</VirtualHost>`), which may
@@ -187,12 +195,12 @@ such as /etc/apache2/sites-enabled/000-default.conf or
 ```
 Alias "/static/" "/home/<user>/allsembly-prototype/web/scripts/"
 WSGIScriptAlias "/allsembly" "/home/<user>/allsembly-prototype/django_site/wsgi.py"
-<Directory /home/user/allsembly-prototype-django-version/django_site>
+<Directory /home/user/allsembly-prototype/django_site>
   <Files wsgi.py>
     Require all granted
   </Files>
 </Directory>
-<Directory /home/user/allsembly-prototype-django-version/web/scripts>
+<Directory /home/user/allsembly-prototype/web/scripts>
   Require all granted
 </Directory>
 ```
