@@ -117,7 +117,6 @@ Create the user database:
 
 ```
 cd allsembly-prototype
-python3.9 manage.py makemigrations
 python3.9 manage.py migrate
 ```
 
@@ -138,23 +137,18 @@ Replace "username" and "password", above, with your desired username
 and password.
 
 #### Run the Allsembly™ server:
-
-Before running the server, you may change any configuration settings
-  in the server_config.py file.
   
 ```
 cd allsembly-prototype/scripts
-sudo su allsembly -s /bin/bash
-./allsembly-server.py --daemon
-exit
+sudo ./allsembly-server.py --daemon --user allsembly
 ```
 
 NOTE: to get it to persist across reboots, you will need a service script
 for systemd or initd.  I haven't written one, yet.  Come back to the repo
 to check for it later.  Or you can write one consulting your OS documentation.
 In the meantime, you could put a line like:
-`<directory containing allsembly-server.py and server_config.py>/allsembly-server.py --daemon --user allsembly` into your /etc/rc.local file.
-(Replace `<directory containing allsembly-server.py and server_config.py>` with the path where you have put the files, e.g., `/usr/local/bin` or `/home/user/allsembly-prototype/scripts`.)
+`<directory containing allsembly-server.py>/allsembly-server.py --daemon --user allsembly` into your /etc/rc.local file.
+(Replace `<directory containing allsembly-server.py>` with the path where you have put the file, e.g., `/usr/local/bin` or `/home/user/allsembly-prototype/scripts`.)
 
 
 ### Setup and start the Apache web server:
