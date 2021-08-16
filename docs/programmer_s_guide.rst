@@ -467,7 +467,7 @@ Choosing library dependencies:
 How it works
 ------------
 
-For now, see docs/how_it_works.md in the 
+For now, see misc/how_it_works.md in the 
 `source code repository <https://github.com/waleedmebane/allsembly-prototype>`_.
 
 Other uses
