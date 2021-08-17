@@ -33,7 +33,8 @@ position being taken, then press "OK".
 The position appears in the diagram.  It is annotated above with
 50.0% because there is no information pro or con to influence the estimate
 of the probability of the position being true or correct.  Fifty percent
-means indifference between true and false, correct and incorrect.
+means indifference between true and false, correct and incorrect. 
+(This is expected to be changed in the future.  A new position without supporting evidence will start out as presumed false and show 0%. The reasoning for the proposed change is elaborated on as "Issue #3" in the Github `source code repository <https://github.com/waleedmebane/allsembly-prototype>`_.)
 
 The diagram may be moved around by clicking and dragging it with the mouse
 and zooming in and out may be accomplished with a mouse scroll wheel.
