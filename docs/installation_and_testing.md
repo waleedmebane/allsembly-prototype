@@ -23,7 +23,6 @@ Dependencies:
  Python >=3.7 (tested with Python 3.9.5)
  pip
  Apache2
- openssl
  mod_wsgi
  graphviz
  graphviz-dev
@@ -37,16 +36,14 @@ Dependencies:
   transaction
   atomic
   readerwriterlock
-  argon2-cffi
-  cryptography
   typing
   python-daemon
 
-Install Apache2, openssl, and graphviz:
+Install Apache2 and graphviz:
 
 ```
 sudo apt-get update
-sudo apt-get install apache2 openssl graphviz graphviz-dev apache2-dev
+sudo apt-get install apache2 graphviz graphviz-dev apache2-dev
 ```
 
 The apache2-dev package might not be necessary if you install Python and

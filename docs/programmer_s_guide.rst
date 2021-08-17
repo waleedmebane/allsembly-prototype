@@ -11,14 +11,10 @@ Apache2
 Apache2 mod_wsgi
 	For interacting with Django (using the Python WSGI standard directly instead of CGI)
 
-openssl
-    The Python encryption library "cryptography" and one of the password hashing libraries (the Python standard library's "hashlib") rely on openssl for encryption features.  It is the premier free and open source encryption library, widely used.
-
 graphviz
 
 graphviz-dev
     The Python library "PyGraphviz" relies on these.  Graphviz is used to draw the graphs.
-
 
 Problog
     A probabilistic programming language.  This is used to compute the probabilities.
@@ -53,8 +49,8 @@ d3.js
 dialog-polyfill.js
     This provides the HTML DIALOG tag and its functionality for browsers that don't (fully) support it, yet.  The DIALOG tag is used for creating the modal dialogs.
 
-simple-jsonrpc-js.js
-    This provides the client side functions for JSON-RPC (remote procedure call) interaction.
+jquery-3.6.0.js
+    Used to simplify AJAX calls (asynchronous loading of web content using JavaScript).
 
 
 Future possible dependencies
