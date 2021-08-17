@@ -226,7 +226,7 @@ Design for confidentiality
 The figure above shows a design with a separate server for login and a separate
 server for registration, which could be hosted by different organizations.
 The organization hosting the Registration server verifies the new user's
-identity but never sees the user's userid or passwors; those are encrypted
+identity but never sees the user's userid or passwords; those are encrypted
 on the client side using the public key of the organization hosting the
 login server.
 
@@ -264,12 +264,9 @@ If the user needs to change their PII, they log in to the registration
 server using their email adress.  (They could potentially use the same 
 password hashed and salted differently.)
 
-A password may be reset by logging in to the registration server and again 
-sending an encrypted userid which is passed on to the login server.  But to
-avoid a user being able to reset other users' passwords something special
-needs to be done.
+There is no way to recover a forgotten userid without connecting the userid with the real identity, temporarily breaching anonymity (i.e., intervention of the parties stewarding the relevant private keys).
 
-There is no way to recover a forgotten userid without revoking anonymity.
+There seems also to be no way to recover a forgotten password without temporarily breaching anonymity for that user.  Although the user has both email address and userid, the user cannot authenticate with the login server using an email address without connecting the identities, so password reset via email would only get a user access to their profile on the registration server.
 
 If the ID guardian is a separate person/organization from the organization
 hosting the login server, then the representatives of both organizations
@@ -306,6 +303,8 @@ for bids, asks, and betting contract purchases and sales.
 
 The client can store them in local memory and can also store pending
 transactions to re-send in case it does not get a confirmation receipt.
+
+Likewise, users should not be able to repudiate their orders or betting contracts.  So, those should be cryptographically signed by users as well.
 
 Design for scalability
 ^^^^^^^^^^^^^^^^^^^^^^

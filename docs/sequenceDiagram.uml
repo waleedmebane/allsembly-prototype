@@ -6,6 +6,8 @@ alt sucessful authentication
 
     UserAgent -> "Django app": service request with logged in session
     "Django app" -> AllsemblyServices: service request
+    AllsemblyServices -> "Django app": response (for some services)
+    "Django app" -> UserAgent: response
 
 else authentication failed
     "Django app" -> UserAgent: Redirect to login page with error message
