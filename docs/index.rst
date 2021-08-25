@@ -33,7 +33,7 @@ userid that they use to login using cryptographic technology in such a way that
 the userid and real identity cannot normally be reconnected.  For details, see :ref:`Design for confidentiality` 
 in the Programmer's Guide.  Participants will not know each other's identities,
 not even their userids.  All contributions will be anonymous to other users. 
-The reasons for this are explained in the file misc/prospectus.pdf in the 
+The reasons for this are explained in the file `misc/prospectus.pdf <https://github.com/waleedmebane/allsembly-prototype/blob/main/misc/prospectus.pdf>`_ in the 
 `source code repository <https://github.com/waleedmebane/allsembly-prototype>`_.  Anonymity means that
 users will be free to speak their minds because they cannot be retaliated 
 against, and it also means that markers of different status are obscured so that
@@ -83,9 +83,9 @@ though they are also able to investigate topics outside of their base of
 knowledge).
 
 After a panel is convened, it proceeds in the way described in the file 
-misc/notes.md in the source code repository and shown to some extent in the 
+`misc/notes.md <https://github.com/waleedmebane/allsembly-prototype/blob/main/misc/notes.md>`_ in the source code repository and shown to some extent in the 
 screen shots in the User's Guide.  Participants
-present policy proposals as described in misc/prospectus.pdf, and then they
+present policy proposals as described in `misc/prospectus.pdf <https://github.com/waleedmebane/allsembly-prototype/blob/main/misc/prospectus.pdf>`_, and then they
 present positions, statements about the evaluation of those proposals, and pro and
 con evidence to support such statements.  The pro and con evidence statements
 are themselves positions which may be supported or opposed with new pieces of, 
@@ -98,8 +98,8 @@ the weight of the evidence as each new piece of evidence is added and as
 participants adjust their expressed confidence in positions by making new bets.
 A bet is supposed to represent the taking of a risk.  Thus a participant is
 rational when their bet corresponds with what they actually believe.  And 
-participants will be constrained to only contribute logically consistent 
-positions.  See misc/notes.md for some further explanation.
+participants will be constrained to contribute only logically consistent 
+positions.  See `misc/notes.md <https://github.com/waleedmebane/allsembly-prototype/blob/main/misc/notes.md>`_ for some further explanation.
 
 In the end, proposals will have probability estimates associated with them.
 Probability estimates might contain error.  So the result gives us a clear
@@ -122,8 +122,8 @@ contribution that might appear irrelevant might just need to be contributed
 to a different part of the graph.  Having a graph makes both things possible.
 Contributions are not prejudiced as irrelevant if one can find somewhere in the
 graph to put them, even by adding a new initial position, but each branch is
-kept on topic.  Some other details can be found in misc/notes.md and 
-misc/prospectus.pdf and gleaned from the User's and Programmer's Guides.  In 
+kept on topic.  Some other details can be found in `misc/notes.md <https://github.com/waleedmebane/allsembly-prototype/blob/main/misc/notes.md>`_ and 
+`misc/prospectus.pdf <https://github.com/waleedmebane/allsembly-prototype/blob/main/misc/prospectus.pdf>`_ and gleaned from the User's and Programmer's Guides.  In 
 the future, I expect that summarization will have an important role to play as
 well.  For example, the positions with the highest probability estimates or
 highest last bet price might appear at a glance and others be visible after

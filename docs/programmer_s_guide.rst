@@ -116,11 +116,14 @@ Files
 |     Documents containing additional explanation about what Allsembly™ is about and the theory behind it--these files are not part of the documentation, and might be edited for publication elsewhere at some point.
 | 
 |     notes.md
+|         This file contains an overview of the dialogue procedure and why it is expected to be effective, including notes about a few salient design issues.
+| 
+|     how_it_works.md
+|         This file explains how human participants contribute to making the probabilistic estimates of the truth or correctness of conclusions possible, including a contrived example.
 | 
 |     prospectus.pdf
+|         This file contains a scholarly presentation of the initial development of the theory and concepts that are behind this software prototype and includes some of the motivation as well.
 |
-|     how_it_works.md
-| 
 | scripts/
 | 
 |     allsembly-server.py*
@@ -392,6 +395,35 @@ Benefits of this approach could be:
 Project development roadmap
 ---------------------------
 
+Accessibility basics
+^^^^^^^^^^^^^^^^^^^^
+* Add text description to SVG diagram of the dialogue graph that describes the graph structure.
+* Add keyboard controls for zooming and panning the SVG image. 
+* Maintain the page layout reasonably when the page is scaled with ctrl-+/-.
+
+Core features
+^^^^^^^^^^^^^
+* Enable a user to reuse existing positions to support or oppose other arguments.
+* Enable a user to mark two or more positions as the same or as mutually exclusive (the "Relate" feature).
+* Enable a user to add posts to a per-position informal discussion (the "Discuss" feature).
+* Implement the betting markets, including the order book, the matchin algorithm, and the ledger of bids and betting contracts.
+* Enable the (re-)selling of existing betting contracts.
+* Implement detection of inconsistent bids and bets and prevent users from making such.
+* Implement detection of inconsistencies in other commitments (as the result of reductio arguments and some "Relate" actions) and enable users to resolve inconsistencies by selling betting contracts.
+* Enable topic proposal.
+* Enable users to interact on the same dialogues (not only single user sanboxes and simulated multi-user activity).
+* Add policy proposals as the initial position type and add a policy evaluation positon type and the other policy decision features.
+* (For possible inclusion in the prototype:) Add encryption of anonymous IDs that connect a user to their bids and bets in the ledger.
+* (For possible inclusion in the prototype:) Add asymmetric encryption of userids in a registration record to prevent its connection with user login records, as described under :ref:`Design for confidentiality`.  If this is added in the prototype, it will be an optional feature and only use a single public key, not two.
+
+Demo features
+^^^^^^^^^^^^^
+* Enable deletion of positions.
+* Add a guest login option.
+* Allow a user to simulate multiple users by selecting the current user from a dropdown menu.
+
+More to be added to this section, including categorizing items as short-, medium-, or long-term and possibly including beyond-the-prototype items, later.
+
 
 Coding standards
 ----------------
@@ -462,7 +494,7 @@ Choosing library dependencies:
 How it works
 ------------
 
-For now, see misc/how_it_works.md in the 
+For now, see `misc/how_it_works.md <https://github.com/waleedmebane/allsembly-prototype/blob/main/misc/how_it_works.md>`_ in the 
 `source code repository <https://github.com/waleedmebane/allsembly-prototype>`_.
 
 Other uses
