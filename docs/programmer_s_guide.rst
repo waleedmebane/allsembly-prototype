@@ -26,7 +26,7 @@ PyGraphviz
     Easy to use Python bindings to the Graphviz library.
 
 RPyC
-    Python to Python RPC used to communicate between the FastCGI script and the Allsembly™ server.  This will no longer be needed when we switch to mod-proxy-fcgi and incorporate the FastCGI directly into the Allsembly™ server.  (See :ref:`Future possible dependencies`.)  However, it could be useful later for implementing communication with a registration server.  (See :ref:`Design for confidentiality`.)
+    Python to Python RPC used to communicate between the Django services and the Allsembly™ server.  It could be useful later for implementing communication with a registration server.  (See :ref:`Design for confidentiality`.)
 
 persistent
     This works with ZODB to automatically save and restore objects that subclass "Persistent".
@@ -267,9 +267,9 @@ If the user needs to change their PII, they log in to the registration
 server using their email adress.  (They could potentially use the same 
 password hashed and salted differently.)
 
-There is no way to recover a forgotten userid without connecting the userid with the real identity, temporarily breaching anonymity (i.e., intervention of the parties stewarding the relevant private keys).
+To enable recovery of a forgotten userid, userid could be stored by the registration server (or in the registration database) encrypted with the user's password.  The password is not stored bythe registration server, except possibly in hashed form, so the userid is encrypted using the password hashed with a different algorithm and/or parameters. In that case, the user logs into the registration server using email address and password; then, the registration server sends the encrypted userid to the user who decrypts it client-side.
 
-There seems also to be no way to recover a forgotten password without temporarily breaching anonymity for that user.  Although the user has both email address and userid, the user cannot authenticate with the login server using an email address without connecting the identities, so password reset via email would only get a user access to their profile on the registration server.
+There seems to be no way to recover a forgotten password without temporarily breaching anonymity for that user.  Although the user has both email address and userid, the user cannot authenticate with the login server using an email address without connecting the identities, so password reset via email would only get a user access to their profile on the registration server.
 
 If the ID guardian is a separate person/organization from the organization
 hosting the login server, then the representatives of both organizations
