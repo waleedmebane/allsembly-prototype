@@ -252,7 +252,7 @@ using the private key held offline).
 
 The flow is as follows:
 
-   #. User connects to the registration server and provides personally identifying information that will be used to verify their identity and provides and a desired userid that is encrypted with a public key of the login server (the Allsembly™ server).  The corresponding private key is stored unencrypted on the login server.  
+   #. User connects to the registration server and provides personally identifying information that will be used to verify their identity and provides a desired userid that is encrypted with a public key of the login server (the Allsembly™ server).  The corresponding private key is stored unencrypted on the login server.  
    #. The registration server sends only the encrypted userid and password to the login server. 
    #. The login server informs the registration server whether the userid is unique.  If it is not, then the registration server informs the user to select a new userid.
    #. If the userid is unique, the login server stores the userid and password in its login database (table) with a flag indicating that it is not yet activated (because the user has not yet been verified).
