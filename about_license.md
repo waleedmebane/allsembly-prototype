@@ -4,6 +4,9 @@ as a third additional term.  Each has been given a separate heading.  Also
 note that the software's license is LGPL verion 3 only (not "or later versions")
 plus the additional terms.
 
+A static linking exception has already been added.  The discussion
+about that, below, is retained for context.
+
 # Trademark
 
 Making "Allsembly" a trademark is not intended to prevent the use of the
