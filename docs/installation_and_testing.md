@@ -31,7 +31,7 @@ Dependencies:
  Python packages:
   problog
   ZODB
-  pygrphviz
+  pygraphviz
   RPyC
   persistent
   transaction
@@ -39,6 +39,7 @@ Dependencies:
   readerwriterlock
   typing
   python-daemon
+  django
 
 Install Apache2 and graphviz:
 
@@ -142,14 +143,24 @@ sudo ./allsembly-server.py --daemon --user allsembly
 ```
 
 NOTE: to get it to persist across reboots, you will need a service script
-for systemd or initd.  I haven't written one, yet.  Come back to the repo
-to check for it later.  Or you can write one consulting your OS documentation.
-In the meantime, you could put a line like:
+for systemd or initd.  See allsembly-prototype/scripts/allsembly.service
+for an example.  Modify the path on the line starting with "ExecStart="
+to point to the location of allsembly-server.py on your system.  You 
+then need to copy the service script into the appropriate system
+location: /etc/systemd/system/; and run
+the command to enable the service: `sudo systemctl enable allsembly.service`.
+Alternatively, you could put a line like:
 `<directory containing allsembly-server.py>/allsembly-server.py --daemon --user allsembly` into your /etc/rc.local file.
 (Replace `<directory containing allsembly-server.py>` with the path where you have put the file, e.g., `/usr/local/bin` or `/home/user/allsembly-prototype/scripts`.)
 
 
 ### Setup and start the Apache web server:
+(NOTE: you can try out Allsembly™ using the web server build into
+Django.  Consult the Django documentation for details.  Basically,
+you can execute `python3 manage.py runserver` from the allsembly-prototype
+directory; then connect to http://127.0.0.1:8000.  You can skip setting
+up Apache and return to it later when you desire a production quality 
+web service.)
 
 #### Setup SSL (Recommended)
 Add an SSL certificate, either by following the directions given by

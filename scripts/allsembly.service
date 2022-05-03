@@ -1,0 +1,16 @@
+[Unit]
+Description = Allsembly server daemon
+
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+Restart=on-failure
+RestartSec=3s
+
+User=allsembly
+ExecStart=/usr/local/bin/python3 /home/user/allsembly-prototype/scripts/allsembly-server.py --daemon --user allsembly
+
+
+[Install]
+WantedBy=multi-user.target

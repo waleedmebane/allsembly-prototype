@@ -11,6 +11,9 @@ Apache2
 Apache2 mod_wsgi
 	For interacting with Django (using the Python WSGI standard directly instead of CGI)
 
+django
+    Web framework: provides user login and registration; generates the client-side HTML and javascript pages to serve in response to user actions.  (It also has its own basic webserver, which could be used to try out the Allsembly™ program without installing Apache.)
+
 graphviz
 
 graphviz-dev
@@ -128,6 +131,8 @@ Files
 | 
 |     allsembly-server.py*
 |         Use this script to start the Allsembly™ server.  Run it with the ``--help`` option to get usage information.  Also, see, the section :ref:`Installation and Testing` for some instructions.
+|     allsembly.service
+|         A systemd service script example.  Modify the line "ExecStart"; then use this file to make the allsembly-server.py persistent as a daemon (i.e., make it available on system startup).
 |  
 | test/
 |     The tests.
