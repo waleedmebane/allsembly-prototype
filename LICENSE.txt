@@ -20,7 +20,7 @@ are to be found in the file COPYING.LESSER.
    the contents of section 4 with the more permissive text presented in 
    quotes, below.  This exception does not invalidate any other reason why 
    your software might be covered by the LGPL or the GPL.  You must still 
-   adhere to all of the license terms of any other works you combine or 
+   adhere to all of the license terms of any works you combine or 
    link with the Library.
 
    Amended Section 4.

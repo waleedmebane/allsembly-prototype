@@ -19,11 +19,9 @@ I do not expect to develop the prototype further until Fall or later.
 ## License
 
 Please find the license terms in the file: LICENSE.txt.
-The license is LGPLv3-only with two additional terms, disallowing using the
-authors' names and likenesses and declining to grant license to use trademarks.
-A third proposed additional term, a static linking exception, is discussed in
-about_license.md, and might be included in the license terms of some future
-version.
+The license is LGPLv3-only with three additional terms: 1) disallowing using the
+authors' names and likenesses; 2) declining to grant license to use trademarks; 
+and 3) providing additional permission for static linking.
 
 The Javascript libraries "d3", "dialog-polyfill", and "jquery"
 are included with this software in the sub-directory:
