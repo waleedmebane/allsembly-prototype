@@ -23,7 +23,7 @@ are to be found in the file COPYING.LESSER.
    adhere to all of the license terms of any works you combine or 
    link with the Library.
 
-   Amended Section 4.
+   Section 4 replacement text.
    "You may convey a Combined Work under terms of your choice
    if you also do each of the following:
    
