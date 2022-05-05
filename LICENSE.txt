@@ -1,4 +1,4 @@
-Copyright © 2021 Waleed H. Mebane
+Copyright © 2021, 2022 Waleed H. Mebane
 
 This program "Allsembly™ Prototype" is licensed under the terms of
 the Lesser GNU General Public License, version 3 (LGPL) and the 
