@@ -29,6 +29,7 @@ The functions to build arguments and insert them into the graph are
 """
 
 import copy
+import threading
 import time
 import logging
 
@@ -131,6 +132,12 @@ class ArgumentGraph(persistent.Persistent):
         self._v_gv_graph.graph_attr["color"] = "gray"
         self._v_gv_graph.graph_attr["packmode"] = "clust"
         self._v_my_g_svg: List[str] = ["", ""]
+        self._v_updated_graph_event_obj = threading.Event()
+        # this could be saved to the database, but it is okay if this
+        # resets to zero because the logic in rpyc is to only
+        # wait once and not re-check the revision number after it
+        # is signalled that a new graph is available.
+        self._v_graph_revision_number = 0
         self._build_initial_gv_graph()
         self.read_buffer_index = 0
         self.write_buffer_index = 1
@@ -148,9 +155,21 @@ class ArgumentGraph(persistent.Persistent):
         self._v_gv_graph.graph_attr["color"] = "gray"
         self._v_gv_graph.graph_attr["packmode"] = "clust"
         self._v_my_g_svg = ["", ""]
+        self._v_updated_graph_event_obj = threading.Event()
+        # this could be saved to the database, but it is okay if this
+        # resets to zero because the logic in rpyc is to only
+        # wait once and not re-check the revision number after it
+        # is signalled that a new graph is available.
+        self._v_graph_revision_number = 0
         self._build_initial_gv_graph()
         self._prepare_graph()
 
+
+    def get_revision_number(self) -> int:
+        return self._v_graph_revision_number
+
+    def get_update_graph_event_obj(self) -> threading.Event:
+        return self._v_updated_graph_event_obj
 
     def _add_position_to_gv_graph(self, pos_id: int, pos: PositionNode) -> None:
         p_key = pos_id
@@ -331,7 +350,9 @@ class ArgumentGraph(persistent.Persistent):
             self._update_gv_graph_nodes()
 
             #add rules and disjunctions to problog model
-
+            self._v_graph_revision_number += 1
+            self._v_updated_graph_event_obj.set()
+            self._v_updated_graph_event_obj.clear()
             return arg_id
         else:
             return None
@@ -383,6 +404,9 @@ class ArgumentGraph(persistent.Persistent):
             self._add_position_to_gv_graph(pos_id, position)
             self._prepare_graph()
             #add probabilistic term to problog model
+            self._v_graph_revision_number += 1
+            self._v_updated_graph_event_obj.set()
+            self._v_updated_graph_event_obj.clear()
 
             return pos_id
         else:
@@ -452,7 +476,7 @@ class IssuesDBAccessor:
         with my_iss_access.get_context() as issues:
             diagram_svg: str = issues.graph[issue_id].get_drawn_graph()
     """
-    # Encapsulates a ZODB database object to allow acces from a different
+    # Encapsulates a ZODB database object to allow access from a different
     # thread or threads
     def __init__(self, db: ZODB.DB, read_only: bool = False) -> None:
         self._db = db

@@ -38,10 +38,11 @@ The RPyC server is threaded, so multiple threads might try to access
 """
 import pickle
 import logging
+import threading
 from threading import Event
 from logging import Logger
 from collections import deque
-from typing import Tuple, Optional, cast, Any, Deque, Union, NamedTuple
+from typing import Tuple, Optional, cast, Any, Deque, Union, NamedTuple, Dict
 from typing_extensions import Final
 
 import rpyc  #type: ignore[import]
@@ -220,8 +221,11 @@ class GraphRequest:
     """
     # This seems no longer really to be needed since the read-lock
     # is taken out in the ArgumentGraph class instance itself and not here
-    def __init__(self, issues: IssuesDBAccessor) -> None:
-        self._issues_accessor: Final[IssuesDBAccessor] = issues
+    def __init__(self,
+                 issues_from_db: IssuesDBAccessor,
+                 issues_obj_not_safe_to_write: Issues) -> None:
+        self._issues_accessor: Final[IssuesDBAccessor] = issues_from_db
+        self._issues_not_safe_to_write: Final[Issues] = issues_obj_not_safe_to_write
 
     def draw(self, issue: Tuple[bytes, int]) -> str:
         # Each thread needs its own context (provided by its own IssuesAccessor copy).
@@ -231,6 +235,16 @@ class GraphRequest:
                 graph_ref: Final[ArgumentGraph] = issues.graphs[issue]
                 return graph_ref.get_drawn_graph()
         return ""
+
+    def get_next_graph(self,
+                       issue: Tuple[bytes, int],
+                       last_received_graph_revision_number: int) -> Union[int, None]:
+        if self._issues_not_safe_to_write.graphs.has_key(issue):
+            graph_ref: Final[ArgumentGraph] = self._issues_not_safe_to_write.graphs[issue]
+            if last_received_graph_revision_number >= graph_ref.get_revision_number():
+                graph_ref.get_update_graph_event_obj().wait()
+            return graph_ref.get_revision_number()
+        return None
 
     def get_position_details(self, issue: Tuple[bytes, int],
                              pos_id: int) -> str:
@@ -252,6 +266,8 @@ class LedgerRequest:
     """
     pass
 
+
+latest_thread_for_user: Final[Dict[bytes, int]] = {}
 
 class AuthCredentialsStr(NamedTuple):
     userid: str
@@ -383,6 +399,25 @@ class AllsemblyServices(rpyc.Service):
             module, called via GraphRequest.
             """
             return self._services.graph_req.draw((self._userid_hashed, issue))
+
+        def get_next_arg_graph(self,
+                               issue: int,
+                               # user: str,
+                               last_graph_revision_number: int) -> Union[Tuple[str, int], None]:
+            my_thread_id: Final[int] = threading.get_ident()
+            latest_thread_for_user[self._userid_hashed] = my_thread_id
+            available_graph: Final[Union[int, None]] = self._services.graph_req.get_next_graph(
+                (self._userid_hashed, issue),
+                last_graph_revision_number
+            )
+            if available_graph is not None:
+                if latest_thread_for_user[self._userid_hashed] == my_thread_id:
+                    return (
+                        self.get_arg_graph(issue),
+                        available_graph
+                    )
+            return None
+
 
         def get_position_details(self,
                                          issue: int,

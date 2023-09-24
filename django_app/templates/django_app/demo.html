@@ -172,7 +172,10 @@ overflow: auto;
 
 	<script src="{% static 'dialog-polyfill.js' %}"></script>
 	<script>
+		var last_arg_graph_revision_number = 0;
+		var long_polling_suspended = false;
 		var positAddDialog = document.getElementById('positAddDialog');
+		positAddDialog.addEventListener('close', restart_long_polling);
 		positAddDialog.addEventListener('close', positDialogOnClose);
 		dialogPolyfill.registerDialog(positAddDialog);
 		function showPositAddDialog(event) {
@@ -182,13 +185,17 @@ overflow: auto;
 			return false;
 		}
 		var initialPositionForm = document.getElementById('add_initial_position_form');
+		initialPositionForm.addEventListener('submit', restart_long_polling);
 		initialPositionForm.addEventListener('submit', showPositAddDialog);
 		var clearGraphForm = document.getElementById('clear_graph_form');
+		clearGraphForm.addEventListener('submit', restart_long_polling);
 		clearGraphForm.addEventListener('submit', clearGraph);
 		var positShowDialog = document.getElementById('positShowDialog');
+		positShowDialog.addEventListener('close', restart_long_polling);
 		positShowDialog.addEventListener('close', positShowOnClose);
 		dialogPolyfill.registerDialog(positShowDialog);
 		var argueDialog = document.getElementById('argueDialog');
+		argueDialog.addEventListener('close', restart_long_polling);
 		argueDialog.addEventListener('close', argueOnClose);
 		dialogPolyfill.registerDialog(argueDialog);
 
@@ -203,34 +210,38 @@ overflow: auto;
             window.location.href = window.location.href.split(window.location.pathname)[0] + "{% url 'login' %}";
         });
 
+        function set_arg_graph_svg_element(in_svg_str) {
+			var elem = document.querySelector('#svg');
+			elem.innerHTML = in_svg_str;
+			if (in_svg_str != "") {
+				var svgn = document.querySelector("#svg svg").getAttribute("transform");
+				var trf = document.querySelector("#svg svg g").getAttribute("transform");
+				console.log(trf);
+				if (-1 != trf.indexOf("translate")) {
+					var trf_split = trf.split("translate(");
+					var trans = trf_split[1].split(" ");
+					var trans_x = parseFloat(trans[0]);
+					var trans_y = parseFloat(trans[1]);
+				}
+				console.log(trans_x);
+				console.log(trans_y);
+				var d3trans = d3.zoomTransform(trf);
+				console.log(d3trans);
+
+				var selection = d3.select("svg g");
+				zoom = d3.zoom().on("zoom", zoomed);
+
+				zoom(selection);
+				d3.select("svg").style("background-color", "white");
+				d3.select("svg").style("display", "inline-block");
+			}
+        }
+
 		function get_arg_graph(retry) {
 			//load the argument graph SVG string and overwrite the previous graph
 			$.get("{% url 'get_arg_graph' %}", function(res) {
 				console.log(res);
-				var elem = document.querySelector('#svg');
-				elem.innerHTML = res;
-				if (res != "") {
-					var svgn = document.querySelector("#svg svg").getAttribute("transform");
-					var trf = document.querySelector("#svg svg g").getAttribute("transform");
-					console.log(trf);
-					if (-1 != trf.indexOf("translate")) {
-						var trf_split = trf.split("translate(");
-						var trans = trf_split[1].split(" ");
-						var trans_x = parseFloat(trans[0]);
-						var trans_y = parseFloat(trans[1]);
-					}
-					console.log(trans_x);
-					console.log(trans_y);
-					var d3trans = d3.zoomTransform(trf);
-					console.log(d3trans);
-
-					var selection = d3.select("svg g");
-					zoom = d3.zoom().on("zoom", zoomed);
-
-					zoom(selection);
-					d3.select("svg").style("background-color", "white");
-					d3.select("svg").style("display", "inline-block");
-				}
+				set_arg_graph_svg_element(res);
 			});
 			if (retry) {
 				//Try again after 2 seconds regardless of the outcome of the
@@ -243,7 +254,44 @@ overflow: auto;
 		}
 
 		//load the initial argument graph on startup
-		get_arg_graph(false);
+		// get_arg_graph(false);
+
+		function get_next_arg_graph() {
+			$.ajax({
+				url: "{% url 'get_next_arg_graph' %}" + "?last_arg_graph_revision_number=" + last_arg_graph_revision_number,
+				type: 'GET',
+				dataType: 'json',
+				success: function(res) {
+					if ('success' in res && res.success) {
+						console.log(res);
+						if ('graph' in res)
+							set_arg_graph_svg_element(res.graph);
+						if ('graph_rev_number' in res)
+							last_arg_graph_revision_number = res.graph_rev_number;
+						if (!long_polling_suspended)
+							setTimeout(get_next_arg_graph, 1000);
+					}
+					/* TODO: print a warning message in the graph drawing area
+					 *  e.g., user has opened the graph in another window
+					 *  so updating in this window has been suspended.
+					 */
+					else {
+						long_polling_suspended = true;
+					}
+				}
+			});
+			return;
+		}
+
+		function restart_long_polling() {
+			if (long_polling_suspended) {
+				long_polling_suspended = false;
+				get_next_arg_graph();
+			}
+		}
+
+		// start long polling
+		get_next_arg_graph();
 
 		function positDialogOnClose() {
 			if (positAddDialog.returnValue == "OK") {
@@ -258,7 +306,8 @@ overflow: auto;
 					success: function(res) {
 								if ('success' in res && res.success) {
 									console.log(res);
-									get_arg_graph(true);
+									if (long_polling_suspended)
+										get_arg_graph(true);
 								}
 								else if ('error_text' in res) {
 									alert("Error:" + res.error_text);
@@ -309,7 +358,8 @@ overflow: auto;
 					success: function(res) {
 								if ('success' in res && res.success) {
 									console.log(res);
-								 	get_arg_graph(true);
+									if (long_polling_suspended)
+								 		get_arg_graph(true);
 								}
 								else if ('error_text' in res) {
 									alert("Error:" + res.error_text);
@@ -328,7 +378,8 @@ overflow: auto;
 				$.get("{% url 'clear_graph' %}", function(res) {
 					if ('success' in res && res.success) {
 						console.log(res);
-						get_arg_graph(false);
+						if (long_polling_suspended)
+							get_arg_graph(false);
 					}
 					else if ('error_text' in res) {
 						alert("Error:" + res.error_text);

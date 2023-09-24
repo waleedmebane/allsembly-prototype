@@ -29,6 +29,7 @@ urlpatterns = [
     path('argue/', views.argue, name='argue'),
     path('propose/', views.propose, name='propose'),
     path('get_arg_graph/', views.get_arg_graph, name='get_arg_graph'),
+    path('get_next_arg_graph/', views.get_next_arg_graph, name='get_next_arg_graph'),
     path('get_position_details/', views.get_position_details, name='get_position_details'),
     path('clear_graph/', views.clear_graph, name='clear_graph'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

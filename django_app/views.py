@@ -21,7 +21,7 @@ import pickle
 from django.db import IntegrityError
 from typing_extensions import Final
 import rpyc #type: ignore[import]
-from typing import Optional
+from typing import Optional, Union, Tuple
 
 from allsembly.config import Config, Limits
 from allsembly.speech_act import ArgueSpeechAct, Argument, Premise, Bid, \
@@ -217,6 +217,32 @@ def get_arg_graph(request):
         ).get_arg_graph(0)
     client.close()
     return HttpResponse(my_graph)
+
+
+def _atoi(a):
+    try:
+        return int(a)
+    except ValueError:
+        return 0
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_next_arg_graph(request):
+    client = rpyc.connect("::1", SERVER_PORT_NUMBER, config = {"allow_public_attrs": True, "sync_request_timeout": None}, ipv6=True)
+    last_arg_graph_revision_number = (
+        _atoi(request.GET['last_arg_graph_revision_number'])
+        if 'last_arg_graph_revision_number' in request.GET
+        else 0)
+    retval: Final[Union[Tuple[str, int], None]] = client.root.get_user_services(
+        bytes(request.user.username, 'utf-8')
+        ).get_next_arg_graph(0, last_arg_graph_revision_number)
+    client.close()
+    if retval is not None:
+        my_graph, current_arg_graph_revision_number = retval
+        return JsonResponse({'success': True, 'error': 0, 'graph': my_graph, 'graph_rev_number': current_arg_graph_revision_number})
+    else:
+        return JsonResponse({'success': False, 'error': 1})
 
 
 @login_required

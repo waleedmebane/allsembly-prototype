@@ -591,7 +591,8 @@ class AllsemblyServer:
                                                        self.graph_arg_queue,
                                                        self.graph_pos_queue,
                                                        self.issue_queue,
-                                                       GraphRequest(IssuesDBAccessor(self.argumentdb, read_only=True)),
+                                                       GraphRequest(IssuesDBAccessor(self.argumentdb, read_only=True),
+                                                                    self.issues),
                                                        LedgerRequest()
                                                        ),
                                           hostname = listen_address,
