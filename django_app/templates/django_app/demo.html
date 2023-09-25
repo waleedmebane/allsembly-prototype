@@ -113,6 +113,11 @@ overflow: auto;
 									<button type="submit" id="clear_graph_button" value="Clear graph">Clear Graph</button>
 								</form>
 							</td>
+							<td>
+								<form id="reset_view_form">
+									<button type="submit" id="reset_view_button" value="Reset view">Reset View</button>
+								</form>
+							</td>
 						</tr>
 					</table>
 				</td>
@@ -190,6 +195,9 @@ overflow: auto;
 		var clearGraphForm = document.getElementById('clear_graph_form');
 		clearGraphForm.addEventListener('submit', restart_long_polling);
 		clearGraphForm.addEventListener('submit', clearGraph);
+		var resetViewForm = document.getElementById('reset_view_form');
+		resetViewForm.addEventListener('submit', restart_long_polling);
+		resetViewForm.addEventListener('submit', reset_view);
 		var positShowDialog = document.getElementById('positShowDialog');
 		positShowDialog.addEventListener('close', restart_long_polling);
 		positShowDialog.addEventListener('close', positShowOnClose);
@@ -199,22 +207,8 @@ overflow: auto;
 		argueDialog.addEventListener('close', argueOnClose);
 		dialogPolyfill.registerDialog(argueDialog);
 
-		function zoomed({transform}) {
-			//callback function, used by the d3 library to implement
-			//panning and zooming in the SVG image (the argument graph)
-			//pan with click and drag and zoom with the mouse scroll wheel.
-		   	document.querySelector("#svg svg").setAttribute("transform", transform);
-		}
-
-        $(document).ajaxError(function() {
-            window.location.href = window.location.href.split(window.location.pathname)[0] + "{% url 'login' %}";
-        });
-
-        function set_arg_graph_svg_element(in_svg_str) {
-			var elem = document.querySelector('#svg');
-			elem.innerHTML = in_svg_str;
-			if (in_svg_str != "") {
-				var svgn = document.querySelector("#svg svg").getAttribute("transform");
+        function set_zoom() {
+        		var svgn = document.querySelector("#svg svg").getAttribute("transform");
 				var trf = document.querySelector("#svg svg g").getAttribute("transform");
 				console.log(trf);
 				if (-1 != trf.indexOf("translate")) {
@@ -234,6 +228,32 @@ overflow: auto;
 				zoom(selection);
 				d3.select("svg").style("background-color", "white");
 				d3.select("svg").style("display", "inline-block");
+        }
+
+		function reset_view(event) {
+		    event.preventDefault();
+			var selection = d3.select("svg g");
+			zoom = d3.zoom().on("zoom", zoomed);
+			zoom.transform(selection, d3.zoomIdentity);
+		   	return false;
+		}
+
+		function zoomed({transform}) {
+			//callback function, used by the d3 library to implement
+			//panning and zooming in the SVG image (the argument graph)
+			//pan with click and drag and zoom with the mouse scroll wheel.
+		   	document.querySelector("#svg svg").setAttribute("transform", transform);
+		}
+
+        $(document).ajaxError(function() {
+            window.location.href = window.location.href.split(window.location.pathname)[0] + "{% url 'login' %}";
+        });
+
+        function set_arg_graph_svg_element(in_svg_str) {
+			var elem = document.querySelector('#svg');
+			elem.innerHTML = in_svg_str;
+			if (in_svg_str != "") {
+			    set_zoom();
 			}
         }
 
@@ -254,7 +274,7 @@ overflow: auto;
 		}
 
 		//load the initial argument graph on startup
-		// get_arg_graph(false);
+		get_arg_graph(false);
 
 		function get_next_arg_graph() {
 			$.ajax({
