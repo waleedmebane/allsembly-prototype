@@ -29,6 +29,7 @@
     <input type="submit" value="Login" />
 </form>
 <p><a href="{% url 'registration' %}">Register a new user.</a></p>
+<p><small>You may register anonymously.  </br>No email verification is performed.</small></p>
 {% if auth_failed %}<p style="color:red">Incorrect UserId or Password</p>{% endif %}
 </body>
 </html>

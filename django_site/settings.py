@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-wa99oida$ladw2qo!@2qu9wptnxb3p04b+i8@(s3voilc!9co&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['waleedmebane.com', 'www.waleedmebane.com']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +126,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'web', 'scripts')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
+
+CAPTCHA_2X_IMAGE = True
+
+CAPTCHA_MATH_CHALLENGE_OPERATOR = 'x'
+
+CAPTCHA_LETTER_ROTATION = None
+
+CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_null',)
+
+CAPTCHA_FLITE_PATH = '/usr/bin/flite'

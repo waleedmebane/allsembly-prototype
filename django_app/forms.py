@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import validators
+from captcha.fields import CaptchaField
 
 
 class LoginForm(forms.Form):
@@ -22,6 +23,7 @@ class RegistrationForm(forms.Form):
                                      required=False)
     comment = forms.CharField(widget=forms.Textarea, label='Comment (optional)',
                               required=False)
+    captcha = CaptchaField()
 
 
 class ArgueForm(forms.Form):

@@ -85,7 +85,9 @@ def registration_view(request):
                     comment = form.cleaned_data['comment']
                     try:
                         User.objects.create_user(username=username,
-                                                 password=password)
+                                                 password=password,
+                                                 email=email_address,
+                                                 first_name=realname)
                         if comment and comment != '':
                             reg_comment_entry = RegistrationComment(username=username,
                                                                     real_name=realname,
