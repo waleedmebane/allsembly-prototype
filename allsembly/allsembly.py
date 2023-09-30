@@ -75,7 +75,6 @@ import rpyc #type: ignore[import]
 
 from typing import TextIO, Dict
 #from queue import Queue
-from atomic import AtomicLong #type: ignore[import]
 import time
 from time import thread_time_ns
 from typing import Optional
@@ -101,24 +100,24 @@ from allsembly.speech_act import ProOrCon, UnconcededPosition
 
 logger: Logger = logging.getLogger(__name__)
 
-class PicklableAtomicLong(AtomicLong):
-    """ AtomicLong is a module
-    written in C, and so is not picklable.
-    Use this class instead when serialization using Pickle is
-    required, such as with ZODB persistence.
-    """
+# class PicklableAtomicLong(AtomicLong):
+#    """ AtomicLong is a module
+#    written in C, and so is not picklable.
+#    Use this class instead when serialization using Pickle is
+#    required, such as with ZODB persistence.
+#    """
     #This class is a wrapper implementing __getstate__
     # and __setstate__ so that an AtomicLong object may be pickled.
-
-    def __init__(self, initial_value: Optional[int] = None):
-        super().__init__(initial_value)
-
-    def __getstate__(self) -> Any:
-        return {'value': super().value}
-
-    def __setstate__(self, state: Dict[Any, Any]) -> None:
-        super().__init__(0)
-        super().get_and_set(state['value'])
+#
+#    def __init__(self, initial_value: Optional[int] = None):
+#        super().__init__(initial_value)
+#
+#    def __getstate__(self) -> Any:
+#        return {'value': super().value}
+#
+#    def __setstate__(self, state: Dict[Any, Any]) -> None:
+#        super().__init__(0)
+#        super().get_and_set(state['value'])
 
 
 class ServerControl:
@@ -150,16 +149,16 @@ class ServerControl:
     def get_event_obj(self) -> Event:
         return self._event_obj
 
-class ServerControlThreadSafe(ServerControl):
-    """Thread safe version of ServerControl
-       Use this to tell the server_main_loop to exit,
-       by setting "should_exit".
-    """
+# class ServerControlThreadSafe(ServerControl):
+#    """Thread safe version of ServerControl
+#       Use this to tell the server_main_loop to exit,
+#       by setting "should_exit".
+#    """
     # Replace integer used in ServerControl
     # with thread-safe atomic integer
     # noinspection PyMissingConstructor
-    def __init__(self) -> None:
-        self._should_exit: AtomicLong = AtomicLong(0)
+#    def __init__(self) -> None:
+#        self._should_exit: AtomicLong = AtomicLong(0)
 
 
 def process_one_argument_from_queue(issues: Issues,
