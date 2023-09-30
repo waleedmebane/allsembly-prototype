@@ -75,6 +75,7 @@ And then follow the instructions in the README.rst file, which amount to:
 
 The configure options, except --enable-optimization, which is optional,
 are needed for Python to work well with mod_wsgi.
+(For Python 3.12 from source, I also needed to run, before running "./configure": `sudo apt-get install openssl zlibc libreadline-dev zlib1-dev libbz2-dev libffi-dev libssl-dev`)
 (`*`See the bottom of this section for a tip in case you get an error message
 about needing to add a source repository in order to install build
 dependencies--the first step listed above.)
@@ -147,7 +148,7 @@ for systemd or initd.  See allsembly-prototype/scripts/allsembly.service
 for an example.  Modify the path on the line starting with "ExecStart="
 to point to the location of allsembly-server.py on your system.  You 
 then need to copy the service script into the appropriate system
-location: /etc/systemd/system/; and run
+location: /lib/systemd/system/; and run
 the command to enable the service: `sudo systemctl enable allsembly.service`.
 Alternatively, you could put a line like:
 `<directory containing allsembly-server.py>/allsembly-server.py --daemon --user allsembly` into your /etc/rc.local file.
