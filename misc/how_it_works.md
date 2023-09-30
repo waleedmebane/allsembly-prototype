@@ -44,7 +44,7 @@ the model is adjusted, and the new calculated probability for the
 conclusion would be the result of counting them together only once.
 
 However, the two are not the same, but they are not independent either.
-Taxes are not the only source or revenue.  We could say that a lowering
+Taxes are not the only source of revenue.  We could say that a lowering
 of taxes implies a decrease in revenue, all other things being equal.
 
 So the dependence could be modeled by adding a new argument:

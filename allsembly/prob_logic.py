@@ -37,12 +37,7 @@ logger: Logger = logging.getLogger(__name__)
 
 class ProblogModel(persistent.Persistent):
     """Problog terms and rules that model the argument graph
-       and allow Problog to create the Bayesian Network
-       and do the inference.
-       Uses "virtual evidence": uncertain evidence is modelled with
-       a probabilistic rule, where the probability is the certainty
-       of the evidence; the antecedent is virtual evidence, with
-       probability 1, and the consequent is the real evidence.
+       and allow Problog to do the inference.
 
        Note that the current Problog models (constructed in ArgumentGraph 
        methods, _add_clause_to_problog_program(), 

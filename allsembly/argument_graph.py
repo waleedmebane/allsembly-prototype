@@ -92,7 +92,7 @@ class PositionNode(persistent.Persistent):
         self.same_as = PersistentList()
         self.creation_time = int()
         self.creator = bytes()
-        # used by the Problog model; leaf nodes are virtual evidence
+        # used by the Problog model
         # set to False when an argument has this node as its conclusion
         self.node_is_leaf_node = True
 
