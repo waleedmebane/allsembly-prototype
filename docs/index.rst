@@ -20,7 +20,7 @@ Introduction
 ============
 
 This is software for creating an online community for anonymous proposal and collaborative evaluation of public policy options, with automated decision support.
-It makes use of betting markets and Bayesian networks.
+It makes use of betting markets and probabilistic inference.
 
 Only about half of the major features have been added, so far.
 

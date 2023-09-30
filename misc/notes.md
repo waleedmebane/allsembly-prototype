@@ -26,11 +26,12 @@ A Bayesian network is implicitly set up representing the relationships
 between the positions.  This is accomplished by expressing the arguments
 in a logical form, as Problog programs.  Problog is a probabilistic logic
 programming language, an extension of Prolog.  This program currently
-depends on Problog for its probability calculations.  Positions which
-have not yet been supported or opposed by arguments are set up as
-"virtual evidence" (in the terminology of Judea Pearl in his 1988 book, _Probabilistic Reasoning in Intelligent Systems_, Chapter 2).
-Then all of the positions have their marginal probabilities calculated
-by taking the bet prices for the remaining positions to be their prior probabilities.
+depends on Problog for its probability calculations.  Positions 
+are given initial probabilities based on the prices of bets on those
+positions, and their relationships (of, e.g., independence or dependence)
+are modeled according to their logical relationships.
+Then all of the positions have their marginal probabilities calculated.
+
 
 The result is an estimate of the confidence one ought to have in each
 position (if one is Bayesian), given the weight of evidence pro and con, 
@@ -87,7 +88,7 @@ even if their view isn't the prevailing one by the end.
 The betting is intended to be done with play money and with a betting limit.
 Each market (each of which is for a separate position) will have a
 separate allocation of amounts of play money to each participant.
-The amounts may not be share between markets.  This is so that the
+The amounts may not be shared between markets.  This is so that the
 betting limit remains effective at preventing market manipulations.
 Participants will not be able to accumulate profits from many markets 
 and pool them to manipulate some other market (e.g., to put all their
