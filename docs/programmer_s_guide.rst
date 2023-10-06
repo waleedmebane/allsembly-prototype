@@ -107,22 +107,22 @@ Files
 |     index.rst
 |         The main file of the documentation
 | 
+|     how_it_works.md
+|         This file explains how human participants contribute to making the probabilistic estimates of the truth or correctness of conclusions possible, including a contrived example.
+| 
 |     make.bat
 | 
 |     Makefile
 |         Files for building the documentation.  Sphinx is required. 
 |     
+|     notes.md
+|         This file contains an overview of the dialogue procedure and why it is expected to be effective, including notes about a few salient design issues.
+| 
 | LICENSE.third-party/
 |     Licenses for third-party software distributed with Allsembly™
 | 
 | misc/
 |     Documents containing additional explanation about what Allsembly™ is about and the theory behind it--these files are not part of the documentation, and might be edited for publication elsewhere at some point.
-| 
-|     notes.md
-|         This file contains an overview of the dialogue procedure and why it is expected to be effective, including notes about a few salient design issues.
-| 
-|     how_it_works.md
-|         This file explains how human participants contribute to making the probabilistic estimates of the truth or correctness of conclusions possible, including a contrived example.
 | 
 |     prospectus.pdf
 |         This file contains a scholarly presentation of the initial development of the theory and concepts that are behind this software prototype and includes some of the motivation as well.
@@ -499,7 +499,7 @@ Choosing library dependencies:
 How it works
 ------------
 
-For now, see `misc/how_it_works.md <https://github.com/waleedmebane/allsembly-prototype/blob/main/misc/how_it_works.md>`_ in the 
+For now, see `docs/how_it_works.md <https://github.com/waleedmebane/allsembly-prototype/blob/main/docs/how_it_works.md>`_ in the 
 `source code repository <https://github.com/waleedmebane/allsembly-prototype>`_.
 
 Other uses

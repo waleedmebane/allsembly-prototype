@@ -1,13 +1,7 @@
-Copyright © 2021 Waleed H. Mebane
-License is granted to the recipients of this file to distribute it 
-incidentally and without changes with the Allsembly™ Prototype source code 
-provided that all of the terms of the license for the Allsembly™ Prototype 
-software are adhered to. This notice must be reproduced verbatim and legibly 
-in distributed copies.  If the Allsembly™ Prototype source code is being 
-distributed for a fee, this file may only be distributed with it if no 
-additional amount is charged.  No other permissions are granted.  This work 
-or works derived from it may not be published under any other circumstances 
-without the explicit prior written permission of the author.
+Copyright © 2021, 2023 Waleed H. Mebane
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 
 Allsembly™ Prototype
 
