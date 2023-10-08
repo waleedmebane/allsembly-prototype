@@ -227,7 +227,7 @@ overflow: auto;
 				trf = document.querySelector("#svg svg").getAttribute("transform");
 				console.log(trf);
 
-				let selection = d3.select("svg");
+				let selection = d3.select("#svg svg");
 				let d3trans = d3.zoomTransform(d3.select("#svg svg"));
 				let zoom = d3.zoom()
 					.on("zoom", zoomed);
@@ -242,6 +242,12 @@ overflow: auto;
 		            event.preventDefault();
 		        }
 			saved_transform = null;
+			let selection = d3.select("#svg svg");
+			let zoom = d3.zoom()
+				.on("zoom", zoomed);
+			zoom(selection);
+			zoom.transform(selection, d3.zoomIdentity);
+			
 		   	return false;
 		}
 
@@ -264,6 +270,21 @@ overflow: auto;
 				var parser = new DOMParser();
 				var my_svg_doc = parser.parseFromString(in_svg_str, "text/html");
 			        var my_svg = my_svg_doc.querySelector('svg');
+				var svg_elem = d3.select("#svg svg");
+				var svg_elem2 = elem.querySelector("svg");
+				console.log("svg_elem2.viewBox = " + svg_elem2.viewBox);
+				console.log("svg_elem2.viewBox.baseVal = " + svg_elem2.viewBox.baseVal);
+				if (svg_elem != null) {
+					svg_elem.attr("width", elem.clientWidth);
+					svg_elem.attr("height", elem.clientheight);
+					//svg_elem.attr("x", elem.clientLeft);
+					//svg_elem.attr("y", elem.clientTop);
+					svg_elem.attr("preserveAspectRatio", "xMinYMid");
+					svg_elem2.viewBox.baseVal.x = my_svg.viewBox.baseVal.x;
+					svg_elem2.viewBox.baseVal.y = my_svg.viewBox.baseVal.y;
+					svg_elem2.viewBox.baseVal.width = my_svg.viewBox.baseVal.width;
+					svg_elem2.viewBox.baseVal.height = my_svg.viewBox.baseVal.height;;
+				}
 				graph_elem.replaceWith(my_svg.querySelector('g'));
 			}
 			else {
@@ -313,6 +334,7 @@ overflow: auto;
 					 *  so updating in this window has been suspended.
 					 */
 					else {
+					    if ('error' in res && 1 == res.error)
 						long_polling_suspended = true;
 					}
 				}
@@ -414,8 +436,11 @@ overflow: auto;
 				$.get("{% url 'clear_graph' %}", function(res) {
 					if ('success' in res && res.success) {
 						console.log(res);
-						get_arg_graph(false);
-						reset_view(null);
+						//get_arg_graph(true);
+						//reset_view(null);
+						svg_elem = document.querySelector("#svg svg");
+						if (svg_elem != null)
+						    svg_elem.remove();
 					}
 					else if ('error_text' in res) {
 						alert("Error:" + res.error_text);
