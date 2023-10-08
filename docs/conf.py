@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Allsembly™ Prototype'
-copyright = '2021, Waleed H. Mebane'
+copyright = '2021, 2023 Waleed H. Mebane'
 author = 'Waleed H. Mebane'
 
 

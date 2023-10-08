@@ -301,7 +301,9 @@ def process_one_issue_from_queue(issues: Issues,
         if isinstance(issue_queue_item, IssueDeleteDirective):
             issue_id_to_delete: Final = issue_queue_item.id_to_delete
             if issues.graphs.has_key(issue_id_to_delete):
-                del issues.graphs[issue_id_to_delete]
+                issue_to_delete = issues.graphs[issue_id_to_delete]
+                issues.graphs[issue_id_to_delete] = ArgumentGraph(issue_to_delete.issue_name)
+                issue_to_delete.clear()
         else: #if isinstance(issue_queue_item, IssueAddDirective):
             issue_to_add: Final = issue_queue_item
             issue_id = issue_to_add[0]

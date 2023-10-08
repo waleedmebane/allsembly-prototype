@@ -44,6 +44,8 @@ from logging import Logger
 from collections import deque
 from typing import Tuple, Optional, cast, Any, Deque, Union, NamedTuple, Dict
 from typing_extensions import Final
+import enum
+from dataclasses import dataclass
 
 import rpyc  #type: ignore[import]
 
@@ -221,6 +223,15 @@ class GraphRequest:
     """
     # This seems no longer really to be needed since the read-lock
     # is taken out in the ArgumentGraph class instance itself and not here
+
+    class ErrCodes(enum.Enum):
+        GRAPH_UNAVAILABLE = 1
+        TIMED_OUT = 2
+
+    @dataclass
+    class Error:
+        code: 'GraphRequest.ErrCodes';
+
     def __init__(self,
                  issues_from_db: IssuesDBAccessor,
                  issues_obj_not_safe_to_write: Issues) -> None:
@@ -238,13 +249,14 @@ class GraphRequest:
 
     def get_next_graph(self,
                        issue: Tuple[bytes, int],
-                       last_received_graph_revision_number: int) -> Union[int, None]:
+                       last_received_graph_revision_number: int) -> Union[int, 'GraphRequest.Error']:
         if self._issues_not_safe_to_write.graphs.has_key(issue):
             graph_ref: Final[ArgumentGraph] = self._issues_not_safe_to_write.graphs[issue]
             if last_received_graph_revision_number >= graph_ref.get_revision_number():
-                graph_ref.get_update_graph_event_obj().wait()
+                if not graph_ref.get_update_graph_event_obj().wait(Config.long_polling_timeout_seconds):
+                    return GraphRequest.Error(GraphRequest.ErrCodes.TIMED_OUT)
             return graph_ref.get_revision_number()
-        return None
+        return GraphRequest.Error(GraphRequest.ErrCodes.GRAPH_UNAVAILABLE)
 
     def get_position_details(self, issue: Tuple[bytes, int],
                              pos_id: int) -> str:
@@ -403,20 +415,29 @@ class AllsemblyServices(rpyc.Service):
         def get_next_arg_graph(self,
                                issue: int,
                                # user: str,
-                               last_graph_revision_number: int) -> Union[Tuple[str, int], None]:
+                               last_graph_revision_number: int) -> Union[Tuple[str, int], int]:
+            """Returns the argument graph (svg string) and the graph revision 
+            number on success or an error code on failure:
+            1, if the call to get the graph returned early with no graph
+            2, if the call timed out.
+            TODO: use an enumeration instead of an int for the error codes.
+            """
             my_thread_id: Final[int] = threading.get_ident()
             latest_thread_for_user[self._userid_hashed] = my_thread_id
-            available_graph: Final[Union[int, None]] = self._services.graph_req.get_next_graph(
+            available_graph: Final[Union[int, GraphRequest.Error]] = self._services.graph_req.get_next_graph(
                 (self._userid_hashed, issue),
                 last_graph_revision_number
             )
-            if available_graph is not None:
+            if not isinstance(available_graph, GraphRequest.Error):
                 if latest_thread_for_user[self._userid_hashed] == my_thread_id:
                     return (
                         self.get_arg_graph(issue),
                         available_graph
                     )
-            return None
+                else:
+                    return 1
+            errcode: Final[int] = 1 if available_graph.code == GraphRequest.ErrCodes.GRAPH_UNAVAILABLE else 2
+            return errcode
 
 
         def get_position_details(self,

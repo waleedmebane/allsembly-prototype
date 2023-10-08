@@ -236,15 +236,15 @@ def get_next_arg_graph(request):
         _atoi(request.GET['last_arg_graph_revision_number'])
         if 'last_arg_graph_revision_number' in request.GET
         else 0)
-    retval: Final[Union[Tuple[str, int], None]] = client.root.get_user_services(
+    retval: Final[Union[Tuple[str, int], int]] = client.root.get_user_services(
         bytes(request.user.username, 'utf-8')
         ).get_next_arg_graph(0, last_arg_graph_revision_number)
     client.close()
-    if retval is not None:
+    if type(retval) is tuple:
         my_graph, current_arg_graph_revision_number = retval
         return JsonResponse({'success': True, 'error': 0, 'graph': my_graph, 'graph_rev_number': current_arg_graph_revision_number})
     else:
-        return JsonResponse({'success': False, 'error': 1})
+        return JsonResponse({'success': False, 'error': retval})
 
 
 @login_required
