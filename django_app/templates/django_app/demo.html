@@ -94,6 +94,9 @@ overflow: auto;
 overflow: auto;
   padding: 15px;
 }
+#svg {
+  align-items: center;
+}
 </style>
 </head>
 <body>
@@ -115,7 +118,7 @@ overflow: auto;
 							</td>
 							<td>
 								<form id="reset_view_form">
-									<button type="submit" id="reset_view_button" value="Reset view">Reset View</button>
+									<!-- <button type="submit" id="reset_view_button" value="Reset view">Reset View</button> -->
 								</form>
 							</td>
 						</tr>
@@ -177,6 +180,7 @@ overflow: auto;
 
 	<script src="{% static 'dialog-polyfill.js' %}"></script>
 	<script>
+		var saved_transform;
 		var last_arg_graph_revision_number = 0;
 		var long_polling_suspended = false;
 		var positAddDialog = document.getElementById('positAddDialog');
@@ -211,30 +215,33 @@ overflow: auto;
         		var svgn = document.querySelector("#svg svg").getAttribute("transform");
 				var trf = document.querySelector("#svg svg g").getAttribute("transform");
 				console.log(trf);
-				if (-1 != trf.indexOf("translate")) {
-					var trf_split = trf.split("translate(");
-					var trans = trf_split[1].split(" ");
-					var trans_x = parseFloat(trans[0]);
-					var trans_y = parseFloat(trans[1]);
+
+				try{
+					if (saved_transform !== undefined && saved_transform != null) {
+						console.log("saved_transform: " + saved_transform);
+		   				document.querySelector("#svg svg g").setAttribute("transform", saved_transform);
+					}
 				}
-				console.log(trans_x);
-				console.log(trans_y);
-				var d3trans = d3.zoomTransform(trf);
+				catch(ReferenceError) {}
+
+				trf = document.querySelector("#svg svg").getAttribute("transform");
+				console.log(trf);
+
+				let selection = d3.select("svg");
+				let d3trans = d3.zoomTransform(d3.select("#svg svg"));
+				let zoom = d3.zoom()
+					.on("zoom", zoomed);
 				console.log(d3trans);
-
-				var selection = d3.select("svg g");
-				zoom = d3.zoom().on("zoom", zoomed);
-
 				zoom(selection);
 				d3.select("svg").style("background-color", "white");
 				d3.select("svg").style("display", "inline-block");
         }
 
 		function reset_view(event) {
-		    event.preventDefault();
-			var selection = d3.select("svg g");
-			zoom = d3.zoom().on("zoom", zoomed);
-			zoom.transform(selection, d3.zoomIdentity);
+	 	        if (event != null) {
+		            event.preventDefault();
+		        }
+			saved_transform = null;
 		   	return false;
 		}
 
@@ -242,7 +249,8 @@ overflow: auto;
 			//callback function, used by the d3 library to implement
 			//panning and zooming in the SVG image (the argument graph)
 			//pan with click and drag and zoom with the mouse scroll wheel.
-		   	document.querySelector("#svg svg").setAttribute("transform", transform);
+			saved_transform = transform;
+		   	document.querySelector("#svg svg g").setAttribute("transform", transform);
 		}
 
         $(document).ajaxError(function() {
@@ -251,7 +259,16 @@ overflow: auto;
 
         function set_arg_graph_svg_element(in_svg_str) {
 			var elem = document.querySelector('#svg');
-			elem.innerHTML = in_svg_str;
+			var graph_elem = elem.querySelector('svg g');
+			if (graph_elem != null && in_svg_str != "") {
+				var parser = new DOMParser();
+				var my_svg_doc = parser.parseFromString(in_svg_str, "text/html");
+			        var my_svg = my_svg_doc.querySelector('svg');
+				graph_elem.replaceWith(my_svg.querySelector('g'));
+			}
+			else {
+				elem.innerHTML = in_svg_str;
+			}
 			if (in_svg_str != "") {
 			    set_zoom();
 			}
@@ -326,8 +343,7 @@ overflow: auto;
 					success: function(res) {
 								if ('success' in res && res.success) {
 									console.log(res);
-									if (long_polling_suspended)
-										get_arg_graph(true);
+									get_arg_graph(true);
 								}
 								else if ('error_text' in res) {
 									alert("Error:" + res.error_text);
@@ -398,8 +414,8 @@ overflow: auto;
 				$.get("{% url 'clear_graph' %}", function(res) {
 					if ('success' in res && res.success) {
 						console.log(res);
-						if (long_polling_suspended)
-							get_arg_graph(false);
+						get_arg_graph(false);
+						reset_view(null);
 					}
 					else if ('error_text' in res) {
 						alert("Error:" + res.error_text);

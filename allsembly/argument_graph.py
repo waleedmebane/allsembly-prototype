@@ -165,6 +165,12 @@ class ArgumentGraph(persistent.Persistent):
         self._prepare_graph()
 
 
+    def clear(self) -> None:
+        self._v_graph_revision_number = 0;
+        self._v_updated_graph_event_obj.set()
+        self._v_updated_graph_event_obj.clear()
+
+
     def get_revision_number(self) -> int:
         return self._v_graph_revision_number
 
