@@ -6,7 +6,7 @@ Dependencies
 ------------
 
 Apache2
-    This is the web server.  Other web servers could be substituted.  I chose Apache because it is the premier free and open source web server.  We can have confidence in its security and robustness, as much as is possible for web server software.
+    This is the web server.  Other web servers could be substituted.  I chose Apache because it is the premier free and open source web server.  Also, because it has mod_wsgi, it is simpler to setup for deploying Django apps.
     
 Apache2 mod_wsgi
 	For interacting with Django (using the Python WSGI standard directly instead of CGI)
@@ -333,7 +333,22 @@ mapper (ORM) to possibly eek out some better concurrency.  It might not
 be necessary to do that, though.
 
 Python does not provide thread parallelism.  I assume that I will eventually
-have to write custom code to replace Problog.  Other than that, I would
+have to replace Problog, maybe with custom code.  A promising possibility may
+be to use iterative join-graph probagation (IGJP), which is an "anytime"
+algorithm for evaluating Bayesian Networks.  At each iteration, it gets
+closer to the exact solution.  So, the graph could be updated with the
+approximate values computed so far until the algorithm converges on the
+solution.  There is an existing open source implementation in a 
+software package called `"merlin" <https://github.com/radum2275/merlin/>`_.
+It could be integrated into the Allsembly server.  It is single threaded.
+However, I would like to investigate parallelizing the algorithm.  There
+is a dependency of a node on the node from which it receives a message
+in IJGP (and in other message passing belief propagation algorithms).
+But it seems like there would be many graphs that would have multiple
+semi-independent paths parts of which could have their calculations
+independently computed by separate worker threads.
+
+Other than that, I would
 propose parallelising the Allsembly™ server using separate processes, with 
 each process handling one or more complete issues (whole argument graphs).
 The separate processes would have to coordinate with regard to users needing

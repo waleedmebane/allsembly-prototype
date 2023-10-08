@@ -39,10 +39,11 @@ means indifference between true and false, correct and incorrect.
 The diagram may be moved around by clicking and dragging it with the mouse
 and zooming in and out may be accomplished with a mouse scroll wheel.
 Additional controls for panning and zooming are intended for a future version.
-Currently, the panning is a bit buggy.  If the diagram disappears from view, 
-you can get it back by loading the page again.  Just press enter in the
-location line after the URL.  (Do not use the browser's reload or refresh
-button since that would cause the last form to be resubmitted.)
+Currently, the pan and zoom and graph positioning behavior does not
+always produce an intuitive presentation.  If the diagram disappears from view, 
+you can get it back by loading the page again. 
+(Using the browser's reload, or refresh,
+button sseems to work in Chrome but not in Firefox.)
 
 .. image:: images/04mortal_position_detail.png
 
@@ -126,14 +127,6 @@ There is high confidence in that new position (95 "cents").  The probability
 estimate of the position it supports, "His heel is vulnerable", has increased
 and so has the probability estimate of the position supported by that position
 (i.e., the initial position) that "Achilles is mortal".
-
-*Note that in the current version of the prototype, the software sometimes
-requests a new version of the argument graph before it has finished
-being drawn.  If that situations occurs, 
-you can get the latest version of the graph by loading the page again.  
-Just press enter in the location line after the URL.  (Do not use the 
-browser's reload or refresh button since that would cause the last form
-to be resubmitted.)*
 
 
 Future features
