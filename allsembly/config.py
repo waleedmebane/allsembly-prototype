@@ -70,7 +70,7 @@ class Config:
     argon2id_hash_iterations = 2 #currently not used
     # TODO: implement and use SRP 6a as the default
     user_password_type = UserPasswordType.argon2id
-    number_of_threadpool_threads = 100
+    number_of_threadpool_threads = 30
     #whether to store userid as plaintext or as a secure hash of the userid
     store_userid_as_hashed_userid = True #currently not used
     long_polling_timeout_seconds = 60.0
