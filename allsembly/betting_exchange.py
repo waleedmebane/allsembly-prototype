@@ -108,6 +108,24 @@ There will also be a secondary market, integrated with the primary market.
  they are obligated under: first find the sale item with the presumed
  current owner's id; check that there is no later sale, then find
  the mentioned contract id number.
+Purchasing or selling a betting contract depends on there being a
+ counterpart ready to sell/buy such a contract.  In a large enough
+ market, that condition might be normally, or constantly, met.
+ In markets, in general, there are
+ often _market-makers_, and in betting situations, there are
+ often _book-makers_ who contract for bets using a guess as
+ to their value plus an integrated small transaction cost.  The
+ book-maker takes the risk of getting stuck with a contract not worth
+ its value and having to pay out in order to broker sales and make
+ money from the transaction markup.  The book-maker or market-maker
+ benefits the market by adding liquidity.  There will generally always
+ be someone to buy from or sell to at reasonable terms even if that
+ someone is the book-/market- maker rather than another person
+ intrinsically interested in the betting outcome.  Using "Hanson's
+ market scoring rule", a market-maker for betting markets could be
+ automated, and that is described in a paper: Berg, Henry and Todd A.
+ Proebsting (2009), "Hanson's Automated Market Maker", _Journal of
+ Prediction Markets_, Vol. 3, Iss. 1, pp. 45-59.
 """
 
 import persistent  #type: ignore[import]
