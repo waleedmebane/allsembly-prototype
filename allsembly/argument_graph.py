@@ -168,6 +168,11 @@ class ArgumentGraph(persistent.Persistent):
     def clear(self) -> None:
         self._v_graph_revision_number = 0;
         self._v_updated_graph_event_obj.set()
+        # TODO: the line below should most likely be removed
+        #  because otherwise a thread could wait on revisions to
+        #  this argument graph after it has stopped being used.
+        #  Probably should also change the name of this function
+        #  to something like "cleanup" or "decommission".
         self._v_updated_graph_event_obj.clear()
 
 
