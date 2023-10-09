@@ -109,9 +109,11 @@ There will also be a secondary market, integrated with the primary market.
  current owner's id; check that there is no later sale, then find
  the mentioned contract id number.
 Purchasing or selling a betting contract depends on there being a
- counterpart ready to sell/buy such a contract.  In a large enough
- market, that condition might be normally, or constantly, met.
- In markets, in general, there are
+ counterpart ready to sell/buy such a contract.  In the meantime,
+ prospective buyers/sellers have to wait to complete their purchase/sale
+ until their bid or ask is accepted by a counterpart seller/buyer. 
+ In a large enough market, that condition might normally, or even 
+ constantly, be met.In markets, in general, there are
  often _market-makers_, and in betting situations, there are
  often _book-makers_ who contract for bets using a guess as
  to their value plus an integrated small transaction cost.  The
