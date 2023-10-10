@@ -127,7 +127,9 @@ Purchasing or selling a betting contract depends on there being a
  market scoring rule", a market-maker for betting markets could be
  automated, and that is described in a paper: Berg, Henry and Todd A.
  Proebsting (2009), "Hanson's Automated Market Maker", _Journal of
- Prediction Markets_, Vol. 3, Iss. 1, pp. 45-59.
+ Prediction Markets_, Vol. 3, Iss. 1, pp. 45-59.  It is not an
+ essential feature but could be added at some point as an 
+ enhancement.
 """
 
 import persistent  #type: ignore[import]
