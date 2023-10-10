@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
   name='allsembly',
-  version='0.2.2',
+  version='0.2.3',
   author='Waleed Mebane',
   author_email='allsemblyUNDERSCOREdev@waleedmebane.c.m',
   zip_safe=False,

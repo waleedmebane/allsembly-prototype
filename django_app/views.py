@@ -30,7 +30,7 @@ from allsembly.speech_act import ArgueSpeechAct, Argument, Premise, Bid, \
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django_app.models import RegistrationComment
 
@@ -48,6 +48,8 @@ OPPOSE: Final[str] = 'Con'
 
 @require_http_methods(["GET", "POST"])
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect("demo");
     form = LoginForm()
     context = {'form': form}
     if request.method == 'POST':
