@@ -42,8 +42,6 @@ Additional controls for panning and zooming are intended for a future version.
 Currently, the pan and zoom and graph positioning behavior does not
 always produce an intuitive presentation.  If the diagram disappears from view, 
 you can get it back by loading the page again. 
-(Using the browser's reload, or refresh,
-button sseems to work in Chrome but not in Firefox.)
 
 .. image:: images/04mortal_position_detail.png
 
@@ -198,6 +196,20 @@ However, it will be posible to create a new position or argument and have it
 associated with the old one(s).  Also, it will be possible to add a gloss
 to the text, which must, however, have the same meaning as the text but just
 expand on or clarify it.
+
+Search button and showing similar arguments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There is a "Search" button that is not currently functional on the demo
+webpage.  It is important for efficient dialogues that participants avoid
+duplicating arguments.  The search button is supposed to help participants
+locate arguments that they are interested in in order to make contributions.
+Also in the future, creating a new argument might automatically trigger a
+search for similar arguments, so that participants can decide whether their
+concerns are already being covered or if it would be better to locate their
+concerns at some other branch.  They might also discover that positions
+in different branches ought to be related using the "Relate" feature
+(to be implemented).
 
 Alternative layout
 ------------------
