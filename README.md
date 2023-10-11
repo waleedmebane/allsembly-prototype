@@ -4,7 +4,7 @@ Allsembly™ Prototype
 This software will be for creating an online community for anonymous proposal and collaborative evaluation of public policy options, with automated decision support.
 It makes use of betting markets and probabilistic inference.
 Some additional explanation may be found in the _Introduction_ section of the 
-documentation, in misc/notes.md, and in misc/prospectus.pdf.
+documentation, in docs/notes.md, and in docs/prospectus.pdf.
 
 Only about half of the major features have been added, so far.
 
@@ -14,7 +14,7 @@ You may also generate the documentation from the files in the docs
 subdirectory using the documentation creation tool, Sphinx
 (https://www.sphinx-doc.org/).
 
-I do not expect to develop the prototype further until Fall or later.
+I do not expect to develop the prototype further until Summer or later.
 
 ## License
 
