@@ -332,14 +332,15 @@ An alternative would be to use an SQL DBMS through an object-relational
 mapper (ORM) to possibly eek out some better concurrency.  It might not
 be necessary to do that, though.
 
-Python does not provide thread parallelism.  I assume that I will eventually
-have to replace Problog, maybe with custom code.  A promising possibility may
+I assume that I will eventually
+have to replace Problog.  A promising possibility may
 be to use iterative join-graph probagation (IGJP), which is an "anytime"
 algorithm for evaluating Bayesian Networks.  At each iteration, it gets
-closer to the exact solution.  So, the graph could be updated with the
-approximate values computed so far until the algorithm converges on the
-solution.  There is an existing open source implementation in a 
-software package called `"merlin" <https://github.com/radum2275/merlin/>`_.
+closer to the exact solution (but it is only exact inference when the
+"join graph" is a "join tree").  So, the graph could be updated with the
+approximate values computed so far.  There is an existing open source 
+implementation in a software package called 
+`"merlin" <https://github.com/radum2275/merlin/>`_.
 It could be integrated into the Allsembly server.  It is single threaded.
 However, I would like to investigate parallelizing the algorithm.  There
 is a dependency of a node on the node from which it receives a message
@@ -347,6 +348,36 @@ in IJGP (and in other message passing belief propagation algorithms).
 But it seems like there would be many graphs that would have multiple
 semi-independent paths parts of which could have their calculations
 independently computed by separate worker threads.
+
+Regarding exact versus approximate inference, since the primary purpose
+of evaluating the positions in the dialogue after every move and not only
+at the end of the dialogue or at other key points, such as when considering
+extending the time-limit for the dialogue, is to guide participants in
+choosing the most efficient next moves, a good enough approximation should
+be adequate to the purpose. Exact inference could be used at the end and,
+possibly also, at other key points in the dialogue.  The approximation needs
+to be good enough that it does not or only rarely does lead participants to
+expend their efforts attacking or supporting positions that are not in
+need of it or doing so when there would be much better targets for
+attack or support given their beliefs about the evidence and the correctness
+of various positions.
+
+The evaluated estimate of the confidence that the group of participants as
+a whole has in aggregate in the weight of evidence supporting a position
+functions in a similar way to a *burden of proof*.  When the value is less
+than 50%, it indicates that advocates of that position will 'lose' (that is,
+not have their preferred position be considered justified) if nothing changes
+before the end of the dialogue.  Therefore, as long as they continue to
+believe that there is evidence to decisively support the position, it is
+incumbent on them to provide it (subject to their priorities--some other
+position might be more important to them to focus their efforts on).  On the
+other hand, when the position assessed at greater than 50%, those opposed
+have the burden of producing evidence while they continue to believe that
+the position (in and of itself or because of what it supports) is important
+and that there is decisive evidence opposed to it.  So long as the appoximation
+guides, with high frequency, the participants to make the same strategic
+assessments as the exact result would, the system will be functioning well
+(efficiently).
 
 Other than that, I would
 propose parallelising the Allsembly™ server using separate processes, with 
@@ -514,7 +545,7 @@ Choosing library dependencies:
 How it works
 ------------
 
-For now, see `docs/how_it_works.md <https://github.com/waleedmebane/allsembly-prototype/blob/main/docs/how_it_works.md>`_ in the 
+For now, see :doc: `docs/how_it_works.md <how_it_works.html>`_ in the 
 `source code repository <https://github.com/waleedmebane/allsembly-prototype>`_.
 
 Other uses
