@@ -83,7 +83,7 @@ though they are also able to investigate topics outside of their base of
 knowledge).
 
 After a panel is convened, it proceeds in the way described in the file 
-:doc: `docs/notes.md <notes.html>`_ in the source code repository and shown to some extent in the 
+`docs/notes.md <notes.html>`_ in the source code repository and shown to some extent in the 
 screen shots in the User's Guide.  Participants
 present policy proposals as described in `misc/prospectus.pdf <https://github.com/waleedmebane/allsembly-prototype/blob/main/misc/prospectus.pdf>`_, and then they
 present positions, statements about the evaluation of those proposals, and pro and
@@ -99,7 +99,7 @@ participants adjust their expressed confidence in positions by making new bets.
 A bet is supposed to represent the taking of a risk.  Thus a participant is
 rational when their bet corresponds with what they actually believe.  And 
 participants will be constrained to contribute only logically consistent 
-positions.  See :doc: `docs/notes.md <notes.html>`_ for some further explanation.
+positions.  See `docs/notes.md <notes.html>`_ for some further explanation.
 
 In the end, proposals will have probability estimates associated with them.
 Probability estimates might contain error.  So the result gives us a clear
@@ -122,7 +122,7 @@ contribution that might appear irrelevant might just need to be contributed
 to a different part of the graph.  Having a graph makes both things possible.
 Contributions are not prejudiced as irrelevant if one can find somewhere in the
 graph to put them, even by adding a new initial position, but each branch is
-kept on topic.  Some other details can be found in :doc: `docs/notes.md <notes.html>`_ and 
+kept on topic.  Some other details can be found in `docs/notes.md <notes.html>`_ and 
 `misc/prospectus.pdf <https://github.com/waleedmebane/allsembly-prototype/blob/main/misc/prospectus.pdf>`_ and gleaned from the User's and Programmer's Guides.  In 
 the future, I expect that summarization will have an important role to play as
 well.  For example, the positions with the highest probability estimates or

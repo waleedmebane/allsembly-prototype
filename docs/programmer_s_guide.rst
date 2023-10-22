@@ -545,7 +545,7 @@ Choosing library dependencies:
 How it works
 ------------
 
-For now, see :doc: `docs/how_it_works.md <how_it_works.html>`_ in the 
+For now, see `docs/how_it_works.md <how_it_works.html>`_ in the 
 `source code repository <https://github.com/waleedmebane/allsembly-prototype>`_.
 
 Other uses
