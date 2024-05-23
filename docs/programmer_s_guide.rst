@@ -333,10 +333,12 @@ mapper (ORM) to possibly eek out some better concurrency.  It might not
 be necessary to do that, though.
 
 I assume that I will eventually
-have to replace Problog.  A promising possibility may
-be to use iterative join-graph probagation (IGJP), which is an "anytime"
-algorithm for evaluating Bayesian Networks.  At each iteration, it gets
-closer to the exact solution (but it is only exact inference when the
+have to replace Problog.  It is slow because of the knowledge compilation
+step. It is intended to improve processing when many queries are made against
+the same graph, which is not quite my use case. A promising alternative 
+possibility may be to use iterative join-graph probagation (IGJP), which is an
+"anytime" algorithm for evaluating Bayesian Networks.  At each iteration, it
+gets closer to the exact solution (but it is only exact inference when the
 "join graph" is a "join tree").  So, the graph could be updated with the
 approximate values computed so far.  There is an existing open source 
 implementation in a software package called 
@@ -347,7 +349,9 @@ is a dependency of a node on the node from which it receives a message
 in IJGP (and in other message passing belief propagation algorithms).
 But it seems like there would be many graphs that would have multiple
 semi-independent paths parts of which could have their calculations
-independently computed by separate worker threads.
+independently computed by separate worker threads.  I also intend to
+investigate algorithms for dynamically updating graphs without losing
+all of the previous inference or knowledge compilation work.
 
 Regarding exact versus approximate inference, since the primary purpose
 of evaluating the positions in the dialogue after every move and not only
