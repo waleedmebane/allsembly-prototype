@@ -42,3 +42,7 @@ Installation
 Installation directions are in the file:
 docs/installation_and_testing.md
 
+Code of conduct for contributors
+--------------------------------
+
+This project currently has only one contributor; therefore, I have not yet adopted a code of conduct. If enough people express interest in contributing, I expect to adopt a code of conduct based on the [Contributor Covenant 3.0 Code of Conduct](https://www.contributor-covenant.org/version/3/0/code_of_conduct/), with appropriate interpretation and enforcement guidelines that are manageable for a small group.
