@@ -18,7 +18,7 @@ subdirectory using the documentation creation tool, Sphinx
 
 I do not expect to develop the prototype further until Summer or later.
 
-I intend to make future updates on Launchpad instead of Github in order to avoid the use of Microsoft products due to ethical concerns highlighted in a [June 2025 UN special rapporteur report](https://afsc.org/newsroom/unprecedented-investor-action-demands-microsoft-answer-reported-involvement-gaza-genocide) and concerns [highlighted by some Microsoft employees](https://noazureforapartheid.com/). I will add a link here to the new repository after it is created.
+I intend to make future updates on Codeberg instead of Github in order to avoid the use of Microsoft products due to ethical concerns highlighted in a [June 2025 UN special rapporteur report](https://afsc.org/newsroom/unprecedented-investor-action-demands-microsoft-answer-reported-involvement-gaza-genocide) and concerns [highlighted by some Microsoft employees](https://noazureforapartheid.com/). I will add a link here to the new repository after it is created.
 
 ## License
 
